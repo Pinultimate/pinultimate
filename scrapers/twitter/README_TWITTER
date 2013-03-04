@@ -1,0 +1,32 @@
+Twitter REST API
+----------------
+Documentation: https://dev.twitter.com/docs/api
+Created by: Kyle Vermeer
+
+Searching tweets by location:
+-----------------------------
+
+URL: https://api.twitter.com/1.1/search/tweets.json
+Rate Limits: 180/rate limit window (I believe 15 minutes)
+Important Parameters:
+	q: query 
+		query format explained here: https://dev.twitter.com/docs/using-search
+	geocode: only grab tweets near specificied location. 
+		Format: "latitude,longitude,radius", e.i. "37.781157,-122.398720,1mi"
+		Notes: radius must be in either 'km' or 'mi', OPTIONAL
+	count: max number of tweets to return
+		Format: integer
+		Notes: max 100, default to 15, OPTIONAL
+	result_type: type of results you want: most recent, most popular, or mixed
+		Format: 'mixed','popular', or 'recent'
+		Notes: default is mixed, OPTIONAL
+
+Returns: An array called "statuses" that contains Tweet objects (https://dev.twitter.com/docs/platform-objects/tweets)
+
+The script provided explores two API methods: finding poi's based on latitudes and longitudes and seaching tweets based on location.  The main method to pay attention to is the second method, which returns tweets for a given latitude and longitude.
+
+Requires one python library:
+
+oauth2 - https://github.com/simplegeo/python-oauth2
+
+
