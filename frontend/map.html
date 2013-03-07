@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>Nokia Maps API for JavaScript Example: Add value based heat map</title>
+    <script type="text/javascript" charset="UTF-8" src="http://api.maps.nokia.com/2.2.4/jsl.js?with=all"></script>
+    <link href='http://fonts.googleapis.com/css?family=Tauri' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <header>
+      <h1 id="pageTitle">Pinultimate</h1>
+      <h2 id="pageSubtitle">Bringing Customizable HeatMaps to all Maps</h2>
+    </header>
+    <div id="mapContainer"></div>
+
+    <footer>
+      <p class="footer-text">Pinultimate in conjunction with Nokia</p>
+    </footer>
+
+    <script type="text/javascript" src="map.js"></script>
+    <script type="text/javascript" src="sampleData.js"></script>
+    <script type="text/javascript">
+      console.log(data);
+      var heatmap_data = JSON.parse(data);
+      console.log(heatmap_data);
+      createNokiaMap("mapContainer", heatmap_data);
+
+
+    </script>
+  </body>
+</html>
