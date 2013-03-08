@@ -1,0 +1,369 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+    <head> 
+    	<title>Heat Map</title>
+
+    	<meta charset="utf-8">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+ 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+
+	<link rel="stylesheet" href="jquery.mobile-1.2.0.css" />
+
+	<link rel="stylesheet" href="style.css" />
+	<link rel="apple-touch-icon" href="SSIcon.png" />
+	<link rel="apple-touch-startup-image" href="SSIcon.png">
+	
+	<script type="text/javascript" src="jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="jquery.mobile-1.2.0.js"></script>
+	<script type="text/javascript" src="jhere.js"></script>
+       
+        
+
+        <style type="text/css">
+        #map {      
+        	position: absolute;      
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: white;
+        }
+		</style>
+    </head>
+
+
+<body>
+<div data-role="page"  >
+
+	<div data-role="header">
+		<h1>Heat Map</h1>
+	</div><!-- /header -->
+
+		
+	<div data-role="content">
+        <h1>This is the DEMO of Heat Map</h1>
+	<div id="map"></div>
+
+	</div><!-- /content -->
+
+    <div data-role="footer" data-id="samebar" class="nav-glyphish-example" data-position="fixed" data-tap-toggle="false">
+			<div data-role="navbar" class="nav-glyphish-example" data-grid="a">
+		
+		<ul>
+			<li><a href="home.html" id="home" data-icon="custom" >Home</a></li>
+			<li><a href="map.html" id="beer" data-icon="custom" class="ui-btn-active">Map</a></li>
+		</ul>
+			</div>
+	</div><!-- /footer -->	
+
+</div><!-- /page -->	
+
+</body>
+
+<!-- 
+<script type="text/javascript">
+var heatMapData = [
+ {
+        "value": 4899,
+        "latitude":  37.434361,
+        "longitude":  -122.166056
+    },
+    {
+        "value": 3299,
+        "latitude":  38,
+        "longitude": -122
+    },
+    {
+        "value": 36,
+        "latitude": 39,
+        "longitude": -121
+    }
+    ];
+
+</script>-->
+<script type="text/javascript">
+var heatMapData = [
+    {
+        "value": 1043,
+        "latitude": 37.424330145984214,
+        "longitude": -122.1656459569931
+    },
+    {
+        "value": 64,
+        "latitude": 37.4239595086973,
+        "longitude": -122.16620653867722
+    },
+    {
+        "value": 1132,
+        "latitude": 37.42316331627802,
+        "longitude": -122.16561052918293
+    },
+    {
+        "value": 598,
+        "latitude": 37.42430245475609,
+        "longitude": -122.16628968715668
+    },
+    {
+        "value": 1978,
+        "latitude": 37.42391857989888,
+        "longitude": -122.16800542899837
+    },
+    {
+        "value": 294,
+        "latitude": 37.42463,
+        "longitude": -122.166935
+    },
+    {
+        "value": 84,
+        "latitude": 37.424523,
+        "longitude": -122.166522
+    },
+    {
+        "value": 1998,
+        "latitude": 37.425320633178906,
+        "longitude": -122.16436386108398
+    },
+    {
+        "value": 216,
+        "latitude": 37.425252471039094,
+        "longitude": -122.16655254364014
+    },
+    {
+        "value": 17,
+        "latitude": 37.42363736512375,
+        "longitude": -122.16476786656617
+    },
+    {
+        "value": 1368,
+        "latitude": 37.42416186836296,
+        "longitude": -122.16825842857361
+    },
+    {
+        "value": 2341,
+        "latitude": 37.42569552383859,
+        "longitude": -122.16749668121338
+    },
+    {
+        "value": 3594,
+        "latitude": 37.424910064273604,
+        "longitude": -122.16890350268025
+    },
+    {
+        "value": 157,
+        "latitude": 37.423181,
+        "longitude": -122.167201
+    },
+    {
+        "value": 7,
+        "latitude": 37.42457962036133,
+        "longitude": -122.1668930053711
+    },
+    {
+        "value": 2168,
+        "latitude": 37.426125,
+        "longitude": -122.167036
+    },
+    {
+        "value": 619,
+        "latitude": 37.42563336348534,
+        "longitude": -122.16496190130633
+    },
+    {
+        "value": 148,
+        "latitude": 37.42317365162698,
+        "longitude": -122.16736235928508
+    },
+    {
+        "value": 116,
+        "latitude": 37.42447712233134,
+        "longitude": -122.16389179229736
+    },
+    {
+        "value": 25,
+        "latitude": 37.423348,
+        "longitude": -122.165967
+    },
+    {
+        "value": 410,
+        "latitude": 37.42299,
+        "longitude": -122.167448
+    },
+    {
+        "value": 81,
+        "latitude": 37.42506076468821,
+        "longitude": -122.16580957174301
+    },
+    {
+        "value": 93,
+        "latitude": 37.423733,
+        "longitude": -122.16802775859833
+    },
+    {
+        "value": 467,
+        "latitude": 37.42306272928104,
+        "longitude": -122.16367185115814
+    },
+    {
+        "value": 1292,
+        "latitude": 37.424429,
+        "longitude": -122.16891
+    },
+    {
+        "value": 221,
+        "latitude": 37.424281,
+        "longitude": -122.167868
+    },
+    {
+        "value": 528,
+        "latitude": 37.4231053318716,
+        "longitude": -122.16423511505127
+    },
+    {
+        "value": 362,
+        "latitude": 37.42296246637736,
+        "longitude": -122.16739562160595
+    },
+    {
+        "value": 36,
+        "latitude": 37.42357988942938,
+        "longitude": -122.16512267268303
+    },
+    {
+        "value": 99,
+        "latitude": 37.424528244471404,
+        "longitude": -122.16346800327301
+    },
+   
+];
+</script> 
+
+<script type="text/javascript">
+
+	
+          if (navigator.geolocation)
+            {
+            navigator.geolocation.getCurrentPosition(success);
+            }
+          else{x.innerHTML="Geolocation is not supported by this browser.";}
+          
+function success(position) {
+             var centerObject = {latitude: position.coords.latitude , longitude: position.coords.longitude};
+              //Set default credentials
+            $.jHERE.defaultCredentials('ZK2z_y4VG6AbOWUzjvN2', 'n7NUDiZ7BXw8Hw0YF1ajWQ');
+
+            $('#map').jHERE({enable: ['behavior', 'zoombar', 'typeselector', 'positioning', 'contextmenu']});
+            $('#map').jHERE('center', centerObject);
+
+
+             $('#map').jHERE('heatmap', heatMapData, 'value');
+
+}	
+		  
+
+
+
+   
+
+
+
+</script>
+
+<!--
+<script type="text/javascript">
+
+/*	Set authentication token and appid 
+*	WARNING: this is a demo-only key
+*	please register on http://api.developer.nokia.com/ 
+*	and obtain your own developer's API key 
+*/
+nokia.Settings.set( "appId", "ZK2z_y4VG6AbOWUzjvN2");
+nokia.Settings.set( "authenticationToken", "n7NUDiZ7BXw8Hw0YF1ajWQ");
+
+
+// Get the DOM node to which we will append the map
+var mapContainer = document.getElementById("mapContainer");
+// Create a map inside the map container DOM node
+var map = new nokia.maps.map.Display(mapContainer, {
+	// initial center and zoom level of the map
+	center: [52.51, 13.4],
+	zoomLevel: 10,
+	components: [
+		// ZoomBar provides a UI to zoom the map in & out
+		new nokia.maps.map.component.ZoomBar(), 
+		// We add the behavior component to allow panning / zooming of the map
+		new nokia.maps.map.component.Behavior(),
+		// Creates UI to easily switch between street map satellite and terrain mapview modes
+		new nokia.maps.map.component.TypeSelector(),
+		// Creates a toggle button to show/hide traffic information on the map
+		new nokia.maps.map.component.Traffic(),
+		// Creates a toggle button to show/hide public transport lines on the map
+		new nokia.maps.map.component.PublicTransport(),
+		// Creates a toggle button to enable the distance measurement tool
+		new nokia.maps.map.component.DistanceMeasurement(),
+		// Shows a min-map in the bottom right corner of the map
+		new nokia.maps.map.component.Overview(),
+		/* Shows a scale bar in the bottom right corner of the map depicting
+		 * ratio of a distance on the map to the corresponding distance in the real world
+		 * in either kilometers or miles
+		 */ 
+		new nokia.maps.map.component.ScaleBar(),
+		/* Positioning will show a set "map to my GPS position" UI button
+		 * Note: this component will only be visible if W3C geolocation API
+		 * is supported by the browser and if you agree to share your location.
+		 * If you location can not be found the positioning button will reset
+		 * itself to its initial state
+		 */
+		new nokia.maps.positioning.component.Positioning(),
+		// Add ContextMenu component so we get context menu on right mouse click / long press tap
+		new nokia.maps.map.component.ContextMenu()
+	]
+});
+
+var heatmapProvider;
+try {
+	// Creating Heatmap overlay
+	var test = new nokia.maps.heatmap.Overlay({});
+	console.log("Heat Map: " + test);
+	heatmapProvider = new nokia.maps.heatmap.Overlay({
+		// This is the greatest zoom level for which the overlay will provide tiles
+		max: 15,
+		// This is the overall opacity applied to this overlay
+		opacity: 0.6,
+		// Defines if our heatmap is value or density based
+		type: "value",
+		// Coarseness defines the resolution with which the heat map is created.
+		coarseness: 2
+	});
+} catch (e) {
+	// The heat map overlay constructor throws an exception if there
+	// is no canvas support in the browser
+	console.log("Didn't work!");
+	console.log(e.message);
+	//alert(typeof e == "string" ? e : e.message);
+}
+
+if (heatmapProvider) {
+	/* We load a data file containing data points for the heat map
+	 * LoadScript is an helper function and not part of the Nokia Maps API
+	 * See exampleHelpers.js for implementation details 
+	 * 		{latitude: 53, longitude: 13: value 5.3},
+	 */
+	data = [
+		{latitude: 52.51, longitude: 13.4, value: 5.3},
+		{latitude: 52.53, longitude: 13.4, value: 8},
+		{latitude: 52.52, longitude: 13.3, value: 6}
+	];
+	// Rendering the heat map overlay onto the map
+	heatmapProvider.addData(data);
+	map.overlays.add(heatmapProvider);
+}
+
+	
+    
+</script>-->	
+
+
+</html>
+        
