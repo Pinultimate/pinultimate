@@ -1,5 +1,10 @@
 PINULTIMATE
 ---------------------------------------------------------------------------
+Team GitHub Account:
+Username: puadmin
+Email: teampinultimate@gmail.com
+Password: pupassword123
+---------------------------------------------------------------------------
 SSH to EC2:
 1. git pull to obtain ./ec2/pinultimatekey.pem
 2. sudo chmod 600 ./ec2/pinultimatekey.pem
