@@ -1,5 +1,7 @@
 # Django settings for server project.
 
+from mongoengine import *
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -9,6 +11,11 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+# Init MongoDB
+DBNAME = 'HEATMAPDB'
+connect(DBNAME)
+
+# This is IGNORED when using MongoDB
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.

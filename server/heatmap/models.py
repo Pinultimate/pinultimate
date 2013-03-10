@@ -1,3 +1,10 @@
 from django.db import models
+from mongoengine import *
 
-#class Location(models.Model):
+class Location(DynamicDocument):
+	coordinates = GeoPointField(required=True)
+	timestamp = DateTimeField(required=True)
+
+	meta = {
+        'ordering': ['-timestamp']
+    }
