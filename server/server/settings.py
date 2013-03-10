@@ -1,4 +1,4 @@
-# Django settings for backend project.
+# Django settings for server project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -19,6 +19,7 @@ DATABASES = {
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
     }
+    'mongo'
 }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
@@ -83,7 +84,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'pq3khwu-sad@+%$!(3g1uga!v96qtvt4&s2(f75!q=9b-&!30t'
+SECRET_KEY = 'wzhv$72huhv$yv!&@gvv&+_&+265f@(9l^58h^5n9g!$xxehci'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -102,10 +103,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'backend.urls'
+ROOT_URLCONF = 'server.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'backend.wsgi.application'
+WSGI_APPLICATION = 'server.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -124,6 +125,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'server.heatmap',
 )
 
 # A sample logging configuration. The only tangible logging

@@ -18,3 +18,21 @@ PUSH to EC2:
 CHECKOUT Code on EC2:
 > cd ~/source.git
 > GIT_WORK_TREE=/home/puadmin/source git checkout -f
+---------------------------------------------------------------------------
+SERVER-SIDE Development:
+1. INSTALL MYSQL:
+> brew install mysql
+> unset TMPDIR
+> mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
+2. START MYSQL:
+> mysql.server start
+3. STOP MYSQL:
+> mysql.server stop
+4. INSTALL MYSQL DRIVER:
+> pip install MySQL-python
+5. CREATE local pudev ACCOUNT:
+> mysql.server start
+> mysql -u root
+>> CREATE DATABASE HEATMAPDB;
+>> CREATE USER 'pudevs'@'localhost' IDENTIFIED BY 'pukey';
+>> GRANT ALL ON HEATMAPDB.* TO 'pudevs'@'localhost';
