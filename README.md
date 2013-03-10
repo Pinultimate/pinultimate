@@ -40,6 +40,7 @@ pip install django
 ### MongoDB SETUP:
 ```bash
 brew install mongodb
+pip install pymongo
 pip install mongoengine
 ```
 
