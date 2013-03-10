@@ -5,24 +5,46 @@ PINULTIMATE
 * Email: teampinultimate@gmail.com
 * Github Password: pupassword123
 
-### SSH to EC2:
+## SSH to EC2:
 ```bash
 ssh puadmin@pinultimate.net
 ```
 password: pukey
 
-### DEPLOY to EC2:
+## DEPLOY to EC2:
 ```bash
 git push deploy master
 ```
-### CHECKOUT Code on EC2:
+## CHECKOUT Code on EC2:
 ```bash
 cd ~/source.git
 GIT_WORK_TREE=/home/puadmin/source git checkout -f
 ```
 
-### SERVER-SIDE Development:
+## SERVER-SIDE Development:
 
+### Install Homebrew & PIP:
+```bash
+/usr/bin/ruby -e "$(/usr/bin/curl -fksSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
+brew update
+```
+```bash
+sudo easy_install pip
+```
+
+### Django SETUP:
+```bash
+pip install django
+```
+
+### MongoDB SETUP:
+```bash
+brew install mongodb
+pip install pymongo
+pip install mongoengine
+```
+
+### MYSQL SETUP:
 1. INSTALL MYSQL:
 ```bash
 brew install mysql
@@ -33,7 +55,6 @@ unset TMPDIR
 ```bash
 mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
 ```
-
 2. START MYSQL:
 ```bash
 mysql.server start
@@ -53,7 +74,6 @@ mysql.server start
 ```bash
 mysql -u root
 ```
-
 6. INITIALIZE DATABASE
 ```sql
 CREATE DATABASE HEATMAPDB;
