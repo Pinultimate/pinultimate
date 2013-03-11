@@ -1,6 +1,8 @@
 import sys
 import time
 import random
+import pymongo
+import datetime
 
 '''
 This class is for populating the database with fake data points.
@@ -19,27 +21,30 @@ class PointGenerator:
         for i in range(num_points):
             long = center['longitude'] + random.random()*xrange
             lat = center['latitude'] + random.random()*yrange
-            self.points.append(({'latitude':lat,'longitude':long}, time))
+            self.points.append({"coords":{'latitude':lat,'longitude':long}, "timestamp":time})
 
     def print_points(self):
         for point in self.points:
             print point
 
-    def add_to_db(self):
-        pass
-
+    def add_to_db(self, db_name):
+        connection = pymongo.Connection()
+        db = connection[db_name]
+        points = db.points
+        for point in self.points:
+            points.insert(point)
 
 
 SEC_IN_HOUR = 3600
             
 def main(args):
-    gen = PointGenerator()
     center = {'latitude':37.44,'longitude':-122.14}
+    gen = PointGenerator()
+    t = datetime.datetime.utcnow()
     for i in range(10):
-        t = int(time.time()) - i*SEC_IN_HOUR
-        gen.generate_points(center, 0.02, 0.01, t, 10)
+        gen.generate_points(center, 0.02, 0.01, t - datetime.timedelta(hours=i), 10)
     #gen.print_points()
-    #gen.add_to_db()
+    gen.add_to_db('dummy_data')
     
 '''
 def usage(program_name):
