@@ -5,12 +5,14 @@ from heatmap.views import *
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns('heatmap.views',
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    url(r'^location/coord/(?P<latitude>\d+(\.\d+)?)/(?P<longitude>\d+(\.\d+)?)/datetime/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<hour>\d+)/(?P<minute>\d+)/$', 'heatmap.views.find_locations'),
-    url(r'^location/coord/(?P<latitude>\d+(\.\d+)?)/(?P<longitude>\d+(\.\d+)?)/$', 'heatmap.views.find_all_locations'),
+    url(r'^location/coord/(?P<latitude>\d+(\.\d+)?)/(?P<longitude>\d+(\.\d+)?)/datetime/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<hour>\d+)/(?P<minute>\d+)/$', 'find_locations_radius_time'),
+    url(r'^location/coord/(?P<latitude>\d+(\.\d+)?)/(?P<longitude>\d+(\.\d+)?)/$', 'find_locations_radius'),
+    url(r'^location/all/$', 'find_locations_all'),
+    url(r'^add/coord/(?P<latitude>\d+(\.\d+)?)/(?P<longitude>\d+(\.\d+)?)/$', 'add_location_now'),
 )
