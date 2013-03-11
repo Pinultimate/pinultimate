@@ -9,7 +9,7 @@ import time
 def find_locations_radius_time(request, latitude, longitude, year, month, day, hour, minute):
 	return HttpResponse("Latitude : %s\nLongitude : %s\nDatetime : %s/%s/%s, %s:%s" % (latitude, longitude, month, day, year, hour, minute))
 
-def find_locations_radius(request, latitude, longitude):
+def find_locations_radius(request, latitude, longitude, radius):
 	return HttpResponse("Latitude : %s\nLongitude : %s" % (latitude, longitude))
 
 def find_locations_all(request):
@@ -34,4 +34,3 @@ def add_location_now(request, latitude, longitude):
 def normalize_timestamp(timestamp):
 	# TODO: handle tzinfo if necessary in the future
 	return datetime.datetime(timestamp.year, timestamp.month, timestamp.day, timestamp.hour)
-	
