@@ -1,4 +1,4 @@
-function createNokiaMap(divID, heatmap_data) {
+function createNokiaMap(divID, heatmap_data, map_type) {
 
   nokia.Settings.set( "appId", "ZK2z_y4VG6AbOWUzjvN2");
   nokia.Settings.set( "authenticationToken", "n7NUDiZ7BXw8Hw0YF1ajWQ");
@@ -32,7 +32,7 @@ function createNokiaMap(divID, heatmap_data) {
       // This is the overall opacity applied to this overlay
       opacity: 0.6,
       // Defines if our heatmap is value or density based
-      type: "value",
+      type: map_type,
       // Coarseness defines the resolution with which the heat map is created.
       coarseness: 2
     });
