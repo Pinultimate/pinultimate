@@ -15,10 +15,13 @@ function createNokiaMap(divID, heatmap_data) {
       new nokia.maps.map.component.Overview(),
       new nokia.maps.map.component.DistanceMeasurement(),
       new nokia.maps.map.component.ScaleBar(),
+      new nokia.maps.map.component.TypeSelector()
     ],
     zoomLevel: 13,
     center: [37.442,  -122.14],
   });
+
+  map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
 
   var heatmapProvider;
   try {

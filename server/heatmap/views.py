@@ -15,10 +15,13 @@ def find_locations_radius(request, latitude, longitude):
 def find_locations_all(request):
 	response = defaultdict(list)
 	locations = Location.objects
+	i = 1
 	for location in locations:
+		i = i + 1
 		n_timestamp = normalize_timestamp(location.timestamp).strftime('%Y-%m-%d %H:%M:%S')
 		response[n_timestamp].append(location.coordinates)
-	return HttpResponse(json.dumps(response), content_type="application/json")
+	return HttpResponse('Hello + %d' % i)
+	#return HttpResponse(json.dumps(response), content_type="application/json")
 
 def add_location_now(request, latitude, longitude):
 	location = Location(
