@@ -4,6 +4,7 @@ from collections import OrderedDict
 import json
 import datetime
 import time
+from math import *
 
 def normalize_timestamp(timestamp):
 	# TODO: handle tzinfo if necessary in the future
@@ -12,7 +13,7 @@ def normalize_timestamp(timestamp):
 # if a specific timestamp (1-hour-interval) has zero checkins, then that key-value pair is not included in the json
 # radious: in degrees
 # timestamps is a list
-def query(lat=None, lon=None, rad=None, timestamps=None):
+def query_radius(lat=None, lon=None, rad=None, timestamps=None):
 	response = OrderedDict()
 	locations = Location.objects
 	for location in locations:
@@ -22,9 +23,8 @@ def query(lat=None, lon=None, rad=None, timestamps=None):
 				continue
 
 		if (rad is not None) and (lat is not None) and (lon is not None):
-			if (location.coordinates[0] > lat + rad) or (location.coordinates[0] < lat - rad):
-				continue
-			if (location.coordinates[1] > lon + rad) or (location.coordinates[1] < lon - rad):
+			dist = sqrt(pow(location.coordinates[0] - lat, 2) + pow(location.coordinates[1] - lon, 2))
+			if dist > rad:
 				continue
 
 		n_timestamp_str = n_timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -33,15 +33,30 @@ def query(lat=None, lon=None, rad=None, timestamps=None):
 		response[n_timestamp_str].append(location.coordinates)
 	return response
 
-def search(request, lat=None, lon=None, rad=None, year=None, month=None, day=None, hour=None, minute=None):
-	if (lat is not None) and (lon is not None) and (rad is not None):
-		lat = float(lat)
-		lon = float(lon)
-		rad = float(rad)
-	else:
-		lat = None
-		lon = None
-		rad = None
+def query_region(lat=None, lon=None, latrange=None, lonrange=None, timestamps=None):
+	response = OrderedDict()
+	locations = Location.objects
+	for location in locations:
+		n_timestamp = normalize_timestamp(location.timestamp)
+		if timestamps is not None:
+			if n_timestamp not in timestamps:
+				continue
+
+		if (lat is not None) and (lon is not None):
+			if (latrange is not None):
+				if (location.coordinates[0] > lat + latrange/2) or (location.coordinates[0] < lat - latrange/2):
+					continue
+			if (lonrange is not None):
+				if (location.coordinates[1] > lon + lonrange/2) or (location.coordinates[1] < lon - lonrange/2):
+					continue
+
+		n_timestamp_str = n_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+		if n_timestamp_str not in response:
+			response[n_timestamp_str] = []
+		response[n_timestamp_str].append(location.coordinates)
+	return response
+
+def search(request, lat=None, lon=None, rad=None, latrange=None, lonrange=None, year=None, month=None, day=None, hour=None, minute=None, type=None):
 	
 	if (year is not None) and (month is not None) and (day is not None):
 		timestamps = []
@@ -59,7 +74,14 @@ def search(request, lat=None, lon=None, rad=None, year=None, month=None, day=Non
 	else:
 		timestamps = None
 
-	response = query(lat, lon, rad, timestamps)
+	if (type is None):
+		response = query_radius(timestamps=timestamps)
+	elif (type is 'reg'):
+		response = query_region(float(lat), float(lon), float(latrange), float(lonrange), timestamps)
+	elif (type is 'rad'):
+		response = query_radius(float(lat), float(lon), float(rad), timestamps)
+	else:
+		print 'Error: Incorrect type: %s passed to query URL...' % type
 	return HttpResponse(json.dumps(response), content_type="application/json")
 
 '''
