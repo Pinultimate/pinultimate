@@ -12,7 +12,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 # Init MongoDB
-DBNAME = 'HEATMAPDB'
+DBNAME = 'HEATMAP_DB'
 connect(DBNAME)
 
 # This is IGNORED when using MongoDB
