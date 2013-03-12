@@ -13,7 +13,7 @@ class PointGenerator:
         random.seed()
         self.db_name = db_name
         self.points = []
-        
+
     #center is a dict with values for 'latitude' and 'longitude'. latrange and longrange are the
     #maximum distances from the center in the y and x directions, respectively, for adding points.
     def generate_points(self, center, latrange, longrange, time, num_points):
@@ -45,7 +45,7 @@ def init_parse_args(parser):
     parser.add_argument('-p', '--print', dest='output_method', action='store_const',
                         const=PointGenerator.print_points, default=PointGenerator.add_points_to_db,
                         help='output to stdout rather than to database')
-    
+
 def main():
     parser = argparse.ArgumentParser(description="Generate dummy data points (coords and timestamp) to populate db with.")
     init_parse_args(parser)
@@ -58,7 +58,7 @@ def main():
     for x in range(10):
         gen.generate_points(center, args.latrange, args.longrange, t - datetime.timedelta(hours=x), args.num_per_hour)
     args.output_method(gen)
-    
+
 
 if __name__ == '__main__':
     main()

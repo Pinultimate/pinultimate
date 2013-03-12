@@ -57,7 +57,7 @@ def query_region(lat=None, lon=None, latrange=None, lonrange=None, timestamps=No
 	return response
 
 def search(request, lat=None, lon=None, rad=None, latrange=None, lonrange=None, year=None, month=None, day=None, hour=None, minute=None, type=None):
-	
+
 	if (year is not None) and (month is not None) and (day is not None):
 		timestamps = []
 		if minute is not None:

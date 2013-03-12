@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
 
-timestamp_urlpatterns = patterns('heatmap.views',	
+timestamp_urlpatterns = patterns('heatmap.views',
 	url(r'^ts/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', 'search'),
 	url(r'^ts/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<hour>\d+)/$', 'search'),
 	url(r'^ts/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<hour>\d+)/(?P<minute>\d+)/$', 'search'),
