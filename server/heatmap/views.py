@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from heatmap.models import *
-from collections import defaultdict
+from collections import OrderedDict
 import json
 import datetime
 import time
@@ -13,49 +13,31 @@ def normalize_timestamp(timestamp):
 # radious: in degrees
 # timestamps is a list
 def query(lat=None, lon=None, rad=None, timestamps=None):
-	response = defaultdict(list)
+	response = OrderedDict()
 	locations = Location.objects
-	i = 1
 	for location in locations:
-		n_timestamp = normalize_timestamp(location.timestamp)		
-		if timestamp is not None:
+		n_timestamp = normalize_timestamp(location.timestamp)
+		if timestamps is not None:
 			if n_timestamp not in timestamps:
 				continue
 
 		if (rad is not None) and (lat is not None) and (lon is not None):
-			# geo spatial search true / false
-			if (location.coordinates.latitude > lat + rad) or (location.coordinates.latitude > lat - rad):
+			if (location.coordinates[0] > lat + rad) or (location.coordinates[0] < lat - rad):
 				continue
-			if (location.coordinates.longitude > lon + rad) or (location.coordinates.longitude > lon - rad):
+			if (location.coordinates[1] > lon + rad) or (location.coordinates[1] < lon - rad):
 				continue
 
 		n_timestamp_str = n_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+		if n_timestamp_str not in response:
+			response[n_timestamp_str] = []
 		response[n_timestamp_str].append(location.coordinates)
 	return response
 
-'''
-def search(request):
-	response = query()
-	return HttpResponse(json.dumps(response), content_type="application/json")
-
-def search_radius(request, lat, lon, radius):
-	response = query(lat=float(lat), lon=float(lon), radius=float(radius))
-	return HttpResponse(json.dumps(response), content_type="application/json")
-
-# Create your views here.
-def search_radius_time(request, latitude, longitude, year, month, day, hour, minute=0):
-	# normalize timestamp
-	timestamp = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute))
-	n_timestamp = normalize_timestamp(timestamp)
-
-	response = query(lat=float(lat), lon=float(lon), radius=float(radius), timestamp=[n_timestamp])
-	return HttpResponse(json.dumps(response), content_type="application/json")
-'''
-def search(request, latitude=None, longitude=None, radius=None, year=None, month=None, day=None, hour=None, minute=None):
-	if (latitude is not None) and (longitude is not None) and (radius is not None):
-		lat = float(latitude)
-		lon = float(latitude)
-		rad = float(radius)
+def search(request, lat=None, lon=None, rad=None, year=None, month=None, day=None, hour=None, minute=None):
+	if (lat is not None) and (lon is not None) and (rad is not None):
+		lat = float(lat)
+		lon = float(lon)
+		rad = float(rad)
 	else:
 		lat = None
 		lon = None
@@ -69,8 +51,11 @@ def search(request, latitude=None, longitude=None, radius=None, year=None, month
 		else:
 			if hour is not None:
 				timestamp = datetime.datetime(int(year), int(month), int(day), int(hour))
+				timestamps.append(normalize_timestamp(timestamp))
 			else:
-				timestamp = datetime.datetime(int(year), int(month), int(day))
+				for hour in range(24):
+					timestamp = datetime.datetime(int(year), int(month), int(day), hour)
+					timestamps.append(normalize_timestamp(timestamp))
 	else:
 		timestamps = None
 
