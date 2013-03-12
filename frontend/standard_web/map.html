@@ -4,7 +4,10 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <title>Nokia Maps API for JavaScript Example: Add value based heat map</title>
     <script type="text/javascript" charset="UTF-8" src="http://api.maps.nokia.com/2.2.4/jsl.js?with=all"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Tauri' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+    <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
@@ -12,6 +15,9 @@
       <h1 id="pageTitle">Pinultimate</h1>
       <h2 id="pageSubtitle">Bringing Customizable HeatMaps to all Maps</h2>
     </header>
+    <div id="sliderContainer">
+
+    </div>
     <div id="mapContainer"></div>
 
     <footer>
@@ -20,11 +26,20 @@
 
     <script type="text/javascript" src="map.js"></script>
     <script type="text/javascript" src="sampleData.js"></script>
+    <script type="text/javascript" src="time_slider.js"></script>
     <script type="text/javascript">
-      console.log(data);
-      var heatmap_data = JSON.parse(data);
-      console.log(heatmap_data);
-      createNokiaMap("mapContainer", heatmap_data,"density");
+      $(document).ready(function() {
+        var data = getData();
+        var heatmap_data = JSON.parse(data);
+        var heatmap_type = "value"; // or "density"
+        var map = createNokiaMap("mapContainer", heatmap_data,heatmap_type);
+        var changeFunction = function() {
+          map.overlays.clear();
+          var heatMapOverlay = createHeatMapOverlay(heatmap_data,heatmap_type);
+          map.overlays.add(heatMapOverlay);
+        };
+        var slider = createTimeSlider("sliderContainer", changeFunction ,null);
+      });
     </script>
   </body>
 </html>

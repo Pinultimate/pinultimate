@@ -22,7 +22,13 @@ function createNokiaMap(divID, heatmap_data, map_type) {
   });
 
   map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
+  var heatMapOverlay = createHeatMapOverlay(heatmap_data,map_type);
+  map.overlays.add(heatMapOverlay);
+  
+  return map;
+}
 
+function createHeatMapOverlay(heatMapData,heatMapType) {
   var heatmapProvider;
   try {
     // Creating Heatmap overlay
@@ -32,7 +38,7 @@ function createNokiaMap(divID, heatmap_data, map_type) {
       // This is the overall opacity applied to this overlay
       opacity: 0.6,
       // Defines if our heatmap is value or density based
-      type: map_type,
+      type: heatMapType,
       // Coarseness defines the resolution with which the heat map is created.
       coarseness: 2
     });
@@ -43,13 +49,8 @@ function createNokiaMap(divID, heatmap_data, map_type) {
   }
   // Only start loading data if the heat map overlay was successfully created
   if (heatmapProvider) {
-    /* We load a data file containing data points for the heat map
-     * LoadScript is an helper function and not part of the Nokia Maps API
-     * See exampleHelpers.js for implementation details 
-     */
-     data = heatmap_data;
-      // Rendering the heat map overlay onto the map
-      heatmapProvider.addData(data);
-      map.overlays.add(heatmapProvider);
+    // Rendering the heat map overlay onto the map
+    heatmapProvider.addData(heatMapData);
   }
+  return heatmapProvider;
 }

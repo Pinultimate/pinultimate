@@ -88,3 +88,17 @@ footer {
 .footer-text {
   text-align: right;
 }
+
+#timeSlider {
+  margin:auto;
+}
+
+#sliderContainer {
+  width: 300px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+.timeLabel {
+  text-align:center;
+}
