@@ -94,6 +94,6 @@ class Command(BaseCommand):
         center = {'latitude':options['lat'], 'longitude':options['lon']}
         t = datetime.datetime.utcnow()
 
-        for x in range(10):
+        for x in range(3):
             gen.generate_locations(center, options['latrange'], options['lonrange'], t - datetime.timedelta(hours=x), options['num_per_hour'])
         options['output_method'](gen)
