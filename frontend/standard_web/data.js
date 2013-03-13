@@ -14,6 +14,7 @@ var CALLBACK_URL = "&callback=?";
 // Warning: Notice that the "timestamp" in the string output is not wrapped with quotation marks
 // i.e. 2013-03-14 15:00:00 instead of "2013-03-14 15:00:00"
 var applyLocationData = function(callback_func, lat, lon, rad, ts) {
+	//callback_func(getData());
 	var coord_url = "";
 	var rad_url = "";
 	if ((typeof lat !== 'undefined') && (typeof lon !== 'undefined') && (typeof rad !== 'undefined')) {
@@ -29,13 +30,19 @@ var applyLocationData = function(callback_func, lat, lon, rad, ts) {
 			// returns a string representation of the JSON object
 			var response_str = "{";
 			$.each(response, function(timestamp, locations) {
-    			response_str += timestamp;
+				var spaceIndex= timestamp.indexOf(" ");
+				var colonIndex = timestamp.indexOf(":");
+				var hour = timestamp.substring(spaceIndex+1,colonIndex);
+				console.log(hour);
+    			response_str += '"' + parseInt(hour,10) + '"'; // For now we want hours
     			response_str += " : [";
     			
     			$.each(locations, function(index) {
-    				response_str += "[";
-    				response_str += this;
-    				response_str += "],"
+    				response_str += "{";
+    				console.log(this);
+    				response_str += '"latitude":' + this[0] + ",";
+    				response_str += '"longitude":' + this[1];
+    				response_str += "},"
     			});
 	  			// this trims the last ',' character
     			response_str = response_str.substring(0, response_str.length - 1);
