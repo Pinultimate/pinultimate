@@ -61,7 +61,7 @@
           console.log("Hello");
           global_data = JSON.parse(json_str);
           var centerObject = [global_lat,  global_long];
-          heatmap_data = heatmap_data_for_time(9);
+          heatmap_data = heatmap_data_for_time(0);
           global_map = createNokiaMap("mapContainer", heatmap_data, global_heatmap_type, centerObject);
           global_height = global_map.getViewBounds().getHeight();
           global_width = global_map.getViewBounds().getWidth();
