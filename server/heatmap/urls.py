@@ -28,4 +28,10 @@ urlpatterns = patterns('heatmap.views',
     url(r'^search/', include(radius_urlpatterns), {'type': 'rad'}),
     url(r'^search/', include(region_urlpatterns), {'type': 'reg'}),
     url(r'^search/', include(timestamp_urlpatterns)),
+
+    url(r'^searchexp/$', 'search', {'exp': True}),
+    url(r'^searchexp/&callback=(?P<callback>jQuery[\d_]+)/$', 'search',  {'exp': True}),
+    url(r'^searchexp/', include(radius_urlpatterns), {'type': 'rad', 'exp': True}),
+    url(r'^searchexp/', include(region_urlpatterns), {'type': 'reg', 'exp': True}),
+    url(r'^searchexp/', include(timestamp_urlpatterns), {'exp': True}),
 )
