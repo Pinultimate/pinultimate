@@ -16,7 +16,7 @@ framework.
 import os
 import sys
 
-path = '/var/www/cgi-bin/source/server/'
+path = '/home/deploy/pinultimate/server/'
 if path not in sys.path:
     sys.path.insert(0, path)
 
