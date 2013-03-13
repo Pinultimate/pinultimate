@@ -6,7 +6,7 @@ var CALLBACK_URL = "&callback=?";
 // this function considers (year+month+date+hour+minute) of the ts object, if not undefined
 // example usages: 
 // 		applyLocationData(function(data) {
-//						  	do something with data;
+//						  	call your original function, which takes data as an argument;
 //						  },
 //						  undefined, undefined, undefined,   // these are the location query params
 //						  js_date_object 					 // this is the timestamp query param

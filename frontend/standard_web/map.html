@@ -36,10 +36,13 @@
 
       $(document).ready(function() {
 
-        var test = getLocationData(function(data) {
-          alert("callback");
+        // this is Hongxia's demonstration test
+        var str = "teststr";
+        var test = applyLocationData(function(data) {
+          alert("callback" + str);
           $(".test").html(data);
         });
+        // END
 
         var centerObject = [37.442,  -122.14];
 
