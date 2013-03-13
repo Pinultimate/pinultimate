@@ -1,4 +1,4 @@
-function createNokiaMap(divID, heatmap_data) {
+function createNokiaMap(divID, heatmap_data, map_type, centerObject) {
 
   nokia.Settings.set( "appId", "ZK2z_y4VG6AbOWUzjvN2");
   nokia.Settings.set( "authenticationToken", "n7NUDiZ7BXw8Hw0YF1ajWQ");
@@ -15,11 +15,20 @@ function createNokiaMap(divID, heatmap_data) {
       new nokia.maps.map.component.Overview(),
       new nokia.maps.map.component.DistanceMeasurement(),
       new nokia.maps.map.component.ScaleBar(),
+      new nokia.maps.map.component.TypeSelector()
     ],
     zoomLevel: 13,
-    center: [37.442,  -122.14],
+    center: centerObject,
   });
 
+  map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
+  var heatMapOverlay = createHeatMapOverlay(heatmap_data,map_type);
+  map.overlays.add(heatMapOverlay);
+  
+  return map;
+}
+
+function createHeatMapOverlay(heatMapData,heatMapType) {
   var heatmapProvider;
   try {
     // Creating Heatmap overlay
@@ -29,7 +38,7 @@ function createNokiaMap(divID, heatmap_data) {
       // This is the overall opacity applied to this overlay
       opacity: 0.6,
       // Defines if our heatmap is value or density based
-      type: "value",
+      type: heatMapType,
       // Coarseness defines the resolution with which the heat map is created.
       coarseness: 2
     });
@@ -40,13 +49,8 @@ function createNokiaMap(divID, heatmap_data) {
   }
   // Only start loading data if the heat map overlay was successfully created
   if (heatmapProvider) {
-    /* We load a data file containing data points for the heat map
-     * LoadScript is an helper function and not part of the Nokia Maps API
-     * See exampleHelpers.js for implementation details 
-     */
-     data = heatmap_data;
-      // Rendering the heat map overlay onto the map
-      heatmapProvider.addData(data);
-      map.overlays.add(heatmapProvider);
+    // Rendering the heat map overlay onto the map
+    heatmapProvider.addData(heatMapData);
   }
+  return heatmapProvider;
 }
