@@ -35,24 +35,53 @@
 
       $(document).ready(function() {
 
-        if (navigator.geolocation)
-            {
-            navigator.geolocation.getCurrentPosition(success);
-            }
-          else{x.innerHTML="Geolocation is not supported by this browser.";}
-
-      
-      function success(position) {
-        var centerObject = {latitude: position.coords.latitude , longitude: position.coords.longitude};
-
+        
         var data = getNewData();
         var heatmap_data = JSON.parse(data);
+        var centerObject = [37.442,  -122.14];
         var heatmap_type = "value"; // or "density"
+        
         var map = createNokiaMap("mapContainer", heatmap_data, heatmap_type, centerObject);
+        
         var newData;
         var heatMap_newData;
 
 
+        //Listners
+        var dragendHandler = function (evt) {
+              console.log("event "+ evt.type + " @ " + evt.target.$name);
+        };   
+
+        var listeners = {
+          //"dragstart": [defaultHandler, false, null],
+          //"drag": [defaultHandler, false, null],
+          "dragend": [dragendHandler, false, null]
+
+        };
+        map.addListeners(listeners);
+
+
+
+    // Create a default observer for display properties that will just log a message.
+        var dragObserver = function (obj, key, newValue, oldValue) {
+            console.log("//Was: " + oldValue);
+            console.log("observation: " + obj.$name + "[" + key + "] = " + newValue + ";");
+        };
+
+        var zoomObserver = function (obj, key, newValue, oldValue) {
+            console.log("//Was: " + oldValue);
+            console.log("observation: " + obj.$name + "[" + key + "] = " + newValue + ";");
+        };
+
+        // Template of all map properties we would like to observe
+        var observers = {
+          "center": dragObserver,
+          "zoomLevel": zoomObserver,
+        };
+
+// Again we use a simple loop to install all observers at once
+for (var mapProperty in observers)
+  map.addObserver(mapProperty, observers[mapProperty]);
 
         var changeFunction = function(sliderValue) {
           newData = getNewData(sliderValue)
@@ -65,7 +94,7 @@
 
 
          var slider = createTimeSlider("sliderContainer", changeFunction ,null);
-      }
+      
 
       });
 
