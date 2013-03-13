@@ -27,27 +27,55 @@ var applyLocationData = function(callback_func, lat, lon, rad, ts) {
 	$.getJSON(SERVER_URL+HEATMAP_SEARCH_URL+coord_url+rad_url+ts_url+CALLBACK_URL,
 		function(response) {
 			// returns a string representation of the JSON object
-			var response_str = "{";
-			$.each(response, function(timestamp, locations) {
-    			response_str += timestamp;
-    			response_str += " : [";
-    			
-    			$.each(locations, function(index) {
-    				response_str += "[";
-    				response_str += this;
-    				response_str += "],"
-    			});
-	  			// this trims the last ',' character
-    			response_str = response_str.substring(0, response_str.length - 1);
-    			response_str += "],";
-  			});
-  			// this trims the last ',' character
-  			response_str = response_str.substring(0, response_str.length - 1);
-			response_str += "}";
+			var response_str = stringifyLocationJSON(response);
 
 			if ((typeof callback_func !== 'undefined') && (jQuery.isFunction(callback_func))) {
 				callback_func(response_str);
 			}
 	    }
     );
+}
+
+var applyLocationDataReg = function(callback_func, lat, lon, latrange, lonrange, ts) {
+	var coord_url = "";
+	var reg_url = "";
+	if ((typeof lat !== 'undefined') && (typeof lon !== 'undefined') && (typeof latrange !== 'undefined') && (typeof lonrange !== 'undefined')) {
+		coord_url = "coord/"+lat+"/"+lon+"/";
+		reg_url = "reg/"+latrange+"/"+lonrange+"/";
+	}
+	var ts_url = "";
+	if (typeof ts !== 'undefined') {
+		ts_url = "ts/"+ts.getYear()+"/"+ts.getMonth()+"/"+ts.getDate()+"/"+ts.getHours()+"/"+ts.getMinutes()+"/";
+	}
+	$.getJSON(SERVER_URL+HEATMAP_SEARCH_URL+coord_url+rad_url+ts_url+CALLBACK_URL,
+		function(response) {
+			// returns a string representation of the JSON object
+			var response_str = stringifyLocationJSON(response);
+			if ((typeof callback_func !== 'undefined') && (jQuery.isFunction(callback_func))) {
+				callback_func(response_str);
+			}
+	    }
+    );
+}
+
+var stringifyLocationJSON = function(response) {
+	var response_str = "{";
+	$.each(response, function(timestamp, locations) {
+		response_str += timestamp;
+		response_str += " : [";
+		
+		$.each(locations, function(index) {
+			response_str += "[";
+			response_str += this;
+			response_str += "],"
+		});
+			// this trims the last ',' character
+		response_str = response_str.substring(0, response_str.length - 1);
+		response_str += "],";
+	});
+
+	// this trims the last ',' character
+	response_str = response_str.substring(0, response_str.length - 1);
+	response_str += "}";
+	return response_str;
 }
