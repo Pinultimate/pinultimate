@@ -24,6 +24,7 @@
 
     <footer>
       <p class="footer-text">Pinultimate in conjunction with Nokia</p>
+      <div class="test"></div>
     </footer>
 
     <script type="text/javascript" src="map.js"></script>
@@ -35,6 +36,10 @@
 
       $(document).ready(function() {
 
+        var test = getLocationData(function(data) {
+          alert("callback");
+          $(".test").html(data);
+        });
 
         var centerObject = [37.442,  -122.14];
 

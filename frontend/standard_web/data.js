@@ -1,36 +1,53 @@
-var getNewData = function(sliderValue, location, radius) {
+var SERVER_URL = "http://localhost:8000/";
+var HEATMAP_SEARCH_URL = "heatmap/search/";
+var CALLBACK_URL = "&callback=?";
 
-	if (sliderValue == 1) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 100000},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 85}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":37} ]';
-	} else if (sliderValue == 2) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 500},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 85}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":37} ]';
-	} else if (sliderValue == 3) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 4) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 5) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 70},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 6) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 130}, { "latitude":37.4267533, "longitude":-122.1442856, "value":70}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 7) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 8) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 95}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 9) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 10) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 80}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 11) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 200},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 12) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 250}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 13) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 250}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 200}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":100} ]';
-	} else if (sliderValue == 14) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 250}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":30} ]';
-	} else if (sliderValue == 15) {
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 250}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 20}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 20}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":25}, {"latitude":37.4438831,"longitude":-122.1617475,"value":200} ]';
-	} 
-		return '[ { "latitude": 37.447061, "longitude": -122.160918, "value": 20},{ "latitude": 37.447061, "longitude": -122.160918, "value": 50}, { "latitude":37.4267533, "longitude":-122.1442856, "value": 90}, {"latitude":37.424096, "longitude":-122.170656, "value": 35}, {"latitude":37.4332161,"longitude":-122.1280808, "value": 85}, {"latitude": 37.4456253, "longitude": -122.1620715,"value":42}, {"latitude":37.44882,"longitude":-122.15831,"value":200}, {"latitude":37.4438831,"longitude":-122.1617475,"value":37} ]';
+// notice that all distance (lat, lon, rad) are in degress
+// this function considers (year+month+date+hour+minute) of the ts object, if not undefined
+// example usages: 
+// 		applyLocationData(function(data) {
+//						  	do something with data;
+//						  },
+//						  undefined, undefined, undefined,   // these are the location query params
+//						  js_date_object 					 // this is the timestamp query param
+//		);
+// Warning: Notice that the "timestamp" in the string output is not wrapped with quotation marks
+// i.e. 2013-03-14 15:00:00 instead of "2013-03-14 15:00:00"
+var applyLocationData = function(callback_func, lat, lon, rad, ts) {
+	var coord_url = "";
+	var rad_url = "";
+	if ((typeof lat !== 'undefined') && (typeof lon !== 'undefined') && (typeof rad !== 'undefined')) {
+		coord_url = "coord/"+lat+"/"+lon+"/";
+		rad_url = "rad/"+rad+"/";
+	}
+	var ts_url = "";
+	if (typeof ts !== 'undefined') {
+		ts_url = "ts/"+ts.getYear()+"/"+ts.getMonth()+"/"+ts.getDate()+"/"+ts.getHours()+"/"+ts.getMinutes()+"/";
+	}
+	$.getJSON(SERVER_URL+HEATMAP_SEARCH_URL+coord_url+rad_url+ts_url+CALLBACK_URL,
+		function(response) {
+			// returns a string representation of the JSON object
+			var response_str = "{";
+			$.each(response, function(timestamp, locations) {
+    			response_str += timestamp;
+    			response_str += " : [";
+    			
+    			$.each(locations, function(index) {
+    				response_str += "[";
+    				response_str += this;
+    				response_str += "],"
+    			});
+	  			// this trims the last ',' character
+    			response_str = response_str.substring(0, response_str.length - 1);
+    			response_str += "],";
+  			});
+  			// this trims the last ',' character
+  			response_str = response_str.substring(0, response_str.length - 1);
+			response_str += "}";
 
+			if ((typeof callback_func !== 'undefined') && (jQuery.isFunction(callback_func))) {
+				callback_func(response_str);
+			}
+	    }
+    );
 }
