@@ -33,12 +33,12 @@ def query_radius(lat=None, lon=None, rad=None, timestamps=None, exp=False):
 		if n_timestamp_str not in response:
 			if (exp is True) and (prev_timestamp is not None):
 				time_diff = n_timestamp-prev_timestamp
-				for missing_hour in range(1, int(time_diff.total_seconds()/3600) + 1): # todo: change to hours
+				for missing_hour in range(1, int(time_diff.total_seconds()/3600) + 1):
 					missing_timestamp = prev_timestamp + datetime.timedelta(hours=missing_hour)
 					missing_timestamp_str = missing_timestamp.strftime('%Y-%m-%d %H:%M:%S')
-					response[missing_timestamp_str] = []				
-				prev_timestamp = n_timestamp
+					response[missing_timestamp_str] = []
 				
+			prev_timestamp = n_timestamp	
 			response[n_timestamp_str] = []
 		response[n_timestamp_str].append(location.coordinates)
 	return response
@@ -66,18 +66,17 @@ def query_region(lat=None, lon=None, latrange=None, lonrange=None, timestamps=No
 		if n_timestamp_str not in response:
 			if (exp is True) and (prev_timestamp is not None):
 				time_diff = n_timestamp-prev_timestamp
-				for missing_hour in range(1, int(time_diff.total_seconds()/3600) + 1): # todo: change to hours
+				for missing_hour in range(1, int(time_diff.total_seconds()/3600) + 1):
 					missing_timestamp = prev_timestamp + datetime.timedelta(hours=missing_hour)
 					missing_timestamp_str = missing_timestamp.strftime('%Y-%m-%d %H:%M:%S')
-					response[missing_timestamp_str] = []			
-				prev_timestamp = n_timestamp
-
+					response[missing_timestamp_str] = []
+				
+			prev_timestamp = n_timestamp
 			response[n_timestamp_str] = []
 		response[n_timestamp_str].append(location.coordinates)
 	return response
 
 def search(request, callback=None, lat=None, lon=None, rad=None, latrange=None, lonrange=None, year=None, month=None, day=None, hour=None, minute=None, type=None, exp=False):
-
 	if (year is not None) and (month is not None) and (day is not None):
 		timestamps = []
 		if minute is not None:
