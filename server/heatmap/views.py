@@ -56,7 +56,7 @@ def query_region(lat=None, lon=None, latrange=None, lonrange=None, timestamps=No
 		response[n_timestamp_str].append(location.coordinates)
 	return response
 
-def search(request, lat=None, lon=None, rad=None, latrange=None, lonrange=None, year=None, month=None, day=None, hour=None, minute=None, type=None):
+def search(request, callback=None, lat=None, lon=None, rad=None, latrange=None, lonrange=None, year=None, month=None, day=None, hour=None, minute=None, type=None):
 
 	if (year is not None) and (month is not None) and (day is not None):
 		timestamps = []
@@ -82,7 +82,10 @@ def search(request, lat=None, lon=None, rad=None, latrange=None, lonrange=None, 
 		response = query_radius(float(lat), float(lon), float(rad), timestamps)
 	else:
 		print 'Error: Incorrect type: %s passed to query URL...' % type
-	return HttpResponse(json.dumps(response), content_type="application/json")
+	if callback is None:
+		return HttpResponse(json.dumps(response), content_type="application/json")
+	else:
+		return HttpResponse(callback+'('+json.dumps(response)+')', content_type="application/json")
 
 '''
 def add_location_now(request, latitude, longitude):
