@@ -1,4 +1,5 @@
-var SERVER_URL = "http://localhost:8000/";
+//var SERVER_URL = "http://localhost:8000/";
+var SERVER_URL = "http://www.pinultimate.net/";
 var HEATMAP_SEARCH_URL = "heatmap/search/";
 var CALLBACK_URL = "&callback=?";
 
