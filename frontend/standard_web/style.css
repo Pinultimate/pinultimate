@@ -88,3 +88,9 @@ footer {
 .footer-text {
   text-align: right;
 }
+
+#sliderContainer {
+  margin: auto;
+  margin-top: 15px;
+  width: 960px;
+}

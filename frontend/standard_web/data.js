@@ -4,7 +4,7 @@ var CALLBACK_URL = "&callback=?";
 
 // notice that all distance (lat, lon, rad) are in degress
 // this function considers (year+month+date+hour+minute) of the ts object, if not undefined
-// example usages: 
+// example usages:
 // 		applyLocationData(function(data) {
 //						  	call your original function, which takes data as an argument;
 //						  },
@@ -85,23 +85,28 @@ var applyLocationDataReg = function(callback_func, lat, lon, latrange, lonrange,
 }
 
 var stringifyLocationJSON = function(response) {
-	var response_str = "{";
-	$.each(response, function(timestamp, locations) {
-		response_str += timestamp;
-		response_str += " : [";
-		
-		$.each(locations, function(index) {
-			response_str += "[";
-			response_str += this;
-			response_str += "],"
-		});
-			// this trims the last ',' character
-		response_str = response_str.substring(0, response_str.length - 1);
-		response_str += "],";
-	});
+    var response_str = "{";
+    $.each(response, function(timestamp, locations) {
+            var spaceIndex= timestamp.indexOf(" ");
+            var colonIndex = timestamp.indexOf(":");
+            var hour = timestamp.substring(spaceIndex+1,colonIndex);
+            console.log(hour);
+    response_str += '"' + parseInt(hour,10) + '"'; // For now we want hours
+    response_str += " : [";
 
-	// this trims the last ',' character
-	response_str = response_str.substring(0, response_str.length - 1);
-	response_str += "}";
-	return response_str;
+    $.each(locations, function(index) {
+            response_str += "{";
+            console.log(this);
+            response_str += '"latitude":' + this[0] + ",";
+            response_str += '"longitude":' + this[1];
+            response_str += "},"
+    });
+            // this trims the last ',' character
+    response_str = response_str.substring(0, response_str.length - 1);
+    response_str += "],";
+    });
+    // this trims the last ',' character
+    response_str = response_str.substring(0, response_str.length - 1);
+    response_str += "}";
+    return response_str;
 }

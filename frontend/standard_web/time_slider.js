@@ -39,8 +39,8 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
         }
       }
   });
-  slider.width(parentDiv.width()*2/3);
-  slider.css("float","right");
+  slider.width(900);
+  slider.css("float","left");
 
   var playButton = $(document.createElement("div")).text("play")
   playButton.click(function() {
@@ -49,8 +49,10 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
       // Pause
       clearInterval(me.timerInterval);
       me.timerInterval = null;
+      playButton.html("play");
     } else {
       //Start Timer
+      playButton.text("pause");
       me.timerInterval = setInterval(function() {
         console.log("timer set");
         var value = slider.slider("value");
@@ -62,11 +64,11 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
     }
   });
 
-  playButton.css("float","left");
+  playButton.css("float","right");
 
   parentDiv.append(timeLabel);
-  parentDiv.append(playButton);
   parentDiv.append(slider);
+  parentDiv.append(playButton);
   // This final div just allows the last two divs to be floated
   parentDiv.append($(document.createElement("div")).css("clear","both"));
 }

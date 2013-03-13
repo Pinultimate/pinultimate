@@ -15,7 +15,7 @@ class LocationGenerator:
         self.db_name = db_name
         connect(db_name)
         self.fake_locations = []
-        
+
     #center is a dict with values for 'latitude' and 'longitude'. latrange and longrange are the
     #maximum distances from the center in the y and x directions, respectively, for adding points.
     def generate_locations(self, center, latrange, lonrange, time, num_locations):
@@ -58,7 +58,7 @@ class Command(BaseCommand):
             make_option('--latrange',
                         type=float,
                         default=0.01,
-                        help='maximum delta of latitude',                    
+                        help='maximum delta of latitude',
             ),
             make_option('--lonrange',
                         type=float,
