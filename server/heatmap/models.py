@@ -9,5 +9,5 @@ class Location(DynamicDocument):
 		return 'Coordinates: %s' % self.coordinates
 	
 	meta = {
-        'ordering': ['-timestamp'],
+        'ordering': ['timestamp'],
     }
