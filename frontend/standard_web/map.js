@@ -1,4 +1,4 @@
-function createNokiaMap(divID, heatmap_data, map_type, centerObject) {
+function createNokiaMap(divID, heatmap_data, map_type, centerObejct) {
 
   nokia.Settings.set( "appId", "ZK2z_y4VG6AbOWUzjvN2");
   nokia.Settings.set( "authenticationToken", "n7NUDiZ7BXw8Hw0YF1ajWQ");
@@ -18,8 +18,8 @@ function createNokiaMap(divID, heatmap_data, map_type, centerObject) {
       new nokia.maps.map.component.TypeSelector()
     ],
     zoomLevel: 13,
-    center: centerObject,
-  });
+    center: centerObejct, 
+      });
 
   map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
   var heatMapOverlay = createHeatMapOverlay(heatmap_data,map_type);
