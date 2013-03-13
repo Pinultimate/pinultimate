@@ -35,21 +35,30 @@
 
       $(document).ready(function() {
 
-        
-        var data = getNewData();
-        var heatmap_data = JSON.parse(data);
+
         var centerObject = [37.442,  -122.14];
+
+        // Initialization. radiu is the scale level
+        var location = centerObject;
+        var radius = 13;
+
+
+
+        var data = getNewData(0, location, radius);
+        var heatmap_data = JSON.parse(data);
         var heatmap_type = "value"; // or "density"
-        
+
         var map = createNokiaMap("mapContainer", heatmap_data, heatmap_type, centerObject);
         
-        var newData;
-        var heatMap_newData;
 
+        // For drag, i'm not sure to use dragend listner or dragObserver to track the movement. There are some tradeoffs we can discuss tomorrow.
 
         //Listners
         var dragendHandler = function (evt) {
-              console.log("event "+ evt.type + " @ " + evt.target.$name);
+              //console.log("event "+ evt.type + " @ " + evt.target.$name);
+              var center_geo = map.getViewBounds().getCenter();
+              console.log(center_geo.latitude);
+              console.log(center_geo.longitude);
         };   
 
         var listeners = {
@@ -64,13 +73,37 @@
 
     // Create a default observer for display properties that will just log a message.
         var dragObserver = function (obj, key, newValue, oldValue) {
-            console.log("//Was: " + oldValue);
-            console.log("observation: " + obj.$name + "[" + key + "] = " + newValue + ";");
+
+            console.log(newValue.longitude);
+            console.log(newValue.latitude);
+
+            //set new center
+            location = [newValue.latitude, newvalue.longitude];
+
+            //update data
+            var newData = getNewData(0, location, radius)
+            var heatMap_newData = JSON.parse(newData);
+            map.overlays.clear();
+            var heatMapOverlay = createHeatMapOverlay(heatMap_newData,heatmap_type);
+            map.overlays.add(heatMapOverlay);
+
+
+            
         };
 
         var zoomObserver = function (obj, key, newValue, oldValue) {
-            console.log("//Was: " + oldValue);
-            console.log("observation: " + obj.$name + "[" + key + "] = " + newValue + ";");
+
+          //set new radius
+          radius = newValue;
+
+          //update data
+          var newData = getNewData(0, location, radius)
+          var heatMap_newData = JSON.parse(newData);
+          map.overlays.clear();
+          var heatMapOverlay = createHeatMapOverlay(heatMap_newData,heatmap_type);
+          map.overlays.add(heatMapOverlay);
+
+        
         };
 
         // Template of all map properties we would like to observe
@@ -79,14 +112,17 @@
           "zoomLevel": zoomObserver,
         };
 
+
 // Again we use a simple loop to install all observers at once
 for (var mapProperty in observers)
   map.addObserver(mapProperty, observers[mapProperty]);
 
+        
         var changeFunction = function(sliderValue) {
-          newData = getNewData(sliderValue)
-          heatMap_newData = JSON.parse(newData);
 
+
+          var newData = getNewData(sliderValue, location, radius)
+          var heatMap_newData = JSON.parse(newData);
           map.overlays.clear();
           var heatMapOverlay = createHeatMapOverlay(heatMap_newData,heatmap_type);
           map.overlays.add(heatMapOverlay);
