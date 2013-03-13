@@ -75,6 +75,16 @@ class Command(BaseCommand):
                         default=DBNAME,
                         help='db to store points in'
             ),
+            make_option('--start_time',
+                        type=str,
+                        default='2000-1-1 0:0:0',
+                        help='beginning time of the generated fake data'
+            ),
+            make_option('--num_hours',
+                        type=int,
+                        default=1,
+                        help='number of hours to span'
+            ),
             make_option('-p',
                         '--print',
                         dest='output_method',
@@ -92,9 +102,9 @@ class Command(BaseCommand):
 
         gen = LocationGenerator(options['db_name'], self)
         center = {'latitude':options['lat'], 'longitude':options['lon']}
-        t = datetime.datetime.utcnow()
+        t = datetime.datetime.strptime(options['start_time'],'%Y-%m-%d %H:%M:%S')
 
-        # change number of hours
-        for x in range(10):
-            gen.generate_locations(center, options['latrange'], options['lonrange'], t - datetime.timedelta(hours=x), options['num_per_hour'])
+        for x in range(options['num_hours']):
+            gen.generate_locations(center, options['latrange'], options['lonrange'], t + datetime.timedelta(hours=x), options['num_per_hour'])
+
         options['output_method'](gen)
