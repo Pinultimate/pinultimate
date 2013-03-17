@@ -7,19 +7,23 @@ PINULTIMATE
 
 ## SSH to EC2:
 ```bash
-ssh puadmin@pinultimate.net
+ssh deploy@pinultimate.net
 ```
-password: pukey
+password: pinultimate
 
 ## DEPLOY to EC2:
+First time setup:
+```bash
+git remote remove deploy
+git remote add deploy ssh://deploy@pinultimate.net/home/deploy/pinultimate.git
+```
+Then, whenever you want to deploy:
 ```bash
 git push deploy master
 ```
-## CHECKOUT Code on EC2:
-```bash
-cd ~/source.git
-GIT_WORK_TREE=/home/puadmin/source git checkout -f
-```
+**Never deploy from any other branch other than master. The server will reject all non-fast-forward changes**
+
+Finally, ssh into the server to restart Apache so the new changes to the code are now available to the webserver
 
 ## SERVER-SIDE Development:
 
