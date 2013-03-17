@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 VERIFICATION_TOKEN = 'geography'
 SUBSCRIBE = 'subscribe'
 
-@require_http_methods(['GET' 'POST'])
+@require_http_methods(['GET','POST'])
 def subscription(request):
     if request.method == 'GET':
         return confirm_subscription(request.GET)
