@@ -1,10 +1,8 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from optparse import make_option
 from heatmap.models import Location
 from server.settings import DBNAME
-from mongoengine import *
-import sys
-import time
+import mongoengine as mongo
 import random
 import datetime
 
@@ -13,7 +11,7 @@ class LocationGenerator:
         random.seed()
         self.command = command
         self.db_name = db_name
-        connect(db_name)
+        mongo.connect(db_name)
         self.fake_locations = []
 
     #center is a dict with values for 'latitude' and 'longitude'. latrange and longrange are the
