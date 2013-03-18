@@ -1,4 +1,4 @@
-from mongoengine import DynamicDocument, GeoPointField, DateTimeField
+from mongoengine import DynamicDocument, GeoPointField, DateTimeField, StringField
 
 class Location(DynamicDocument):
 	coordinates = GeoPointField(required=True)
@@ -10,3 +10,7 @@ class Location(DynamicDocument):
 	meta = {
         'ordering': ['timestamp'],
     }
+
+class InstagramLocation(Location):
+    source = StringField(default="instagram")
+    image_url = StringField()

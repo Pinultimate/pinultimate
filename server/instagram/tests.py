@@ -51,5 +51,6 @@ class InstagramTestCase(unittest.TestCase):
         "changed_aspect": "media", "time": 1297286541 }]'''
         json_data = simplejson.loads(json_string)
         response = self.client.post(
-                '/instagram/subscription/', json_data, content_type='application/json')
+                '/instagram/subscription/', json_data,
+                content_type='application/json', **{'X-Hub-Signature': 'foo'})
         self.assertEqual(response.status_code, 200)
