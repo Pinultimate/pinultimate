@@ -7,9 +7,16 @@ import random
 class Normalize:        
 
     def __init__(self, json_data):
-        self.data = json_data
+        if 'value' in json_data:
+            self.data = json_data
+        else: 
+            for checkIn in json_data:
+                checkIn['value'] = 1
+            self.data = json_data
+        print self.data
         self.Threshhold = 0
         random.seed()
+
 
     def getValue(self):
         self.value = []
@@ -22,7 +29,6 @@ class Normalize:
         for checkIn in self.data:
             self.lat.append(float(checkIn['latitude']))
             self.lng.append(float(checkIn['longitude']))
-
     
     #Take the value based checkins and normalize it 
     def normValue(self):
@@ -40,8 +46,6 @@ class Normalize:
                 newCheckIn = {'latitude': self.data[idx]['latitude'], 'longitude': self.data[idx]['longitude'], 'value': newValue}
                 newData.append(newCheckIn)
         self.data = newData
-
-
 
     # Find the clusters 
     def cluster(self):
@@ -107,19 +111,14 @@ class Normalize:
                 newData.append(newCheckIn)
         self.data = newData
 
-
-
     #Use k-means clustering to change density based data to less points with value
     def densityToValue(self):
         num, cluster_num, count, miu, c = self.cluster()
-
-
         newData = []
         for m in xrange(cluster_num):
             newCheckIn = {'latitude': miu[m]['latitude'], 'longitude': miu[m]['longitude'], 'value': count[m]}
             newData.append(newCheckIn)
         self.data = newData
-
 
     #Assume normal distribution  
     def valueToDensity(self):
@@ -132,7 +131,6 @@ class Normalize:
         minLat = min(self.lat)
         maxLng = max(self.lng)
         minLng = min(self.lng)
-
         sigma = math.sqrt((math.fabs((maxLat - minLat)) + GAP) * (math.fabs(maxLng - minLng) + GAP) / num)  
         newData = []
         for checkIn in self.data:
