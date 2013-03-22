@@ -109,6 +109,8 @@ class Normalize:
 
     #Assume normal distribution  
     def valueToDensity(self):
+        GAP = 0.001
+        FACTOR = 1 # Unit normalized value will generate FACTOR number of points
         self.getCord()
         self.getValue()
         num = len(self.data)
@@ -117,6 +119,13 @@ class Normalize:
         maxLng = max(self.lng)
         minLng = min(self.lng)
 
+        sigma = math.sqrt((math.fabs((maxLat - minLat)) + GAP) * (math.fabs(maxLng - minLng) + GAP) / num)  
+        newData = []
+        for checkIn in self.data:
+            for i in xrange(int(checkIn['value']) * FACTOR):
+                newCheckIn = {'latitude': random.gauss(checkIn['latitude'], sigma), 'longitude': random.gauss(checkIn['longitude'], sigma)}
+                newData.append(newCheckIn)
+        self.data = newData
 
 
 
