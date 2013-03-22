@@ -2,14 +2,15 @@ import os
 import sys
 import json
 import math
+import random
 
 class Normalize:        
 
     
-
     def __init__(self, json_data):
         self.data = json_data
         self.Threshhold = 0
+        random.seed()
 
     def getValue(self):
         self.value = []
@@ -23,7 +24,7 @@ class Normalize:
             self.lat.append(float(checkIn['latitude']))
             self.lng.append(float(checkIn['longitude']))
 
-
+    
     #Take the value based checkins and normalize it 
     def normValue(self):
         self.getValue()
@@ -45,21 +46,82 @@ class Normalize:
     def normDensity(self):
         print "density"
 
+
+
     #Use k-means clustering
     def densityToValue(self):
         CLUSTER_GAP = 0.001
+        MIN_GAP = 0.001
+        CLUSTER_RATIO = 0.5
         self.getCord()
+        num = len(self.data)
         maxLat = max(self.lat)
         minLat = min(self.lat)
         maxLng = max(self.lng)
         minLng = min(self.lng)
-        cluster_num = (math.fabs((maxLat - minLat)) + CLUSTER_GAP) * (math.fabs(maxLng - minLng) + CLUSTER_GAP) / CLUSTER_GAP
-        
-        
-        print cluster_num
-        print "k-means clustering"
+       
+        cluster_num = int(num * CLUSTER_RATIO)
+        #cluster_num = int((math.fabs((maxLat - minLat)) + CLUSTER_GAP) * (math.fabs(maxLng - minLng) + CLUSTER_GAP) / CLUSTER_GAP)
+        miu = []
+
+        for i in xrange(cluster_num):
+            miu.append(self.data[random.randint(0, num - 1)])
+
+        c = [0]*num
+
+        return_flag = 0
+        while return_flag == 0:
+            return_flag = 1
+            count = [0]*cluster_num
+            latSum = [0]*cluster_num
+            lngSum = [0]*cluster_num
+            for i in xrange(num):
+                minDistance = 6480
+                minIndex = c[i]
+                for j in xrange(cluster_num):
+                    distance = pow(self.data[i]['latitude'] - miu[j]['latitude'], 2) + pow(self.data[i]['longitude'] - miu[j]['longitude'], 2) 
+                    if distance < minDistance:
+                        minDistance = distance
+                        minIndex = j
+                c[i] = minIndex
+                count[minIndex] += 1
+                #valueSum[minIndex]
+                latSum[minIndex] += float(self.data[i]['latitude'])
+                lngSum[minIndex] += float(self.data[i]['longitude'])
+            return_flag = 1
+            for k in xrange(cluster_num):
+                newLat = latSum[k] / count[k]
+                newLng = lngSum[k] / count[k]
+                if math.fabs(miu[k]['latitude'] - newLat) > MIN_GAP:
+                    miu[k]['latitude'] = newLat
+                    return_flag = 0
+                if math.fabs(miu[k]['longitude'] - newLng) > MIN_GAP: 
+                    miu[k]['longitude'] = newLng
+                    return_flag = 0
+            
+
+        newData = []
+        for m in xrange(cluster_num):
+            newCheckIn = {'latitude': miu[m]['latitude'], 'longitude': miu[m]['longitude'], 'value': count[m]}
+            newData.append(newCheckIn)
+        self.data = newData
+
 
     #Assume normal distribution  
-    def valueToDensity(self, timeRange, ):
-        print "hello"
+    def valueToDensity(self):
+        self.getCord()
+        self.getValue()
+        num = len(self.data)
+        maxLat = max(self.lat)
+        minLat = min(self.lat)
+        maxLng = max(self.lng)
+        minLng = min(self.lng)
+
+
+
+
+
+
+
+        
         
