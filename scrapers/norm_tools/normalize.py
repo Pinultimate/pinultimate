@@ -6,7 +6,6 @@ import random
 
 class Normalize:        
 
-    
     def __init__(self, json_data):
         self.data = json_data
         self.Threshhold = 0
@@ -42,14 +41,10 @@ class Normalize:
                 newData.append(newCheckIn)
         self.data = newData
 
-    #
-    def normDensity(self):
-        print "density"
 
 
-
-    #Use k-means clustering
-    def densityToValue(self):
+    # Find the clusters 
+    def cluster(self):
         CLUSTER_GAP = 0.001
         MIN_GAP = 0.001
         CLUSTER_RATIO = 0.5
@@ -98,7 +93,26 @@ class Normalize:
                 if math.fabs(miu[k]['longitude'] - newLng) > MIN_GAP: 
                     miu[k]['longitude'] = newLng
                     return_flag = 0
-            
+        return (num, cluster_num, count, miu, c)
+
+    #Find clusters and only keep points within certain radius of the cluster 
+    def normDensity(self):
+        num, cluster_num, count, miu, c = self.cluster()
+        newData = []
+        RANGE = 1
+        for m in xrange(num):
+            distance = pow(self.data[m]['latitude'] - miu[c[m]]['latitude'], 2) + pow(self.data[m]['longitude'] - miu[c[m]]['longitude'], 2) 
+            if distance < RANGE:
+                newCheckIn = self.data[m]
+                newData.append(newCheckIn)
+        self.data = newData
+
+
+
+    #Use k-means clustering to change density based data to less points with value
+    def densityToValue(self):
+        num, cluster_num, count, miu, c = self.cluster()
+
 
         newData = []
         for m in xrange(cluster_num):
