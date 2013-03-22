@@ -7,16 +7,9 @@ import random
 class Normalize:        
 
     def __init__(self, json_data):
-        if 'value' in json_data:
-            self.data = json_data
-        else: 
-            for checkIn in json_data:
-                checkIn['value'] = 1
-            self.data = json_data
-        print self.data
+        self.data = json_data
         self.Threshhold = 0
         random.seed()
-
 
     def getValue(self):
         self.value = []
@@ -43,7 +36,7 @@ class Normalize:
         for idx, val in enumerate(self.data):
             newValue = self.value[idx] / sigma
             if newValue > self.Threshhold:
-                newCheckIn = {'latitude': self.data[idx]['latitude'], 'longitude': self.data[idx]['longitude'], 'value': newValue}
+                newCheckIn = {'latitude': self.data[idx]['latitude'], 'longitude': self.data[idx]['longitude'], 'value': newValue} #, 'timeStamp': self.data[idx]['timeStamp']}
                 newData.append(newCheckIn)
         self.data = newData
 
@@ -58,8 +51,8 @@ class Normalize:
         minLat = min(self.lat)
         maxLng = max(self.lng)
         minLng = min(self.lng)
-       
-        cluster_num = int(num * CLUSTER_RATIO)
+
+        cluster_num = int(num * CLUSTER_RATIO) + 1
         #cluster_num = int((math.fabs((maxLat - minLat)) + CLUSTER_GAP) * (math.fabs(maxLng - minLng) + CLUSTER_GAP) / CLUSTER_GAP)
         miu = []
 
@@ -87,17 +80,23 @@ class Normalize:
                 #valueSum[minIndex]
                 latSum[minIndex] += float(self.data[i]['latitude'])
                 lngSum[minIndex] += float(self.data[i]['longitude'])
+            
             return_flag = 1
             for k in xrange(cluster_num):
-                newLat = latSum[k] / count[k]
-                newLng = lngSum[k] / count[k]
-                if math.fabs(miu[k]['latitude'] - newLat) > MIN_GAP:
-                    miu[k]['latitude'] = newLat
-                    return_flag = 0
-                if math.fabs(miu[k]['longitude'] - newLng) > MIN_GAP: 
-                    miu[k]['longitude'] = newLng
-                    return_flag = 0
+                if count[k] == 0:
+                    continue
+                else:
+                    newLat = latSum[k] / count[k]
+                    newLng = lngSum[k] / count[k]
+                    if math.fabs(miu[k]['latitude'] - newLat) > MIN_GAP:
+                        miu[k]['latitude'] = newLat
+                        return_flag = 0
+                    if math.fabs(miu[k]['longitude'] - newLng) > MIN_GAP: 
+                        miu[k]['longitude'] = newLng
+                        return_flag = 0
         return (num, cluster_num, count, miu, c)
+        # num: number of checkins; cluster_num: number of clusters; count: number of points associated with each cluseter
+        # miu: the lat and lng of each cluster; c: the index of the cluster that each point belongs to
 
     #Find clusters and only keep points within certain radius of the cluster 
     def normDensity(self):
@@ -120,10 +119,28 @@ class Normalize:
             newData.append(newCheckIn)
         self.data = newData
 
-    #Assume normal distribution  
-    def valueToDensity(self):
+    def adjustDensity(self, weight):
         GAP = 0.001
-        FACTOR = 1 # Unit normalized value will generate FACTOR number of points
+        FACTOR = weight # Unit normalized value will generate FACTOR number of points
+        self.getCord()
+        num = len(self.data)
+        maxLat = max(self.lat)
+        minLat = min(self.lat)
+        maxLng = max(self.lng)
+        minLng = min(self.lng)
+        sigma = math.sqrt((math.fabs((maxLat - minLat)) + GAP) * (math.fabs(maxLng - minLng) + GAP) / num)  
+        newData = []
+        for checkIn in self.data:
+            for i in xrange(int(FACTOR)):
+                newCheckIn = {'latitude': random.gauss(checkIn['latitude'], sigma), 'longitude': random.gauss(checkIn['longitude'], sigma)}
+                newData.append(newCheckIn)
+        self.data = newData
+
+
+    #Assume normal distribution around the checkin point  
+    def valueToDensity(self, weight):
+        GAP = 0.001
+        FACTOR = weight # Unit normalized value will generate FACTOR number of points
         self.getCord()
         self.getValue()
         num = len(self.data)
@@ -134,7 +151,7 @@ class Normalize:
         sigma = math.sqrt((math.fabs((maxLat - minLat)) + GAP) * (math.fabs(maxLng - minLng) + GAP) / num)  
         newData = []
         for checkIn in self.data:
-            for i in xrange(int(checkIn['value']) * FACTOR):
+            for i in xrange(int(checkIn['value']) * int(FACTOR)):
                 newCheckIn = {'latitude': random.gauss(checkIn['latitude'], sigma), 'longitude': random.gauss(checkIn['longitude'], sigma)}
                 newData.append(newCheckIn)
         self.data = newData
