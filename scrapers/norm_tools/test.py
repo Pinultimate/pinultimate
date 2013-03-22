@@ -4,10 +4,11 @@ import json
 import sys
 
 
-test_data =[{"latitude": 37, "longitude": -122, "value": 2}, {"latitude": 38, "longitude": -123, "value": 3}]
+test_data =[{"latitude": 40, "longitude": -121, "value": 2}, {"latitude": 38, "longitude": -123, "value": 3}]
 def main(argv):
     test = Normalize(test_data)
-    test.normValue()
+    #test.normValue()
+    test.densityToValue()
     print test.data
 
 if __name__ == '__main__':

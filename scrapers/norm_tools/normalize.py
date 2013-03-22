@@ -16,6 +16,15 @@ class Normalize:
         for checkIn in self.data:
             self.value.append(int(checkIn['value']))
 
+    def getCord(self):
+        self.lat = []
+        self.lng = []
+        for checkIn in self.data:
+            self.lat.append(float(checkIn['latitude']))
+            self.lng.append(float(checkIn['longitude']))
+
+
+    #Take the value based checkins and normalize it 
     def normValue(self):
         self.getValue()
         miu = float(sum(self.value)) / len(self.value)
@@ -31,6 +40,26 @@ class Normalize:
                 newCheckIn = {'latitude': self.data[idx]['latitude'], 'longitude': self.data[idx]['longitude'], 'value': newValue}
                 newData.append(newCheckIn)
         self.data = newData
+
+    #
+    def normDensity(self):
+        print "density"
+
+    #Use k-means clustering
+    def densityToValue(self):
+        CLUSTER_GAP = 0.001
+        self.getCord()
+        maxLat = max(self.lat)
+        minLat = min(self.lat)
+        maxLng = max(self.lng)
+        minLng = min(self.lng)
+        cluster_num = (math.fabs((maxLat - minLat)) + CLUSTER_GAP) * (math.fabs(maxLng - minLng) + CLUSTER_GAP) / CLUSTER_GAP
         
-    def createDensityData(self, timeRange, ):
-        print "hellpo"
+        
+        print cluster_num
+        print "k-means clustering"
+
+    #Assume normal distribution  
+    def valueToDensity(self, timeRange, ):
+        print "hello"
+        
