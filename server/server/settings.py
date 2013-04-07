@@ -1,6 +1,6 @@
 # Django settings for server project.
 
-from mongoengine import *
+import mongoengine as mongo
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -13,7 +13,7 @@ MANAGERS = ADMINS
 
 # Init MongoDB
 DBNAME = 'HEATMAP_DB'
-connect(DBNAME)
+mongo.connect(DBNAME)
 
 # This is IGNORED when using MongoDB
 DATABASES = {
@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'heatmap',
+    'instagram',
 )
 
 # A sample logging configuration. The only tangible logging

@@ -1,13 +1,16 @@
-from django.db import models
-from mongoengine import *
+from mongoengine import DynamicDocument, GeoPointField, DateTimeField, StringField
 
 class Location(DynamicDocument):
 	coordinates = GeoPointField(required=True)
 	timestamp = DateTimeField(required=True)
-	
+
 	def __unicode__(self):
 		return 'Coordinates: %s' % self.coordinates
-	
+
 	meta = {
         'ordering': ['timestamp'],
     }
+
+class InstagramLocation(Location):
+    source = StringField(default="instagram")
+    image_url = StringField()
