@@ -3,6 +3,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError
 import hmac
 import hashlib
+from django.views.decorators.csrf import csrf_exempt
 
 
 FILESPATH = '/home/deploy/pinultimate/server/instagram/files/'
@@ -12,6 +13,7 @@ SUBSCRIBE = 'subscribe'
 
 CLIENT_SECRET = '3a299b864af941de9158d2e1f6a2fcce'
 
+@csrf_exempt
 @require_http_methods(['GET','POST'])
 def subscription(request):
     if request.method == 'GET':
