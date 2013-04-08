@@ -34,7 +34,7 @@ def write_instagram_data_to_database(request):
     # TODO: take post data and update it in MongoDB, write json data to a file
     # for now
     json_data = request.body
-    f = open(FILESPATH + 'instagram_data.txt', 'w+')
+    f = open(FILESPATH + 'instagram_data.txt', 'a')
     f.write(request.META)
     f.write(json_data)
     f.close()
