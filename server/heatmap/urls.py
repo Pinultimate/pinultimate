@@ -63,5 +63,5 @@ grid_query_urlpatterns('heatmap.views.normalized',
 
 urlpatterns = patterns('',
 	url(r'^raw/', include(raw_query_urlpatterns)),
-	url(r'^grid/', include(grid_query_urlpatterns)),
+	url(r'^grid/(?P<resolution>?\d+(\.\d+)?))/', include(grid_query_urlpatterns)),
 )
