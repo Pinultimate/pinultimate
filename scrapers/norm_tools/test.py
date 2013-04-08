@@ -1,5 +1,6 @@
 from normalize import *
 from merge import *
+from grid_mapping import *
 import os
 import json
 import sys
@@ -14,12 +15,24 @@ def main(argv):
     #test.densityToValue()
     #test.valueToDensity()
     #test.normDensity()
-    test = Merge()
-    test.addData(test_data, 10)
-    test.addData(test_data1, 5)
+    #test = Merge()
+    #test.addData(test_data, 10)
+    #test.addData(test_data1, 5)
     #test.valueBasedMerege()
-    test.densityBasedMerge()
-    print test.data
+    #test.densityBasedMerge()
+    test = Grid_mapping()
+    print test.gridify(-175, 85, 10)
+    print test.gridify(-165, 85, 10)
+    print test.gridify(0, 0, 10)
+
+
+    print test.grid_center(0, 0, 10)
+    print test.grid_center(1, 0, 10)
+    print test.grid_center(0, 1, 10)
+    print test.grid_center(1, 1, 10)
+
+    
+
 
 if __name__ == '__main__':
     main(sys.argv)
