@@ -1,5 +1,6 @@
-from django.http import HttpResponse
+from heatmap.views.normalization import *
 from heatmap.models import *
+from django.http import HttpResponse
 from collections import OrderedDict
 import json
 import datetime
@@ -74,9 +75,6 @@ def query_region(lat=None, lon=None, latrange=None, lonrange=None, timestamps=No
 	return response
 '''
 
-def normalize_timestamp_to_hour(timestamp):
-	return datetime.datetime(timestamp.year, timestamp.month, timestamp.day, timestamp.hour)
-
 # does not explicitly append empty list for times with 0 check-in's
 def search(request, callback=None):
 	locations = Location.objects
@@ -95,14 +93,18 @@ def search(request, callback=None):
 	else:
 		return HttpResponse(callback+'('+json.dumps(response)+')', content_type="application/json")
 
-def in_range_from_center(target, center, range):
-	if (target <= center + range/2) or (target >= center - range/2):
+def in_range_from_center(target, c, r):
+	if (target <= c + r/2) and (target >= c - r/2):
 		return True
-	else
+	else:
 		return False
 
-def search_region(request, callback=None, lat, lon, latrange, lonrange):
+def search_region(request, lat, lon, latrange, lonrange, callback=None):
 	locations = Location.objects
+	lat = float(lat)
+	lon = float(lon)
+	latrange = float(latrange)
+	lonrange = float(lonrange)
 
 	response = OrderedDict()
 	for location in locations:
@@ -120,8 +122,12 @@ def search_region(request, callback=None, lat, lon, latrange, lonrange):
 	else:
 		return HttpResponse(callback+'('+json.dumps(response)+')', content_type="application/json")
 
-def search_region_to_now(request, callback=None, lat, lon, latrange, lonrange, year, month, day, hour):
+def search_region_to_now(request, lat, lon, latrange, lonrange, year, month, day, hour, callback=None):
 	locations = Location.objects
+	lat = float(lat)
+	lon = float(lon)
+	latrange = float(latrange)
+	lonrange = float(lonrange)
 	from_timestamp = datetime.datetime(int(year), int(month), int(day), int(hour))
 
 	response = OrderedDict()
@@ -142,8 +148,12 @@ def search_region_to_now(request, callback=None, lat, lon, latrange, lonrange, y
 		return HttpResponse(callback+'('+json.dumps(response)+')', content_type="application/json")
 
 
-def search_region_in_timeframe(request, callback=None, lat, lon, latrange, lonrange, fyear, fmonth, fday, fhour, tyear, tmonth, tday, thour):
+def search_region_in_timeframe(request, lat, lon, latrange, lonrange, fyear, fmonth, fday, fhour, tyear, tmonth, tday, thour, callback=None):
 	locations = Location.objects
+	lat = float(lat)
+	lon = float(lon)
+	latrange = float(latrange)
+	lonrange = float(lonrange)
 	from_timestamp = datetime.datetime(int(fyear), int(fmonth), int(fday), int(fhour))
 	to_timestamp = datetime.datetime(int(tyear), int(tmonth), int(tday), int(thour))
 
