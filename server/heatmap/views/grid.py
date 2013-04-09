@@ -1,3 +1,18 @@
+from heatmap.views.normalization import *
+from heatmap.models import *
+from django.http import HttpResponse
+from collections import OrderedDict
+import json
+import datetime
+import time
+from math import *
+
+def add_to_grid(dict, lat, lon):
+	if (lat, lon) in dict:
+		dict[(lat, lon)] = dict[(lat, lon)] + 1
+	else:
+		dict[(lat, lon)] = 1
+
 def grid_search(request, callback=None, resolution):
 	locations = Location.objects
 
@@ -5,12 +20,12 @@ def grid_search(request, callback=None, resolution):
 	for location in locations:
 		n_timestamp = normalize_timestamp_to_hour(location.timestamp)
 		n_timestamp_str = n_timestamp.strftime('%Y-%m-%d %H:%M:%S')
-		gridified_lat, gridified_lon = normalize_to_grid_center(lat, lon, resolution)
 
 		if n_timestamp_str not in response:
-			response[n_timestamp_str] = []
+			response[n_timestamp_str] = {}
 
-		response[n_timestamp_str].append((gridified_lat, gridified_lon))
+		gridified_lat, gridified_lon = normalize_to_grid_center(lat, lon, resolution)
+		add_to_grid(response[n_timestamp_str], gridified_lat, gridified_lon)
 
 	if callback is None:
 		return HttpResponse(json.dumps(response), content_type="application/json")
@@ -30,10 +45,10 @@ def grid_search_region(request, callback=None, resolution, lat, lon, latrange, l
 
 		if (grid_lat_index >= grid_lat_index_min) and (grid_lat_index <= grid_lat_index_max) and (grid_lon_index >= grid_lon_index_min) and (grid_lon_index <= grid_lon_index_max):
 			if n_timestamp_str not in response:
-				response[n_timestamp_str] = []
+				response[n_timestamp_str] = {}
 
 			gridified_lat, gridified_lon = grid_center(grid_lat_index, grid_lon_index, resolution)
-			response[n_timestamp_str].append((gridified_lat, gridified_lon))
+			add_to_grid(response[n_timestamp_str], gridified_lat, gridified_lon)
 
 	if callback is None:
 		return HttpResponse(json.dumps(response), content_type="application/json")
@@ -53,10 +68,10 @@ def grid_search_region_to_now(request, callback=None, resolution, lat, lon, latr
 		if (n_timestamp >= from_timestamp):
 			if (grid_lat_index >= grid_lat_index_min) and (grid_lat_index <= grid_lat_index_max) and (grid_lon_index >= grid_lon_index_min) and (grid_lon_index <= grid_lon_index_max):
 				if n_timestamp_str not in response:
-					response[n_timestamp_str] = []
+					response[n_timestamp_str] = {}
 
 				gridified_lat, gridified_lon = grid_center(grid_lat_index, grid_lon_index, resolution)
-				response[n_timestamp_str].append((gridified_lat, gridified_lon))
+				add_to_grid(response[n_timestamp_str], gridified_lat, gridified_lon)
 
 	if callback is None:
 		return HttpResponse(json.dumps(response), content_type="application/json")
@@ -78,10 +93,10 @@ def grid_search_region_in_timeframe(request, callback=None, resolution, lat, lon
 		if (n_timestamp >= from_timestamp) and (n_timestamp <= to_timestamp):
 			if (grid_lat_index >= grid_lat_index_min) and (grid_lat_index <= grid_lat_index_max) and (grid_lon_index >= grid_lon_index_min) and (grid_lon_index <= grid_lon_index_max):
 				if n_timestamp_str not in response:
-					response[n_timestamp_str] = []
+					response[n_timestamp_str] = {}
 
 				gridified_lat, gridified_lon = grid_center(grid_lat_index, grid_lon_index, resolution)
-				response[n_timestamp_str].append((gridified_lat, gridified_lon))
+				add_to_grid(response[n_timestamp_str], gridified_lat, gridified_lon)
 
 	if callback is None:
 		return HttpResponse(json.dumps(response), content_type="application/json")
