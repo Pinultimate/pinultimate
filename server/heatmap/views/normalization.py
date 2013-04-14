@@ -7,7 +7,6 @@ def gridify(lat, lng, reso):
 	LNG_SHIFT = 180
 	lat_index = floor((lat + LAT_SHIFT) / reso)
 	lng_index = floor((lng + LNG_SHIFT) / reso)
-	#lat_index = floor((-lat + LAT_SHIFT) / reso)
 	return lat_index, lng_index
 
 def grid_center(lat_index, lng_index, reso):
