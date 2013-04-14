@@ -24,6 +24,9 @@ git push deploy master
 **Never deploy from any other branch other than master. The server will reject all non-fast-forward changes**
 
 Finally, ssh into the server to restart Apache so the new changes to the code are now available to the webserver
+```bash
+sudo service apache2 restart
+```
 
 ## SERVER-SIDE Development:
 
