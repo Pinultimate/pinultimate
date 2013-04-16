@@ -1,4 +1,5 @@
 from heatmap.views.normalization import *
+from heatmap.views.requestdict import *
 from heatmap.models import *
 from django.http import HttpResponse
 from collections import OrderedDict
@@ -19,7 +20,8 @@ def grid_search(request, resolution, callback=None):
 	resolution = float(resolution)
 
 	json_response = {}
-	json_response["request"] = {}
+	request_dict = construct_request_dict("grid")
+	json_response["request"] = request_dict
 	response = []
 
 	prev_n_timestamp_str = None
@@ -61,7 +63,9 @@ def grid_search_region(request, resolution, lat, lon, latrange, lonrange, callba
 		grid_lon_index_max = grid_lon_index_max + max_lon_index(resolution)
 
 	json_response = {}
-	json_response["request"] = {}
+	request_dict = construct_request_dict("grid")
+	append_region(request_dict, lat, lon, latrange, lonrange)
+	json_response["request"] = request_dict
 	response = []
 
 	prev_n_timestamp_str = None
@@ -110,7 +114,11 @@ def grid_search_region_to_now(request, resolution, lat, lon, latrange, lonrange,
 		grid_lon_index_max = grid_lon_index_max + max_lon_index(resolution)
 
 	json_response = {}
-	json_response["request"] = {}
+	request_dict = construct_request_dict("grid")
+	append_region(request_dict, lat, lon, latrange, lonrange)
+	append_from_time(request_dict, from_timestamp)
+	append_to_time(request_dict, datetime.datetime.now())
+	json_response["request"] = request_dict
 	response = []
 
 	prev_n_timestamp_str = None
@@ -162,7 +170,11 @@ def grid_search_region_in_timeframe(request, resolution, lat, lon, latrange, lon
 		grid_lon_index_max = grid_lon_index_max + max_lon_index(resolution)
 
 	json_response = {}
-	json_response["request"] = {}
+	request_dict = construct_request_dict("grid")
+	append_region(request_dict, lat, lon, latrange, lonrange)
+	append_from_time(request_dict, from_timestamp)
+	append_to_time(request_dict, to_timestamp)
+	json_response["request"] = request_dict
 	response = []
 
 	prev_n_timestamp_str = None

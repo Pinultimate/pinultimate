@@ -31,3 +31,6 @@ def normalize_to_grid_center(lat, lng, reso):
 
 def normalize_timestamp_to_hour(timestamp):
 	return datetime.datetime(timestamp.year, timestamp.month, timestamp.day, timestamp.hour)
+
+def normalize_timestamp_to_minute(timestamp):
+	return datetime.datetime(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.minute)
