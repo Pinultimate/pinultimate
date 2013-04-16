@@ -8,9 +8,14 @@ class Location(DynamicDocument):
 		return 'Coordinates: %s' % self.coordinates
 
 	meta = {
-        'ordering': ['timestamp'],
-    }
+                'ordering': ['timestamp'],
+        }
 
 class InstagramLocation(Location):
-    source = StringField(default="instagram")
-    user_id = StringField()
+        source = StringField(default="instagram")
+        user_id = StringField()
+
+class FlickrLocation(Location):
+        source = StringField(default="flickr")
+        user_id = StringField()
+    
