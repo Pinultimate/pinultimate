@@ -7,32 +7,43 @@ import datetime
 import time
 from math import *
 
-def add_to_grid(dict, lat, lon):
-	coord = str(lat) + ',' + str(lon)
-	if coord in dict:
-		dict[coord] = dict[coord] + 1
-	else:
-		dict[coord] = 1
+def add_grid_location_to_list(location_list, gridified_lat, gridified_lon):
+	for location in location_list:
+		if location["latitude"] == gridified_lat and location["longitude"] == gridified_lon:
+			location["count"] = location["count"] + 1
+			return
+	location_list.append({"latitude" : gridified_lat, "longitude" : gridified_lon, "count" : 1})	
 
 def grid_search(request, resolution, callback=None):
 	locations = Location.objects
 	resolution = float(resolution)
 
-	response = OrderedDict()
+	json_response = {}
+	json_response["request"] = {}
+	response = []
+
+	prev_n_timestamp_str = None
 	for location in locations:
 		n_timestamp = normalize_timestamp_to_hour(location.timestamp)
 		n_timestamp_str = n_timestamp.strftime('%Y-%m-%d %H:%M:%S')
-
-		if n_timestamp_str not in response:
-			response[n_timestamp_str] = {}
-
 		gridified_lat, gridified_lon = normalize_to_grid_center(location.coordinates[0], location.coordinates[1], resolution)
-		add_to_grid(response[n_timestamp_str], gridified_lat, gridified_lon)
 
+		if prev_n_timestamp_str is None or prev_n_timestamp_str != n_timestamp_str:
+			timestamp_response = {}
+			response.append(timestamp_response)
+			timestamp_response["timestamp"] = n_timestamp_str
+			timestamp_response["locations"] = []
+			add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon)
+			prev_n_timestamp_str = n_timestamp_str
+		else:
+			prev_timestamp_response = response[-1]
+			add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon)
+
+	json_response["response"] = response
 	if callback is None:
-		return HttpResponse(json.dumps(response), content_type="application/json")
+		return HttpResponse(json.dumps(json_response), content_type="application/json")
 	else:
-		return HttpResponse(callback+'('+json.dumps(response)+')', content_type="application/json")
+		return HttpResponse(callback+'('+json.dumps(json_response)+')', content_type="application/json")
 
 def grid_search_region(request, resolution, lat, lon, latrange, lonrange, callback=None):
 	locations = Location.objects
@@ -49,27 +60,38 @@ def grid_search_region(request, resolution, lat, lon, latrange, lonrange, callba
 		wrapping = True
 		grid_lon_index_max = grid_lon_index_max + max_lon_index(resolution)
 
-	response = OrderedDict()
+	json_response = {}
+	json_response["request"] = {}
+	response = []
+
+	prev_n_timestamp_str = None
 	for location in locations:
 		n_timestamp = normalize_timestamp_to_hour(location.timestamp)
 		n_timestamp_str = n_timestamp.strftime('%Y-%m-%d %H:%M:%S')
 		grid_lat_index, grid_lon_index = gridify(location.coordinates[0], location.coordinates[1], resolution)
+		gridified_lat, gridified_lon = grid_center(grid_lat_index, grid_lon_index, resolution)
 
 		if wrapping:
 			if grid_lon_index < grid_lon_index_min:
 				grid_lon_index = grid_lon_index + max_lon_index(resolution)
 
 		if (grid_lat_index >= grid_lat_index_min) and (grid_lat_index <= grid_lat_index_max) and (grid_lon_index >= grid_lon_index_min) and (grid_lon_index <= grid_lon_index_max):
-			if n_timestamp_str not in response:
-				response[n_timestamp_str] = {}
+			if prev_n_timestamp_str is None or prev_n_timestamp_str != n_timestamp_str:
+				timestamp_response = {}
+				response.append(timestamp_response)
+				timestamp_response["timestamp"] = n_timestamp_str
+				timestamp_response["locations"] = []
+				add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon)
+				prev_n_timestamp_str = n_timestamp_str
+			else:
+				prev_timestamp_response = response[-1]
+				add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon)
 
-			gridified_lat, gridified_lon = grid_center(grid_lat_index, grid_lon_index, resolution)
-			add_to_grid(response[n_timestamp_str], gridified_lat, gridified_lon)
-
+	json_response["response"] = response
 	if callback is None:
-		return HttpResponse(json.dumps(response), content_type="application/json")
+		return HttpResponse(json.dumps(json_response), content_type="application/json")
 	else:
-		return HttpResponse(callback+'('+json.dumps(response)+')', content_type="application/json")
+		return HttpResponse(callback+'('+json.dumps(json_response)+')', content_type="application/json")
 
 def grid_search_region_to_now(request, resolution, lat, lon, latrange, lonrange, year, month, day, hour, callback=None):
 	locations = Location.objects
@@ -87,7 +109,11 @@ def grid_search_region_to_now(request, resolution, lat, lon, latrange, lonrange,
 		wrapping = True
 		grid_lon_index_max = grid_lon_index_max + max_lon_index(resolution)
 
-	response = OrderedDict()
+	json_response = {}
+	json_response["request"] = {}
+	response = []
+
+	prev_n_timestamp_str = None
 	for location in locations:
 		n_timestamp = normalize_timestamp_to_hour(location.timestamp)
 		n_timestamp_str = n_timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -99,16 +125,23 @@ def grid_search_region_to_now(request, resolution, lat, lon, latrange, lonrange,
 
 		if (n_timestamp >= from_timestamp):
 			if (grid_lat_index >= grid_lat_index_min) and (grid_lat_index <= grid_lat_index_max) and (grid_lon_index >= grid_lon_index_min) and (grid_lon_index <= grid_lon_index_max):
-				if n_timestamp_str not in response:
-					response[n_timestamp_str] = {}
-
 				gridified_lat, gridified_lon = grid_center(grid_lat_index, grid_lon_index, resolution)
-				add_to_grid(response[n_timestamp_str], gridified_lat, gridified_lon)
+				if prev_n_timestamp_str is None or prev_n_timestamp_str != n_timestamp_str:
+					timestamp_response = {}
+					response.append(timestamp_response)
+					timestamp_response["timestamp"] = n_timestamp_str
+					timestamp_response["locations"] = []
+					add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon)
+					prev_n_timestamp_str = n_timestamp_str
+				else:
+					prev_timestamp_response = response[-1]
+					add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon)
 
+	json_response["response"] = response
 	if callback is None:
-		return HttpResponse(json.dumps(response), content_type="application/json")
+		return HttpResponse(json.dumps(json_response), content_type="application/json")
 	else:
-		return HttpResponse(callback+'('+json.dumps(response)+')', content_type="application/json")
+		return HttpResponse(callback+'('+json.dumps(json_response)+')', content_type="application/json")
 
 
 def grid_search_region_in_timeframe(request, resolution, lat, lon, latrange, lonrange, fyear, fmonth, fday, fhour, tyear, tmonth, tday, thour, callback=None):
@@ -128,7 +161,11 @@ def grid_search_region_in_timeframe(request, resolution, lat, lon, latrange, lon
 		wrapping = True
 		grid_lon_index_max = grid_lon_index_max + max_lon_index(resolution)
 
-	response = OrderedDict()
+	json_response = {}
+	json_response["request"] = {}
+	response = []
+
+	prev_n_timestamp_str = None
 	for location in locations:
 		n_timestamp = normalize_timestamp_to_hour(location.timestamp)
 		n_timestamp_str = n_timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -140,13 +177,21 @@ def grid_search_region_in_timeframe(request, resolution, lat, lon, latrange, lon
 
 		if (n_timestamp >= from_timestamp) and (n_timestamp <= to_timestamp):
 			if (grid_lat_index >= grid_lat_index_min) and (grid_lat_index <= grid_lat_index_max) and (grid_lon_index >= grid_lon_index_min) and (grid_lon_index <= grid_lon_index_max):
-				if n_timestamp_str not in response:
-					response[n_timestamp_str] = {}
-
+				
 				gridified_lat, gridified_lon = grid_center(grid_lat_index, grid_lon_index, resolution)
-				add_to_grid(response[n_timestamp_str], gridified_lat, gridified_lon)
+				if prev_n_timestamp_str is None or prev_n_timestamp_str != n_timestamp_str:
+					timestamp_response = {}
+					response.append(timestamp_response)
+					timestamp_response["timestamp"] = n_timestamp_str
+					timestamp_response["locations"] = []
+					add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon)
+					prev_n_timestamp_str = n_timestamp_str
+				else:
+					prev_timestamp_response = response[-1]
+					add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon)
 
+	json_response["response"] = response
 	if callback is None:
-		return HttpResponse(json.dumps(response), content_type="application/json")
+		return HttpResponse(json.dumps(json_response), content_type="application/json")
 	else:
-		return HttpResponse(callback+'('+json.dumps(response)+')', content_type="application/json")
+		return HttpResponse(callback+'('+json.dumps(json_response)+')', content_type="application/json")
