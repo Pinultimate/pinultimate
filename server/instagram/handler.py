@@ -1,7 +1,9 @@
 import json, urllib2
-from heatmap.models import InstagramLocation
-from server.settings import DBNAME
+import datetime
+from models import InstagramLocation
 import mongoengine as mongo
+
+DBNAME = 'InstagramDB'
 
 class InstagramPOSTHandler:
 
@@ -28,7 +30,7 @@ class InstagramPOSTHandler:
             #first need to check if user is already in db for that time
             location = InstagramLocation(
                 coordinates = [elem['location']['latitude'], elem['location']['longitude']],
-                timestamp = elem['created_time'],
+                timestamp = datetime.datetime.fromtimestamp(int(elem['created_time'])),
                 user_id = elem['user']['id'],
             )
             location.save()
