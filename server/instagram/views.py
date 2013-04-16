@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 import hmac
 import hashlib
 from django.views.decorators.csrf import csrf_exempt
-import subprocess
+from django.core.management import call_command
 
 FILESPATH = '/home/deploy/pinultimate/server/instagram/files/'
 
@@ -36,9 +36,9 @@ def write_instagram_data_to_database(request):
     # TODO: take post data and update it in MongoDB, write json data to a file
     # for now
     
-    json_string = request.body
-    subprocess.call(["python", "/home/deploy/pinultimate/server/manage.py", "handleIG", "\'"+json_string+"\'", CLIENT_ID])
-    
+    json_string = str(request.body)
+    call_command('handleIG', json_string, CLIENT_ID)
+
     if not verify_signature(CLIENT_SECRET, request.body,
             request.META['HTTP_X_HUB_SIGNATURE']):
         raise ValidationError("X-Hub-Signature and hmac digest did not match")

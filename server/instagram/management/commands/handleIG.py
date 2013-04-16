@@ -1,13 +1,9 @@
-
 from django.core.management.base import BaseCommand
 import json, urllib2
 import datetime
 from instagram.models import InstagramLocation
 import mongoengine as mongo
 from server.settings import DBNAME
-
-FILESPATH = '/home/deploy/pinultimate/server/instagram/files/'
-#DBNAME = 'InstagramDB'
 
 class InstagramPOSTHandler:
 
@@ -38,5 +34,16 @@ class InstagramPOSTHandler:
                 user_id = elem['user']['id'],
             )
             location.save()
-        
-        
+
+            
+class Command(BaseCommand):
+    
+    def handle(self, *args, **options):
+        if len(args) == 2:
+            json_string = args[0]
+            client_id = args[1]
+            h = InstagramPOSTHandler()
+            h.process(json_string, client_id)
+        else:
+            print "Must include json_string and client_id arguments"
+
