@@ -4,8 +4,7 @@ from django.core.exceptions import ValidationError
 import hmac
 import hashlib
 from django.views.decorators.csrf import csrf_exempt
-
-from handler import InstagramPOSTHandler
+import subprocess
 
 FILESPATH = '/home/deploy/pinultimate/server/instagram/files/'
 
@@ -15,7 +14,6 @@ SUBSCRIBE = 'subscribe'
 CLIENT_ID = 'f6667e2778b84c5499a5fe4f8e207757'
 CLIENT_SECRET = '3a299b864af941de9158d2e1f6a2fcce'
 
-handler = InstagramPOSTHandler()
 
 @csrf_exempt
 @require_http_methods(['GET','POST'])
@@ -38,7 +36,8 @@ def write_instagram_data_to_database(request):
     # TODO: take post data and update it in MongoDB, write json data to a file
     # for now
     
-    handler.process(request.body, CLIENT_ID)
+    json_string = request.body
+    subprocess.call(["python", "/home/deploy/pinultimate/server/manage.py", "handleIG", "\'"+json_string+"\'", CLIENT_ID])
     
     if not verify_signature(CLIENT_SECRET, request.body,
             request.META['HTTP_X_HUB_SIGNATURE']):
