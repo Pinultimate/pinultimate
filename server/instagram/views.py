@@ -5,13 +5,17 @@ import hmac
 import hashlib
 from django.views.decorators.csrf import csrf_exempt
 
+from handler import InstagramPOSTHandler
 
 FILESPATH = '/home/deploy/pinultimate/server/instagram/files/'
 
 VERIFICATION_TOKEN = 'geography'
 SUBSCRIBE = 'subscribe'
 
+CLIENT_ID = 'f6667e2778b84c5499a5fe4f8e207757'
 CLIENT_SECRET = '3a299b864af941de9158d2e1f6a2fcce'
+
+handler = InstagramPOSTHandler()
 
 @csrf_exempt
 @require_http_methods(['GET','POST'])
@@ -33,11 +37,9 @@ def confirm_subscription(args):
 def write_instagram_data_to_database(request):
     # TODO: take post data and update it in MongoDB, write json data to a file
     # for now
-    json_data = request.body
-    f = open(FILESPATH + 'instagram_data.txt', 'a')
-    f.write(request.META)
-    f.write(json_data)
-    f.close()
+    
+    handler.process(request.body, CLIENT_ID)
+    
     if not verify_signature(CLIENT_SECRET, request.body,
             request.META['HTTP_X_HUB_SIGNATURE']):
         raise ValidationError("X-Hub-Signature and hmac digest did not match")
