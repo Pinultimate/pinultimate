@@ -13,4 +13,4 @@ class Location(DynamicDocument):
 
 class InstagramLocation(Location):
     source = StringField(default="instagram")
-    image_url = StringField()
+    user_id = StringField()
