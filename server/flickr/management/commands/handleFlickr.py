@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
 import json, urllib2
-from flickr.models import flickrLocation
+from flickr.models import FlickrLocation
 from server.settings import DBNAME
 import mongoengine as mongo
 import datetime
+import time
 
 API_KEY = 'c713991eeaef515a3fdacafdc0a140c4'
 LAT = 37.4419
@@ -13,7 +14,7 @@ QUERYSTRING_FORMAT = 'http://api.flickr.com/services/rest/?method=flickr.photos.
 def write_to_db(json_data):
     #make sure to count all pics by the same user in one hour as one 'checkin'
     for elem in json_data:
-        date_taken = datetime.datetime(int(time.mktime(time.strptime(elem['datetaken'], "%Y-%m-%d %H:%M:%S"))))
+        date_taken = datetime.datetime.fromtimestamp(int(time.mktime(time.strptime(elem['datetaken'], "%Y-%m-%d %H:%M:%S"))))
         location = FlickrLocation(
             coordinates = [elem['latitude'], elem['longitude']],
             timestamp = date_taken,
@@ -31,7 +32,6 @@ def main():
     while page < 1000:
         print 'getting page #{0}'.format(page)
         data = json.loads(str(urllib2.urlopen(querystring).read()))
-        print int(data['photos']['pages'])
         write_to_db(data['photos']['photo']);
         if page >= int(data['photos']['pages']):
             break;
@@ -39,6 +39,8 @@ def main():
         querystring = QUERYSTRING_FORMAT.format(API_KEY, LAT, LON, get_min_upload_date(), page)
             
 
-if __name__ == '__main__':
-    mongo.connect(DBNAME)
-    main()
+class Command(BaseCommand):
+    def handle(self, *args, **options):
+        mongo.connect(DBNAME)
+        main()
+

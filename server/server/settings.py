@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'heatmap',
     'instagram',
+    'flickr',
 )
 
 # A sample logging configuration. The only tangible logging
