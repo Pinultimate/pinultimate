@@ -15,13 +15,13 @@ def write_to_db(json_data):
     #make sure to count all pics by the same user in one hour as one 'checkin'
     for elem in json_data:
         userid = elem['ownername'];
-        time = datetime.datetime.fromtimestamp(int(time.mktime(time.strptime(elem['datetaken'], "%Y-%m-%d %H:%M:%S"))))
+        taken_time = datetime.datetime.fromtimestamp(int(time.mktime(time.strptime(elem['datetaken'], "%Y-%m-%d %H:%M:%S"))))
         delta = datetime.timedelta(hours=0.5)
-        same_users = FlickrLocation.objects(user_id=userid, timestamp__lte=time+delta, timestamp__gte=time-delta);
+        same_users = FlickrLocation.objects(user_id=userid, timestamp__lte=taken_time+delta, timestamp__gte=taken_time-delta);
         if len(same_users) == 0:
             location = FlickrLocation(
                 coordinates = [elem['latitude'], elem['longitude']],
-                timestamp = time,
+                timestamp = taken_time,
                 user_id = userid,
             )
             location.save()
