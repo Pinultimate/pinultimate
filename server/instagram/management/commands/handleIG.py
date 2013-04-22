@@ -28,12 +28,17 @@ class InstagramPOSTHandler:
     def write_to_db(self, data):
         for elem in data:
             #first need to check if user is already in db for that time
-            location = InstagramLocation(
-                coordinates = [elem['location']['latitude'], elem['location']['longitude']],
-                timestamp = datetime.datetime.fromtimestamp(int(elem['created_time'])),
-                user_id = elem['user']['id'],
-            )
-            location.save()
+            userid = elem['user']['id'];
+            time = datetime.datetime.fromtimestamp(int(elem['created_time']))
+            delta = datetime.timedelta(hours=0.5)
+            same_users = InstagramLocation.objects(user_id=userid, timestamp__lte=time+delta, timestamp__gte=time-delta);
+            if len(same_users) == 0:
+                location = InstagramLocation(
+                    coordinates = [elem['location']['latitude'], elem['location']['longitude']],
+                    timestamp = time,
+                    user_id = userid,
+                )
+                location.save()
 
             
 class Command(BaseCommand):
