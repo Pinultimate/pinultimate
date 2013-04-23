@@ -36,7 +36,7 @@ class InstagramPOSTHandler:
                 location = InstagramLocation(
                     coordinates = [elem['location']['latitude'], elem['location']['longitude']],
                     timestamp = time,
-                    time_added_to_db = datetime.datetime.now(),
+                    source = "instagram",
                     user_id = userid,
                 )
                 location.save()
