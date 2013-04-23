@@ -22,6 +22,7 @@ def write_to_db(json_data):
             location = FlickrLocation(
                 coordinates = [elem['latitude'], elem['longitude']],
                 timestamp = taken_time,
+                time_added_to_db = datetime.datetime.now(),
                 user_id = userid,
             )
             location.save()

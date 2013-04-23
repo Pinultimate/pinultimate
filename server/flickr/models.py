@@ -3,6 +3,7 @@ from mongoengine import DynamicDocument, GeoPointField, DateTimeField, StringFie
 class Location(DynamicDocument):
     coordinates = GeoPointField(required=True)
     timestamp = DateTimeField(required=True)
+    time_added_to_db = DateTimeField(required=True)
     
     def __unicode__(self):
         return 'Coordinates: %s' % self.coordinates
