@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 import datetime
-from metrics.models import Location
+from heatmap.models import Location
 import mongoengine as mongo
 from server.settings import DBNAME
 
@@ -9,7 +9,7 @@ def main(num_days):
     today = datetime.datetime.now()
     today -= datetime.timedelta(0, today.second, today.microsecond, 0, today.minute, today.hour, 0)
     delta = datetime.timedelta(1)
-    
+
     print "Printing num photos downloaded per day for the past " + str(num_days) + " days:"
 
     instagram_total = 0

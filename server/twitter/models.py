@@ -1,17 +1,9 @@
-from mongoengine import DynamicDocument, GeoPointField, DateTimeField, StringField
+from mongoengine import StringField, IntField, ListField
+from heatmap.models import Location
 
-class Location(DynamicDocument):
-    coordinates = GeoPointField(required=True)
-    timestamp = DateTimeField(required=True)
-    time_added_to_db = DateTimeField(required=True)
-    source = StringField(default="unknown")
-
-    def __unicode__(self):
-        return 'Coordinates: %s' % self.coordinates
-
-    meta = {
-        'ordering': ['timestamp'],
-    }
-
-class FlickrLocation(Location):
+class TwitterLocation(Location):
+    tweet = StringField()
+    retweet_count = IntField()
+    favorite_count = IntField()
+    hashtags = ListField()
     user_id = StringField()

@@ -5,11 +5,7 @@ OAUTH_SECRET = 'LtPxpNbsiy5tWgMd1SfEaEvt0NPlkXvRH3ky1hkovw'
 CONSUMER_KEY = 'A7R0OmDF2kJvdIwHkYaSaA'
 CONSUMER_SECRET = 'FDFfHcKyr2vxa33qMghDPETi2CfztsxC9LPVNyJe0'
 
-#LAT1 = 36.9419
-#LAT2 = 37.9419
-#LON1 = -121.1419
-#LON2 = -122.6419
-LON1, LAT1, LON2, LAT2 = (-122.75,36.8,-121.75,37.8)
+LON1, LAT1, LON2, LAT2 = (-122.23, 37.32, -122.09, 37.49)
 
 locations_args = "%f,%f,%f,%f" % (LON1, LAT1, LON2, LAT2)
 
@@ -29,7 +25,6 @@ def main():
             auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET,
                        CONSUMER_KEY, CONSUMER_SECRET)
            )
-    #iterator = twitter_stream.statuses.filter(locations="-121.1419,36.9419,-122.6419,37.9419")
     iterator = twitter_stream.statuses.filter(locations=locations_args)
     for tweet in iterator:
         print tweet
