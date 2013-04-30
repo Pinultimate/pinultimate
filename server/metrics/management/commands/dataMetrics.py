@@ -15,17 +15,18 @@ def main(num_days):
     instagram_total = 0
     flickr_total = 0
     for i in range(num_days):
-        print "  " + (today - datetime.timedelta(i)).strftime("%D")
-        instagram_entries = Location.objects(timestamp__lte=today+delta, timestamp__gte=today, source="instagram")
+        today -= datetime.timedelta(1);
+        print "  " + today.strftime("%D")
+        instagram_entries = Location.objects(time_added_to_db__lte=today+delta, time_added_to_db__gte=today, source="instagram")
         instagram_total += len(instagram_entries)
-        print "    Instagram: " + len(instagram_entries)
-        flickr_entries = Location.objects(timestamp__lte=today+delta, timestamp__gte=today, source="flickr")
+        print "    Instagram: " + str(len(instagram_entries))
+        flickr_entries = Location.objects(time_added_to_db__lte=today+delta, time_added_to_db__gte=today, source="flickr")
         flickr_total += len(flickr_entries)
-        print "    Flickr: " + len(flickr_entries)
+        print "    Flickr: " + str(len(flickr_entries))
 
     print "\nTotals for past " + str(num_days) + " days:"
-    print "  Instagram: " + instagram_total
-    print "  Flickr: " + flickr_total
+    print "  Instagram: " + str(instagram_total)
+    print "  Flickr: " + str(flickr_total)
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
