@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'heatmap',
     'instagram',
     'flickr',
+    'metrics',
 )
 
 # A sample logging configuration. The only tangible logging
