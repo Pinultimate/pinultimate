@@ -1,2 +1,3 @@
 MAILTO=teampinultimate@gmail.com
 0 * * * * /home/deploy/.virtualenvs/pinultimate/bin/python /home/deploy/pinultimate/server/manage.py handleFlickr
+0 * * * * /home/deploy/.virtualenvs/pinultimate/bin/python /home/deploy/pinultimate/server/manage.py handleTwitter
