@@ -37,6 +37,7 @@ class LocationGenerator:
             location = Location(
                 coordinates=[fake_coords['latitude'], fake_coords['longitude']],
                 timestamp=fake_timestamp,
+                time_added_to_db = datetime.datetime.now(),
             )
             location.save()
         self.command.stdout.write('%d fake_locations > %s' % (len(self.fake_locations), self.db_name))
