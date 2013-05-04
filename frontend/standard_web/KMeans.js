@@ -58,6 +58,7 @@ var ClusteringProcessor = function(data) {
 		var lat = 0;
 		var lon = 0;
 		var length = locations.length;
+
 		for (var i = 0; i < length; i++) {
 			count += locations[i]['count'];
 			lat += locations[i]['latitude'] * locations[i]['count'];
@@ -94,7 +95,12 @@ var ClusteringProcessor = function(data) {
 	var updateCenters = function(centers) {
 		var reassignment = 0;
 		for (var i = 0; i < K; i++) {
-			var newCenter = findCenter(centers[i].getLocations());
+			var newCenter;
+			if (centers[i].getLocations().length == 0) {
+				newCenter = centers[i];
+			} else {
+				newCenter = findCenter(centers[i].getLocations());
+			}
 			console.log(centers[i]);
 			console.log(newCenter);
 			if (!equals(newCenter, centers[i])) {
@@ -169,8 +175,7 @@ var ClusteringProcessor = function(data) {
 		}
 
 		return centers;
-
-		//runKMeans(centers, locations);
+		
 	}
 
 	var recluster = function(oldCenters) {
@@ -184,13 +189,12 @@ var ClusteringProcessor = function(data) {
 		}
 		var centers = KMeansPlus(oldCenters)
 
-		return centers;
+		return runKMeans(centers, oldCenters);
 	}
 
 
 	var initClusters = function() {
 		var centers = KMeansLine(data.slice(0));
-
 		return recluster(centers);
 	}
 
@@ -237,13 +241,16 @@ var ClusteringProcessor = function(data) {
 
 		console.log(centers);
 
-		//centers = runKMeans(centers, data);
+		centers = runKMeans(centers, data);
 
 		console.log(centers);
+		createClusters(centers);
+
+
 	}
 
-	test();
-	//cluster();
+	//test();
+	cluster();
 	return clusters;
 
 }
