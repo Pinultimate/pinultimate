@@ -1,4 +1,6 @@
-function createNokiaMap(div_ID, center_object, zoom_level)
+MAP_markers = [];
+
+function createNokiaMap(div_ID, center_object, zoom_level, dragend_callback)
 {
   nokia.Settings.set( "appId", "ZK2z_y4VG6AbOWUzjvN2");
   nokia.Settings.set( "authenticationToken", "n7NUDiZ7BXw8Hw0YF1ajWQ");
@@ -22,18 +24,17 @@ function createNokiaMap(div_ID, center_object, zoom_level)
       });
 
   map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
-  addListenersAndObservers(map);
+  addListenersAndObservers(map,dragend_callback);
 
   return map;
 }
 
-function addListenersAndObservers(map) {
+function addListenersAndObservers(map,dragend_callback) {
   var dragendHandler = function (evt) {
     var center_geo = map.getViewBounds().getCenter();
     console.log(center_geo.latitude);
     console.log(center_geo.longitude);
-    //applyLocationData(updateData,global_lat,global_long,global_zoom_level,global_ts);
-    //applyLocationData(updateData);
+    dragend_callback(map);
   };   
 
   var listeners = {
@@ -43,8 +44,6 @@ function addListenersAndObservers(map) {
   // Create a default observer for display properties that will just log a message.
   var dragObserver = function (obj, key, newValue, oldValue) {
 
-      console.log(newValue.longitude);
-      console.log(newValue.latitude);
   };
 
   var zoomObserver = function (obj, key, newValue, oldValue) {
@@ -86,7 +85,7 @@ function addMarker(map,text,lat,long, radius) {
       .replace(/__TEXTCONTENT__/g, text)
       .replace(/__TEXT__/g, text)
       .replace(/__ACCENTCOLOR__/g, accentColor)
-      .replace(/__RADIUS__/g, radius)
+      .replace(/__RADIUS__/g, radius) // Currently doesn't do anything, FIX
       .replace(/__MAINCOLOR__/g, mainColor);
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
@@ -99,7 +98,15 @@ function addMarker(map,text,lat,long, radius) {
     }
   );
   map.objects.add(marker);
+  MAP_markers.push(marker);
 };
+
+function removeAllMarkers(map) {
+  console.log("MAP_markers:");
+  console.log(MAP_markers);
+  map.objects.clear();
+  MAP_markers = [];
+}
 
 
 
