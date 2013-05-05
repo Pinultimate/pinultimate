@@ -247,7 +247,7 @@ var ClusteringProcessor = function(data) {
 
 	//test();
 	cluster();
-	console.log(clusters);
+	//console.log(clusters);
 	return clusters;
 
 }
