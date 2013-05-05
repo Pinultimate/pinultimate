@@ -29,12 +29,12 @@ function createNokiaMap(div_ID, center_object, zoom_level, dragend_callback)
   return map;
 }
 
-function addListenersAndObservers(map,dragend_callback) {
+function addListenersAndObservers(map,dragend_callback_l) {
   var dragendHandler = function (evt) {
     var center_geo = map.getViewBounds().getCenter();
     console.log(center_geo.latitude);
     console.log(center_geo.longitude);
-    dragend_callback(map);
+    dragend_callback_l(map);
   };   
 
   var listeners = {

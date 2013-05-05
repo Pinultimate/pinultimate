@@ -107,24 +107,25 @@
 
         var potentialDataUpdate = function(map) {
           console.log("Checking if new data needs to be grabbed...")
-          data_bounds_width = map.getViewBounds().getWidth() *4;
+          data_bounds_width = map.getViewBounds().getWidth();
           console.log("Data bounds width: " + data_bounds_width.toString());
-          data_bounds_height = map.getViewBounds().getHeight() *4;
+          data_bounds_height = map.getViewBounds().getHeight();
           resolution = data_bounds_width/RESOLUTION_DIVISIONS;
-          new_lat_left = map.center.latitude - data_bounds_width/2;
-          new_lat_right = map.center.latitude + data_bounds_width/2;
-          new_long_bottom = map.center.longitude - data_bounds_height/2;
-          new_long_top = map.center.longitude + data_bounds_height/2;
-          if (firstFetch() || newAreaNotCached(new_lat_left,new_lat_right,new_long_top,new_long_bottom)) {
+          map_lat_left = map.center.latitude - map.getViewBounds().getWidth()/2;
+          map_lat_right = map.center.latitude + map.getViewBounds().getWidth()/2;
+          map_long_bottom = map.center.longitude - map.getViewBounds().getHeight()/2;
+          map_long_top = map.center.longitude + map.getViewBounds().getHeight()/2;
+          if (firstFetch() || newAreaNotCached(map_lat_left,map_lat_right,map_long_top,map_long_bottom)) 
+          {
             removeAllMarkers(map);
             getGridLocationData(updateData,map.center.latitude,map.center.longitude,data_bounds_width,data_bounds_height,resolution);
             console.log("New data must be grabbed")
-            fetched_data_lat_left = new_lat_left;
-            fetched_data_lat_right = new_lat_right;
-            fetched_data_long_bottom = new_long_bottom
-            fetched_data_long_top = new_long_top;
+            fetched_data_lat_left = map.center.latitude - data_bounds_width;
+            fetched_data_lat_right = map.center.latitude + data_bounds_width;
+            fetched_data_long_bottom = map.center.longitude - data_bounds_height
+            fetched_data_long_top = map.center.longitude + data_bounds_height;
           }
-        }
+        };
 
         var center_object = [starting_lat,starting_long];
         map = createNokiaMap("mapContainer", center_object, starting_zoom_level, potentialDataUpdate);
