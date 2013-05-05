@@ -14,10 +14,14 @@ var ClusteringProcessor = function(data) {
 	ClusterCenter.prototype.getCluster = function() {
 		var count = 0;
 		var length = this.locations.length;
+		var radius = 0;
 		for (var i = 0; i < length; i++) {
 			count += this.locations[i]['count'];
+			if (this.locations[i]['distance'] > radius) {
+				radius = this.locations[i]['distance'];
+			}
 		}
-		return {"latitude": this.latitude, "longitude": this.longitude, "count": count};
+		return {"latitude": this.latitude, "longitude": this.longitude, "count": count, "radius": Math.sqrt(radius)};
 	}
 
 	ClusterCenter.prototype.clearLocation = function() {
@@ -221,6 +225,7 @@ var ClusteringProcessor = function(data) {
 				break;
 			}
 		}
+		putLocationsInCenters(centers, locations);
 		return centers;
 	}
 
