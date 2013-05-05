@@ -73,9 +73,9 @@ function addListenersAndObservers(map) {
     map.addObserver(mapProperty, observers[mapProperty]);
 };
 
-function addMarker(map,text,lat,long) {
+function addMarker(map,text,lat,long, radius) {
   var iconSVG = 
-  '<svg width="33" height="33" xmlns="http://www.w3.org/2000/svg">' +
+  '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">' +
   '<circle stroke="__ACCENTCOLOR__" fill="__MAINCOLOR__" cx="16" cy="16" r="16" />' +
   '<text x="16" y="20" font-size="10pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
   '</svg>',
@@ -86,6 +86,7 @@ function addMarker(map,text,lat,long) {
       .replace(/__TEXTCONTENT__/g, text)
       .replace(/__TEXT__/g, text)
       .replace(/__ACCENTCOLOR__/g, accentColor)
+      .replace(/__RADIUS__/g, radius)
       .replace(/__MAINCOLOR__/g, mainColor);
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
