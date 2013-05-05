@@ -70,15 +70,8 @@
 
         var slider = createTimeSlider("sliderContainer", sliderChangeFunction ,null);
 
-        var updateData = function(json_str) {
-          console.log("yo");
-          global_data = JSON.parse(json_str);
-          var heatmap_data_at_time = heatmap_data_for_time(global_slider_value);
-          renderHeatMap(heatmap_data_at_time);
-        }
-
         // Initiialization
-        getGridLocationData(initializeGlobalData,starting_lat,starting_long,1,1,.1);
+        getGridLocationData(initializeGlobalData,starting_lat,starting_long,1,1,.02);
 
         
 
