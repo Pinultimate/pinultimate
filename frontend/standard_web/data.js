@@ -1,6 +1,6 @@
 //var SERVER_URL = "http://localhost:8000/";
 var SERVER_URL = "http://www.pinultimate.net/";
-var HEATMAP_SEARCH_URL = "heatmap/search/";
+var HEATMAP_SEARCH_URL = "heatmap/"
 var CALLBACK_URL = "&callback=?";
 
 // notice that all distance (lat, lon, rad) are in degress
@@ -48,6 +48,22 @@ var applyLocationData = function(callback_func, lat, lon, rad, ts, discard_hour,
 			}
 	    }
     );
+}
+
+var getGridLocationData = function(callback_func, lat_center, long_center, lat_range, long_range, resolution) {
+  var data_url = SERVER_URL + HEATMAP_SEARCH_URL;
+  data_url += "resolution/" + resolution + "/";
+  data_url += "search/center/" + lat_center + "/" + long_center + "/";
+  data_url += "region/" + lat_range + "/" + long_range + "/";
+  data_url += CALLBACK_URL; // Need CALLBACK_URL For Jsonp
+
+  $.getJSON(data_url)
+    .done(function(response) {
+      // Once request is recieved, call the call_back function
+      callback_func(response);
+    }).fail(function() {
+      console.log("Getting grid data failed"); 
+    });
 }
 
 var applyLocationDataReg = function(callback_func, lat, lon, latrange, lonrange, ts, discard_hour, discard_minute) {
