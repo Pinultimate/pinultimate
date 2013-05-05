@@ -1,6 +1,6 @@
 
 var ClusteringProcessor = function(data) {
-	var K = 2;
+	var K = 10;
 	var clusters = [];
 
 	var ClusterCenter = function(latitude, longitude) {
@@ -12,7 +12,7 @@ var ClusteringProcessor = function(data) {
 	}
 
 	ClusterCenter.prototype.getCluster = function() {
-		var count = 0;
+		var count = 1;
 		var length = this.locations.length;
 		var radius = 0;
 		for (var i = 0; i < length; i++) {
@@ -236,9 +236,17 @@ var ClusteringProcessor = function(data) {
 	}
 
 	var cluster = function() {
-		var centers = initClusters();
-		centers = runKMeans(centers, data);
-		createClusters(centers);
+		if (data.length > K) {
+			var centers = initClusters();
+			centers = runKMeans(centers, data);
+			createClusters(centers);
+		} else {
+			var DEFAULT_RADIUS = 180;
+			for (var i = 0; i < data.length; i++) {
+				var center = {"latitude": data[i]['latitude'], "longitude": data[i]['longitude'], "count": data[i]['count'], "radius": DEFAULT_RADIUS};
+				clusters.push(center);
+			}
+		}
 	}
 
 	var test = function() {
@@ -247,7 +255,7 @@ var ClusteringProcessor = function(data) {
 
 	//test();
 	cluster();
-	//console.log(clusters);
+	console.log(clusters);
 	return clusters;
 
 }
