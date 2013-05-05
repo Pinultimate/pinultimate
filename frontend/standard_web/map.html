@@ -31,6 +31,7 @@
     <script type="text/javascript" src="sampleData.js"></script>
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="time_slider.js"></script>
+    <script type="text/javascript" src="KMeans.js"></script>
     <script type="text/javascript">
 
 
@@ -58,6 +59,11 @@
           if (fetched_data.length-1 >= 0) {
             current_data = fetched_data[fetched_data.length-1]
             console.log(current_data);
+            clustered_data = ClusteringProcessor(current_data.locations);
+            for (var i=0; i < clustered_data.length; i++) {
+              addMarker(map,clustered_data[i].count.toString(),clustered_data[i].latitude,clustered_data[i].longitude);
+            }
+            console.log(clustered_data);
           }
         };
 
@@ -72,6 +78,7 @@
 
         // Initiialization
         getGridLocationData(initializeGlobalData,starting_lat,starting_long,1,1,.02);
+        //addMarker(map,"cat",starting_lat,starting_long);
 
         
 
