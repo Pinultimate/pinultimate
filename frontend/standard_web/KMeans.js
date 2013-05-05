@@ -6,8 +6,9 @@ var ClusteringProcessor = function(data) {
 	var ClusterCenter = function(latitude, longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
-		this.center = {"latitude": this.latitude, "longitude": this.longitude};
-		this.locations = [];
+		this.count = 1;
+		this.center = {"latitude": this.latitude, "longitude": this.longitude, "count": 1};
+		this.locations = [this.center];
 	}
 
 	ClusterCenter.prototype.getCluster = function() {
@@ -101,8 +102,6 @@ var ClusteringProcessor = function(data) {
 			} else {
 				newCenter = findCenter(centers[i].getLocations());
 			}
-			console.log(centers[i]);
-			console.log(newCenter);
 			if (!equals(newCenter, centers[i])) {
 				centers[i] = newCenter;
 				reassignment++;
@@ -123,35 +122,41 @@ var ClusteringProcessor = function(data) {
 	}
 
 	var KMeansLine = function(locations) {
-		var length = locations.length;
 
 		var NUM_IT = 5;
-		var l = K;
+		var l = K * 2;
 		var centers = [];
-		var initLoc = locations[Math.floor(Math.random()*locations.length)] //To Change
+		var index = Math.floor(Math.random()*locations.length);
+		var initLoc = locations[index];
+		locations.splice(index, 1);
 		centers.push(new ClusterCenter(initLoc['latitude'], initLoc['longitude']));
 
 		var sum = calculateCost(locations, centers);
 
+		var length = locations.length;
+
 		for (var i = 0; i < NUM_IT; i++) {
 			for (var j = 0; j < length; j++) {
 				var prob = l * Math.random() * sum;
-				if (prob - locations[i]['distance'] > 0) continue;
+				if (prob - locations[j]['distance'] > 0) continue;
 				centers.push(new ClusterCenter(locations[j]['latitude'], locations[j]['longitude']));
 				locations.splice(j, 1);
 				length--;
 				j--;
 			}
 			sum = calculateCost(locations, centers);
+			if ((i == NUM_IT - 1) && (centers.length < K)) NUM_IT += NUM_IT;
 		}
-
 		return centers;
 	}
 
 	var KMeansPlus = function(locations) {
 		var centers = [];
-		var initLoc = locations[Math.floor(Math.random()*locations.length)] //To Change
+		var index = Math.floor(Math.random()*locations.length);
+		var initLoc = locations[index];
+		locations.splice(index, 1);
 		centers.push(new ClusterCenter(initLoc['latitude'], initLoc['longitude']));
+
 		var sum = calculateCost(locations, centers);
 
 		var length = locations.length;
@@ -164,7 +169,6 @@ var ClusteringProcessor = function(data) {
 				locations.splice(j, 1);
 				length--;
 				j--;
-
 				if (centers.length == K) {
 					FLAG = true;
 					break;
@@ -173,7 +177,6 @@ var ClusteringProcessor = function(data) {
 			if (FLAG == true) break;
 			sum = calculateCost(locations, centers);
 		}
-
 		return centers;
 		
 	}
@@ -187,11 +190,10 @@ var ClusteringProcessor = function(data) {
 		for (var i = 0; i < length; i++) {
 			findCluster(data[i], oldCenters)['weight']++;
 		}
-		var centers = KMeansPlus(oldCenters)
+		var centers = KMeansPlus(oldCenters.slice(0));
 
 		return runKMeans(centers, oldCenters);
 	}
-
 
 	var initClusters = function() {
 		var centers = KMeansLine(data.slice(0));
@@ -214,10 +216,8 @@ var ClusteringProcessor = function(data) {
 			count++;
 			putLocationsInCenters(centers, locations);
 			var reassignment = updateCenters(centers);
-			console.log(reassignment);
 
-			if (reassignment == 0 || count > 20) {
-				console.log("out of loop");
+			if (reassignment == 0 || count > 2000) {
 				break;
 			}
 		}
@@ -237,20 +237,12 @@ var ClusteringProcessor = function(data) {
 	}
 
 	var test = function() {
-		var centers = initClusters();
-
-		console.log(centers);
-
-		centers = runKMeans(centers, data);
-
-		console.log(centers);
-		createClusters(centers);
-
-
+		
 	}
 
 	//test();
 	cluster();
+	//console.log(clusters);
 	return clusters;
 
 }
