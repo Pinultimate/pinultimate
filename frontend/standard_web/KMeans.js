@@ -218,7 +218,6 @@ var ClusteringProcessor = function(data) {
 			var reassignment = updateCenters(centers);
 
 			if (reassignment == 0 || count > 2000) {
-				console.log(reassignment);
 				break;
 			}
 		}
@@ -238,23 +237,12 @@ var ClusteringProcessor = function(data) {
 	}
 
 	var test = function() {
-		//var centers = initClusters();
-
-		var centers = KMeansLine(data.slice(0));
-
-
-
-		//centers = recluster(centers);
-
-
-		//createClusters(centers);
-
-
+		
 	}
 
 	//test();
 	cluster();
-	console.log(clusters);
+	//console.log(clusters);
 	return clusters;
 
 }
