@@ -1,15 +1,19 @@
+from heatmap.views.normalization import *
 from heatmap.views.requestdict import *
-from heatmap.models import Location
+from heatmap.models import *
 from django.http import HttpResponse
+from collections import OrderedDict
 import json
 import datetime
+import time
+from math import *
 
 def add_grid_location_to_list(location_list, gridified_lat, gridified_lon):
 	for location in location_list:
 		if location["latitude"] == gridified_lat and location["longitude"] == gridified_lon:
 			location["count"] = location["count"] + 1
 			return
-	location_list.append({"latitude" : gridified_lat, "longitude" : gridified_lon, "count" : 1})
+	location_list.append({"latitude" : gridified_lat, "longitude" : gridified_lon, "count" : 1})	
 
 def grid_search(request, resolution, callback=None):
 	locations = Location.objects
@@ -185,7 +189,7 @@ def grid_search_region_in_timeframe(request, resolution, lat, lon, latrange, lon
 
 		if (n_timestamp >= from_timestamp) and (n_timestamp <= to_timestamp):
 			if (grid_lat_index >= grid_lat_index_min) and (grid_lat_index <= grid_lat_index_max) and (grid_lon_index >= grid_lon_index_min) and (grid_lon_index <= grid_lon_index_max):
-
+				
 				gridified_lat, gridified_lon = grid_center(grid_lat_index, grid_lon_index, resolution)
 				if prev_n_timestamp_str is None or prev_n_timestamp_str != n_timestamp_str:
 					timestamp_response = {}

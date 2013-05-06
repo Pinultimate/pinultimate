@@ -1,5 +1,6 @@
-from math import floor
+from math import *
 import datetime
+import time
 
 def gridify(lat, lng, reso):
 	LAT_SHIFT = 90

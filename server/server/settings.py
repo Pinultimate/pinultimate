@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'heatmap',
     'instagram',
     'flickr',
+    'analytics',
     'twitter_scrape',
     'metrics',
 )

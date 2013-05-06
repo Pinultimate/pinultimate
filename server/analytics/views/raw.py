@@ -1,11 +1,15 @@
+from heatmap.views.normalization import *
 from heatmap.views.requestdict import *
-from heatmap.models import Location
+from heatmap.models import *
 from django.http import HttpResponse
+from collections import OrderedDict
 import json
 import datetime
+import time
+from math import *
 
 def add_raw_location_to_list(location_list, gridified_lat, gridified_lon):
-	location_list.append({"latitude" : gridified_lat, "longitude" : gridified_lon})
+	location_list.append({"latitude" : gridified_lat, "longitude" : gridified_lon})	
 
 def search(request, callback=None):
 	locations = Location.objects
@@ -18,7 +22,7 @@ def search(request, callback=None):
 	for location in locations:
 		n_timestamp = normalize_timestamp_to_hour(location.timestamp)
 		n_timestamp_str = n_timestamp.strftime('%Y-%m-%d %H:%M:%S')
-
+		
 		if prev_n_timestamp_str is None or prev_n_timestamp_str != n_timestamp_str:
 			timestamp_response = {}
 			response.append(timestamp_response)
