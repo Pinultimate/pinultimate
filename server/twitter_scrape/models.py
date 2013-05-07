@@ -5,5 +5,5 @@ class TwitterLocation(Location):
     tweet_text = StringField(required=True)
     retweet_count = IntField(required=True)
     favorite_count = IntField(required=True)
-    hashtags = ListField(required=True)
     user_id = StringField(required=True)
+    hashtags = ListField()

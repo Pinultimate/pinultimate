@@ -16,6 +16,10 @@ framework.
 import os
 import sys
 
+# needed for Celery
+import djcelery
+djcelery.setup_loader()
+
 path = '/home/deploy/pinultimate/server/'
 if path not in sys.path:
     sys.path.insert(0, path)

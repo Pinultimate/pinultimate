@@ -17,7 +17,7 @@ def write_to_db(json_data):
         userid = elem['ownername'];
         taken_time = datetime.datetime.fromtimestamp(int(time.mktime(time.strptime(elem['datetaken'], "%Y-%m-%d %H:%M:%S"))))
         delta = datetime.timedelta(hours=0.5)
-        same_users = FlickrLocation.objects(user_id=userid, timestamp__lte=taken_time+delta, timestamp__gte=taken_time-delta);
+        same_users = FlickrLocation.objects(user_id=userid, timestamp__lte=taken_time+delta, timestamp__gte=taken_time-delta)
         if len(same_users) == 0:
             location = FlickrLocation(
                 coordinates = [elem['latitude'], elem['longitude']],
@@ -30,11 +30,11 @@ def write_to_db(json_data):
 
 def get_min_upload_date():
     return 0;
-    
+
 def main():
     page = 1
     querystring = QUERYSTRING_FORMAT.format(API_KEY, LAT, LON, get_min_upload_date(), page)
-        
+
     while page < 1000:
         print 'getting page #{0}'.format(page)
         data = json.loads(str(urllib2.urlopen(querystring).read()))
@@ -43,7 +43,7 @@ def main():
             break;
         page += 1
         querystring = QUERYSTRING_FORMAT.format(API_KEY, LAT, LON, get_min_upload_date(), page)
-            
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):

@@ -1,5 +1,4 @@
 # Django settings for server project.
-
 import mongoengine as mongo
 
 DEBUG = True
@@ -19,6 +18,29 @@ mongo.connect(DBNAME)
 DATABASES = {
     'default': {}
 }
+
+# import Celery, used to run daemon tasks, like Twitter scraping
+import djcelery
+djcelery.setup_loader()
+
+# Celery settings, needed to work with MongoDB
+CELERY_RESULT_BACKEND = "mongodb"
+BROKER_BACKEND = "mongodb"
+BROKER_USER = ""
+BROKER_PASSWORD = ""
+BROKER_URL = 'mongodb://localhost:27017/' + DBNAME
+
+# Settings needed to write to database in task
+CELERY_MONGODB_BACKEND_SETTINGS = {
+    "host": "127.0.0.1",
+    "port": 27017,
+    "database": DBNAME,
+    "taskmeta_collection": "celery_taskmeta" # Collection name to use for task output
+}
+
+# Find and register all celery tasks.  Your tasks need to be in a
+# tasks.py file to be picked up.
+CELERY_IMPORTS = ('twitter_scrape.tasks')
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -123,6 +145,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'djcelery',
     'heatmap',
     'instagram',
     'flickr',
