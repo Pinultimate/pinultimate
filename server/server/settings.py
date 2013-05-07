@@ -42,6 +42,18 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
 # tasks.py file to be picked up.
 CELERY_IMPORTS = ('twitter_scrape.tasks')
 
+from datetime import timedelta
+
+CELERYBEAT_SCHEDULE = {
+    'add-every-30-seconds': {
+        'task': 'tasks.add',
+        'schedule': timedelta(seconds=7201),
+        'args': (16, 16)
+    },
+}
+
+CELERY_TIMEZONE = 'UTC'
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
