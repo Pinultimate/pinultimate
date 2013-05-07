@@ -1,6 +1,6 @@
 
 var ClusteringProcessor = function(data) {
-	var K = 10;
+	var K = 2;
 	var clusters = [];
 
 	var ClusterCenter = function(latitude, longitude) {
@@ -17,11 +17,14 @@ var ClusteringProcessor = function(data) {
 		var radius = 0;
 		for (var i = 0; i < length; i++) {
 			count += this.locations[i]['count'];
-			if (this.locations[i]['distance'] > radius) {
-				radius = this.locations[i]['distance'];
+			var dist = Math.sqrt(this.locations[i]['distance']);
+			if (dist < 0.00001) {
+				radius += 0;
+			} else {
+				radius += dist;
 			}
-		}
-		return {"latitude": this.latitude, "longitude": this.longitude, "count": count, "radius": Math.sqrt(radius)};
+		}		
+		return {"latitude": this.latitude, "longitude": this.longitude, "count": count, "radius": radius / length};
 	}
 
 	ClusterCenter.prototype.clearLocation = function() {
@@ -85,7 +88,6 @@ var ClusteringProcessor = function(data) {
 	var findCluster = function(location, centers) {
 		var result = centers[0];
 		var minDist = centers[0].distance(location);
-
 		var length = centers.length;
 		for (var i = 1; i < length; i++) {
 			var distance = centers[i].distance(location);
@@ -94,6 +96,7 @@ var ClusteringProcessor = function(data) {
 				result = centers[i];
 			}
 		}
+		location['distance'] = minDist;
 		return result;
 	}
 
@@ -214,6 +217,7 @@ var ClusteringProcessor = function(data) {
 		}
 	}
 
+
 	var runKMeans = function(centers, locations) {
 		var count = 0;
 		while (true) {
@@ -239,9 +243,10 @@ var ClusteringProcessor = function(data) {
 		if (data.length > K) {
 			var centers = initClusters();
 			centers = runKMeans(centers, data);
+			//console.log(centers);
 			createClusters(centers);
 		} else {
-			var DEFAULT_RADIUS = 180;
+			var DEFAULT_RADIUS = 0;
 			for (var i = 0; i < data.length; i++) {
 				var center = {"latitude": data[i]['latitude'], "longitude": data[i]['longitude'], "count": data[i]['count'], "radius": DEFAULT_RADIUS};
 				clusters.push(center);
@@ -255,7 +260,7 @@ var ClusteringProcessor = function(data) {
 
 	//test();
 	cluster();
-	console.log(clusters);
+	//console.log(clusters);
 	return clusters;
 
 }
