@@ -46,7 +46,7 @@ def write_to_db(tweet):
         raise RuntimeError
 
 
-@periodic_task(run_every=crontab(second='*/7210'))
+@periodic_task(run_every=crontab(minute='*/120'))
 def main():
     print "Starting task"
     mongo.connect(DBNAME)
