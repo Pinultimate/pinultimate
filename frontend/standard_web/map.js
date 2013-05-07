@@ -6,6 +6,8 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.fetched_data = null;
   this.current_data = null;
 
+  this.hour_offset = 0;
+
   this.fetched_data_lat_left = null;
   this.fetched_data_lat_right = null;
   this.fetched_data_long_top = null;
@@ -48,7 +50,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   var addListenersAndObservers = function(map) 
   {
     var dragendHandler = function (evt) {
-      me.potentialDataUpdate();
+      me.potentialDataUpdate(false);
     };   
 
     var listeners = {
@@ -66,7 +68,9 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
       global_height = map.getViewBounds().getHeight();
       global_width = map.getViewBounds().getWidth();
       if (newValue < oldValue) {
-        me.potentialDataUpdate();
+        me.potentialDataUpdate(false);
+      } else {
+        me.potentialDataUpdate(true);
       }
     };
 
@@ -84,33 +88,33 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   };
 
   this.map = createNokiaMap(div_ID, center_object, zoom_level);
-  this.potentialDataUpdate();
+  this.potentialDataUpdate(false);
   this.slider = createTimeSlider("sliderContainer", function() {
     console.log("Slider Moved");
   } ,null);
 };
 
-TrendMap.prototype.potentialDataUpdate = function() 
+TrendMap.prototype.potentialDataUpdate = function(force) 
 {
   var map = this.map;
   console.log("Checking if new data needs to be grabbed...")
   data_bounds_width = map.getViewBounds().getWidth();
   console.log("Data bounds width: " + data_bounds_width.toString());
   data_bounds_height = map.getViewBounds().getHeight();
-  resolution = data_bounds_width/this.RESOLUTION_DIVISIONS;
+  resolution = map.getViewBounds().getWidth()/this.RESOLUTION_DIVISIONS;
   map_lat_left = map.center.latitude - map.getViewBounds().getWidth()/2;
   map_lat_right = map.center.latitude + map.getViewBounds().getWidth()/2;
   map_long_bottom = map.center.longitude - map.getViewBounds().getHeight()/2;
   map_long_top = map.center.longitude + map.getViewBounds().getHeight()/2;
-  if (this.firstFetch() || this.newAreaNotCached(map_lat_left,map_lat_right,map_long_top,map_long_bottom)) 
+  if (force || this.firstFetch() || this.newAreaNotCached(map_lat_left,map_lat_right,map_long_top,map_long_bottom)) 
   {
     this.removeAllMarkers();
     this.getGridLocationData(this.updateData,map.center.latitude,map.center.longitude,data_bounds_width,data_bounds_height,resolution);
     console.log("New data must be grabbed")
-    this.fetched_data_lat_left = map.center.latitude - data_bounds_width;
-    this.fetched_data_lat_right = map.center.latitude + data_bounds_width;
-    this.fetched_data_long_bottom = map.center.longitude - data_bounds_height
-    this.fetched_data_long_top = map.center.longitude + data_bounds_height;
+    this.fetched_data_lat_left = map.center.latitude - data_bounds_width/2;
+    this.fetched_data_lat_right = map.center.latitude + data_bounds_width/2;
+    this.fetched_data_long_bottom = map.center.longitude - data_bounds_height/2;
+    this.fetched_data_long_top = map.center.longitude + data_bounds_height/2;
   }
 };
 
@@ -187,14 +191,21 @@ TrendMap.prototype.makeMarkers = function(clustered_data)
 TrendMap.prototype.updateData = function(json_object) 
 {
   this.fetched_data = json_object.response;
-  if (this.fetched_data.length-1 >= 0) 
+  if (this.fetched_data.length-1-this.hour_offset >= 0) 
   {
-    this.current_data = this.fetched_data[this.fetched_data.length-1];
-    //console.log(this.current_data);
-    var clustered_data = ClusteringProcessor(this.current_data.locations);
-    this.makeMarkers(clustered_data);
+    this.updateCurrentData();
+  } else {
+    console.log("Hour offset went negative!");
   }
 };
+
+TrendMap.prototype.updateCurrentData = function()
+{
+  this.current_data = this.fetched_data[this.fetched_data.length-1-this.hour_offset];
+  //console.log(this.current_data);
+  var clustered_data = ClusteringProcessor(this.current_data.locations);
+  this.makeMarkers(clustered_data);
+}
 
 TrendMap.prototype.getGridLocationData = function(callback_func, lat_center, long_center, lat_range, long_range, resolution) {
   var me = this;
@@ -211,4 +222,9 @@ TrendMap.prototype.getGridLocationData = function(callback_func, lat_center, lon
     }).fail(function() {
       console.log("Getting grid data failed"); 
     });
+}
+
+TrendMap.prototype.setHourOffset = function(hour_offset)
+{
+  this.hour_offset = hour_offset;
 }
