@@ -37,15 +37,6 @@
 
       $(document).ready(function() {
 
-        // Global Objects
-        fetched_data = null;
-        current_data = null;
-
-        fetched_data_lat_left = null;
-        fetched_data_lat_right = null;
-        fetched_data_long_top = null;
-        fetched_data_long_bottom = null;
-        
         // Palo Alto, California
         starting_zoom_level = 13;
         starting_lat = 37.442
@@ -54,94 +45,10 @@
         global_ts = new Date();
         global_slider_value = 0;
 
-        RESOLUTION_DIVISIONS = 25;
-
-        markers = [];
-
-        var makeMarkers = function(clustered_data)
-        {
-          for (var i=0; i < clustered_data.length; i++) 
-          {
-              addMarker(map,clustered_data[i].count.toString(),clustered_data[i].latitude,clustered_data[i].longitude,clustered_data[i].radius);
-          }
-        }
-
-        var updateData = function(json_object) 
-        {
-          fetched_data = json_object.response;
-          console.log(fetched_data);
-          if (fetched_data.length-1 >= 0) {
-            current_data = fetched_data[fetched_data.length-1]
-            console.log(current_data);
-            var clustered_data = ClusteringProcessor(current_data.locations);
-            makeMarkers(clustered_data);
-            console.log(clustered_data);
-          }
-        }
-
-        var firstFetch = function() {
-          if (fetched_data_lat_left === null || fetched_data_lat_right === null || fetched_data_long_top === null || fetched_data_long_bottom === null) {
-            console.log("First fetch");
-            return true;
-          } else {
-            return false;
-          }
-        }
-
-        var newAreaNotCached = function(new_lat_left,new_lat_right,new_long_top,new_long_bottom) {
-          console.log("New Lat Left: " + new_lat_left.toString());
-          console.log("Old Lat Left: " + fetched_data_lat_left.toString());
-          console.log("New Lat Right: " + new_lat_right.toString());
-          console.log("Old Lat Right: " + fetched_data_lat_right.toString());
-          console.log("New Long Top: " + new_long_top.toString());
-          console.log("Old Long Top: " + fetched_data_long_top.toString());
-          console.log("New Long Bot: " + new_long_bottom.toString());
-          console.log("Old Long Bot: " + fetched_data_long_bottom.toString());
-          if (new_lat_left < fetched_data_lat_left || new_lat_right > fetched_data_lat_right || new_long_bottom < fetched_data_long_bottom || new_long_top > fetched_data_long_top) {
-            console.log("Area not cached");
-            return true;
-          } else {
-            return false;
-          }
-        }
-
-        var potentialDataUpdate = function(map) {
-          console.log("Checking if new data needs to be grabbed...")
-          data_bounds_width = map.getViewBounds().getWidth();
-          console.log("Data bounds width: " + data_bounds_width.toString());
-          data_bounds_height = map.getViewBounds().getHeight();
-          resolution = data_bounds_width/RESOLUTION_DIVISIONS;
-          map_lat_left = map.center.latitude - map.getViewBounds().getWidth()/2;
-          map_lat_right = map.center.latitude + map.getViewBounds().getWidth()/2;
-          map_long_bottom = map.center.longitude - map.getViewBounds().getHeight()/2;
-          map_long_top = map.center.longitude + map.getViewBounds().getHeight()/2;
-          if (firstFetch() || newAreaNotCached(map_lat_left,map_lat_right,map_long_top,map_long_bottom)) 
-          {
-            removeAllMarkers(map);
-            getGridLocationData(updateData,map.center.latitude,map.center.longitude,data_bounds_width,data_bounds_height,resolution);
-            console.log("New data must be grabbed")
-            fetched_data_lat_left = map.center.latitude - data_bounds_width;
-            fetched_data_lat_right = map.center.latitude + data_bounds_width;
-            fetched_data_long_bottom = map.center.longitude - data_bounds_height
-            fetched_data_long_top = map.center.longitude + data_bounds_height;
-          }
-        };
-
         var center_object = [starting_lat,starting_long];
-        map = createNokiaMap("mapContainer", center_object, starting_zoom_level, potentialDataUpdate);
-        // map.getViewBounds.getHeight() or getWidth()
 
-        var sliderChangeFunction = function(sliderValue) {
-          // Get Data for specific time
-          global_slider_value = sliderValue;
-          var heatmap_data_at_time = heatmap_data_for_time(global_slider_value);
-          renderHeatMap(heatmap_data_at_time);
-        };
-
-        var slider = createTimeSlider("sliderContainer", sliderChangeFunction ,null);
-
-        // Initiialization
-        potentialDataUpdate(map);        
+        map = new TrendMap("mapContainer","sliderContainer",center_object,starting_zoom_level);
+       
       });
     </script>
   </body>

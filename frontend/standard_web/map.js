@@ -1,84 +1,127 @@
-MAP_markers = [];
-
-function createNokiaMap(div_ID, center_object, zoom_level, dragend_callback)
+function TrendMap(div_ID, slider_ID, center_object, zoom_level) 
 {
-  nokia.Settings.set( "appId", "ZK2z_y4VG6AbOWUzjvN2");
-  nokia.Settings.set( "authenticationToken", "n7NUDiZ7BXw8Hw0YF1ajWQ");
+  var me = this;
+  this.div_ID = div_ID;
 
-  // Get the DOM node to which we will append the map
-  var mapContainer = document.getElementById(div_ID);
+  this.fetched_data = null;
+  this.current_data = null;
 
-  // Create a map inside the map container DOM node
-  var map = new nokia.maps.map.Display(mapContainer, {
-    components: [
-      // Add the behavior component to allow panning / zooming of the map
-      new nokia.maps.map.component.Behavior(),
-      new nokia.maps.map.component.ZoomBar(),
-      new nokia.maps.map.component.Overview(),
-      new nokia.maps.map.component.DistanceMeasurement(),
-      new nokia.maps.map.component.ScaleBar(),
-      new nokia.maps.map.component.TypeSelector()
-    ],
-    zoomLevel: zoom_level,
-    center: center_object, 
-      });
+  this.fetched_data_lat_left = null;
+  this.fetched_data_lat_right = null;
+  this.fetched_data_long_top = null;
+  this.fetched_data_long_bottom = null;
 
-  map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
-  addListenersAndObservers(map,dragend_callback);
+  this.RESOLUTION_DIVISIONS = 25;
+  this.SERVER_URL = "http://www.pinultimate.net/";
+  this.HEATMAP_SEARCH_URL = "heatmap/"
+  this.CALLBACK_URL = "&callback=?";
 
-  return map;
-}
+  var createNokiaMap = function(div_ID, center_object, zoom_level)
+  {
+    nokia.Settings.set( "appId", "ZK2z_y4VG6AbOWUzjvN2");
+    nokia.Settings.set( "authenticationToken", "n7NUDiZ7BXw8Hw0YF1ajWQ");
 
-function addListenersAndObservers(map,dragend_callback_l) {
-  var dragendHandler = function (evt) {
-    var center_geo = map.getViewBounds().getCenter();
-    console.log(center_geo.latitude);
-    console.log(center_geo.longitude);
-    dragend_callback_l(map);
-  };   
+    // Get the DOM node to which we will append the map
+    var mapContainer = document.getElementById(div_ID);
 
-  var listeners = {
-    "dragend": [dragendHandler, false, null]
+    // Create a map inside the map container DOM node
+    var map = new nokia.maps.map.Display(mapContainer, {
+      components: [
+        // Add the behavior component to allow panning / zooming of the map
+        new nokia.maps.map.component.Behavior(),
+        new nokia.maps.map.component.ZoomBar(),
+        new nokia.maps.map.component.Overview(),
+        new nokia.maps.map.component.DistanceMeasurement(),
+        new nokia.maps.map.component.ScaleBar(),
+        new nokia.maps.map.component.TypeSelector()
+      ],
+      zoomLevel: zoom_level,
+      center: center_object, 
+        });
+
+    map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
+    addListenersAndObservers(map);
+
+    return map;
   };
 
-  // Create a default observer for display properties that will just log a message.
-  var dragObserver = function (obj, key, newValue, oldValue) {
+  var addListenersAndObservers = function(map) 
+  {
+    var dragendHandler = function (evt) {
+      me.potentialDataUpdate();
+    };   
 
+    var listeners = {
+      "dragend": [dragendHandler, false, null]
+    };
+
+    // Create a default observer for display properties that will just log a message.
+    var dragObserver = function (obj, key, newValue, oldValue) {
+
+    };
+
+    var zoomObserver = function (obj, key, newValue, oldValue) {
+      //set new radius
+      global_zoom_level = newValue;
+      global_height = map.getViewBounds().getHeight();
+      global_width = map.getViewBounds().getWidth();
+      if (newValue < oldValue) {
+        me.potentialDataUpdate();
+      }
+    };
+
+    // Template of all map properties we would like to observe
+    var observers = {
+      "center": dragObserver,
+      "zoomLevel": zoomObserver,
+    };
+
+    // Add listeners
+    map.addListeners(listeners);
+    // Add observers
+    for (var mapProperty in observers)
+      map.addObserver(mapProperty, observers[mapProperty]);
   };
 
-  var zoomObserver = function (obj, key, newValue, oldValue) {
-    //set new radius
-    global_zoom_level = newValue;
-    global_height = map.getViewBounds().getHeight();
-    global_width = map.getViewBounds().getWidth();
-    console.log(global_height);
-    console.log(global_width);
-    if (newValue > oldValue) {
-      //applyLocationData(updateData,global_lat,global_long,global_zoom_level,global_ts);
-      //applyLocationData(updateData);
-    }
-  };
-
-  // Template of all map properties we would like to observe
-  var observers = {
-    "center": dragObserver,
-    "zoomLevel": zoomObserver,
-  };
-
-  // Add listeners
-  map.addListeners(listeners);
-  // Add observers
-  for (var mapProperty in observers)
-    map.addObserver(mapProperty, observers[mapProperty]);
+  this.map = createNokiaMap(div_ID, center_object, zoom_level);
+  this.potentialDataUpdate();
+  this.slider = createTimeSlider("sliderContainer", function() {
+    console.log("Slider Moved");
+  } ,null);
 };
 
-function addMarker(map,text,lat,long, radius) {
+TrendMap.prototype.potentialDataUpdate = function() 
+{
+  var map = this.map;
+  console.log("Checking if new data needs to be grabbed...")
+  data_bounds_width = map.getViewBounds().getWidth();
+  console.log("Data bounds width: " + data_bounds_width.toString());
+  data_bounds_height = map.getViewBounds().getHeight();
+  resolution = data_bounds_width/this.RESOLUTION_DIVISIONS;
+  map_lat_left = map.center.latitude - map.getViewBounds().getWidth()/2;
+  map_lat_right = map.center.latitude + map.getViewBounds().getWidth()/2;
+  map_long_bottom = map.center.longitude - map.getViewBounds().getHeight()/2;
+  map_long_top = map.center.longitude + map.getViewBounds().getHeight()/2;
+  if (this.firstFetch() || this.newAreaNotCached(map_lat_left,map_lat_right,map_long_top,map_long_bottom)) 
+  {
+    this.removeAllMarkers();
+    this.getGridLocationData(this.updateData,map.center.latitude,map.center.longitude,data_bounds_width,data_bounds_height,resolution);
+    console.log("New data must be grabbed")
+    this.fetched_data_lat_left = map.center.latitude - data_bounds_width;
+    this.fetched_data_lat_right = map.center.latitude + data_bounds_width;
+    this.fetched_data_long_bottom = map.center.longitude - data_bounds_height
+    this.fetched_data_long_top = map.center.longitude + data_bounds_height;
+  }
+};
+
+TrendMap.prototype.addMarker = function(text,lat,long, radius) 
+{
   var iconSVG = 
   '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">' +
   '<circle stroke="__ACCENTCOLOR__" fill="__MAINCOLOR__" cx="16" cy="16" r="16" />' +
   '<text x="16" y="20" font-size="10pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
-  '</svg>',
-  svgParser = new nokia.maps.gfx.SvgParser(),
+  '</svg>';
+  svgParser = new nokia.maps.gfx.SvgParser();
   // Helper function that allows us to easily set the text and color of our SVG marker.
   createIcon = function (text, mainColor, accentColor) {
     var svg = iconSVG
@@ -90,20 +133,82 @@ function addMarker(map,text,lat,long, radius) {
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
   var markerIcon = createIcon(text, "#43A51B", "#FFF");
-  var marker = new nokia.maps.map.Marker(
-    // Center GeoCoordinates
-    [lat, long], 
-    {
-      icon: markerIcon
-    }
-  );
-  map.objects.add(marker);
-  MAP_markers.push(marker);
+  var marker = new nokia.maps.map.Marker([lat, long], {icon: markerIcon});
+  this.map.objects.add(marker);
 };
 
-function removeAllMarkers(map) {
-  console.log("MAP_markers:");
-  console.log(MAP_markers);
-  map.objects.clear();
-  MAP_markers = [];
+TrendMap.prototype.removeAllMarkers = function() 
+{
+  this.map.objects.clear();
+};
+
+TrendMap.prototype.firstFetch = function()
+{
+  if (this.fetched_data_lat_left === null || this.fetched_data_lat_right === null || this.fetched_data_long_top === null || this.fetched_data_long_bottom === null) 
+  {
+    console.log("First fetch");
+    return true;
+  } else 
+  {
+    return false;
+  }
+};
+
+TrendMap.prototype.newAreaNotCached = function(new_lat_left,new_lat_right,new_long_top,new_long_bottom) 
+{
+  /*
+  console.log("New Lat Left: " + new_lat_left.toString());
+  console.log("Old Lat Left: " + fetched_data_lat_left.toString());
+  console.log("New Lat Right: " + new_lat_right.toString());
+  console.log("Old Lat Right: " + fetched_data_lat_right.toString());
+  console.log("New Long Top: " + new_long_top.toString());
+  console.log("Old Long Top: " + fetched_data_long_top.toString());
+  console.log("New Long Bot: " + new_long_bottom.toString());
+  console.log("Old Long Bot: " + fetched_data_long_bottom.toString());
+  */
+  if (new_lat_left < this.fetched_data_lat_left || new_lat_right > this.fetched_data_lat_right || new_long_bottom < this.fetched_data_long_bottom || new_long_top > this.fetched_data_long_top) 
+  {
+    console.log("Area not cached");
+    return true;
+  } else 
+  {
+    return false;
+  }
+};
+
+TrendMap.prototype.makeMarkers = function(clustered_data)
+{
+  for (var i=0; i < clustered_data.length; i++) 
+  {
+    this.addMarker(clustered_data[i].count.toString(),clustered_data[i].latitude,clustered_data[i].longitude,clustered_data[i].radius);
+  }
+};
+
+TrendMap.prototype.updateData = function(json_object) 
+{
+  this.fetched_data = json_object.response;
+  if (this.fetched_data.length-1 >= 0) 
+  {
+    this.current_data = this.fetched_data[this.fetched_data.length-1];
+    //console.log(this.current_data);
+    var clustered_data = ClusteringProcessor(this.current_data.locations);
+    this.makeMarkers(clustered_data);
+  }
+};
+
+TrendMap.prototype.getGridLocationData = function(callback_func, lat_center, long_center, lat_range, long_range, resolution) {
+  var me = this;
+  var data_url = this.SERVER_URL + this.HEATMAP_SEARCH_URL;
+  data_url += "resolution/" + resolution + "/";
+  data_url += "search/center/" + lat_center + "/" + long_center + "/";
+  data_url += "region/" + lat_range + "/" + long_range + "/";
+  data_url += this.CALLBACK_URL; // Need CALLBACK_URL For Jsonp
+
+  $.getJSON(data_url)
+    .done(function(response) {
+      // Once request is recieved, call the call_back function
+      me.updateData(response);
+    }).fail(function() {
+      console.log("Getting grid data failed"); 
+    });
 }
