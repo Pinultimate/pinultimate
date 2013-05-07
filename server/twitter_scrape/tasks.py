@@ -1,4 +1,5 @@
-from celery.decorators import task
+from celery.decorators import periodic_task
+from celery.schedules import crontab
 from twitter import TwitterStream, OAuth, TwitterHTTPError
 from twitter_scrape.models import TwitterLocation
 from server.settings import DBNAME
@@ -45,7 +46,7 @@ def write_to_db(tweet):
         raise RuntimeError
 
 
-@task()
+@periodic_task(run_every=crontab(minute='*/3'))
 def main():
     print "Starting task"
     mongo.connect(DBNAME)
