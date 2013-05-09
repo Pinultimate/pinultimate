@@ -6,6 +6,7 @@ from collections import OrderedDict
 import json
 import datetime
 import time
+import sys
 from django.db.models import Q
 from math import *
 
@@ -58,7 +59,6 @@ def search_region(request, lat, lon, latrange, lonrange, callback=None):
 	bottom_left_lon, bottom_left_lat = convert_to_bottom_left(lon, lat, lonrange, latrange)
 	upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, lonrange, latrange)
 	locations = Location.objects(coordinates__within_box=[(bottom_left_lat, bottom_left_lon), (upper_right_lat, upper_right_lon)])
-
 	json_response = {}
 	request_dict = construct_request_dict("raw")
 	append_region(request_dict, lat, lon, latrange, lonrange)
@@ -98,10 +98,9 @@ def search_region_to_now(request, lat, lon, latrange, lonrange, year, month, day
 	from_timestamp = datetime.datetime(int(year), int(month), int(day), int(hour))
 	bottom_left_lon, bottom_left_lat = convert_to_bottom_left(lon, lat, lonrange, latrange)
 	upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, lonrange, latrange)
-	locations = Location.objects(
-		Q(coordinates__within_box=[(bottom_left_lat, bottom_left_lon), (upper_right_lat, upper_right_lon)])
-		& Q(timestamp__gte=from_timestamp)
-	)
+	locations = Location.objects(__raw__={
+		'coordinates' : {'$within' : { '$box' : [ [bottom_left_lat, bottom_left_lon], [upper_right_lat, upper_right_lon] ] }},
+		'timestamp' : { '$gte' : from_timestamp }})
 	
 	json_response = {}
 	request_dict = construct_request_dict("raw")
@@ -147,11 +146,9 @@ def search_region_in_timeframe(request, lat, lon, latrange, lonrange, fyear, fmo
 	to_timestamp = datetime.datetime(int(tyear), int(tmonth), int(tday), int(thour))
 	bottom_left_lon, bottom_left_lat = convert_to_bottom_left(lon, lat, lonrange, latrange)
 	upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, lonrange, latrange)
-	locations = Location.objects(
-		Q(coordinates__within_box=[(bottom_left_lat, bottom_left_lon), (upper_right_lat, upper_right_lon)])
-		& Q(timestamp__gte=from_timestamp)
-		& Q(timestamp__lte=to_timestamp)
-	)
+	locations = Location.objects(__raw__={
+		'coordinates' : {'$within' : { '$box' : [ [bottom_left_lat, bottom_left_lon], [upper_right_lat, upper_right_lon] ] }},
+		'timestamp' : { '$gte' : from_timestamp, '$lt' : to_timestamp + datetime.timedelta(hours = 1) }})
 
 	json_response = {}
 	request_dict = construct_request_dict("raw")
