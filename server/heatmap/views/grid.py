@@ -58,7 +58,7 @@ def grid_search_region(request, resolution, lat, lon, latrange, lonrange, callba
 
 	bottom_left_lon, bottom_left_lat = convert_to_bottom_left(lon, lat, lonrange, latrange)
 	upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, lonrange, latrange)
-	locations = Location.objects(coordinates__within_box=[(bottom_left_lon, bottom_left_lat), (upper_right_lon, upper_right_lat)])
+	locations = Location.objects(coordinates__within_box=[(bottom_left_lat, bottom_left_lon), (upper_right_lat, upper_right_lon)])
 
 	grid_lat_index_min, grid_lon_index_min = gridify(lat-latrange/2, lon-lonrange/2, resolution)
 	grid_lat_index_max, grid_lon_index_max = gridify(lat+latrange/2, lon+lonrange/2, resolution)
@@ -115,7 +115,7 @@ def grid_search_region_to_now(request, resolution, lat, lon, latrange, lonrange,
 	bottom_left_lon, bottom_left_lat = convert_to_bottom_left(lon, lat, lonrange, latrange)
 	upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, lonrange, latrange)
 	locations = Location.objects(
-		Q(coordinates__within_box=[(bottom_left_lon, bottom_left_lat), (upper_right_lon, upper_right_lat)])
+		Q(coordinates__within_box=[(bottom_left_lat, bottom_left_lon), (upper_right_lat, upper_right_lon)])
 		& Q(timestamp__gte=from_timestamp)
 	)
 
@@ -179,7 +179,7 @@ def grid_search_region_in_timeframe(request, resolution, lat, lon, latrange, lon
 	bottom_left_lon, bottom_left_lat = convert_to_bottom_left(lon, lat, lonrange, latrange)
 	upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, lonrange, latrange)
 	locations = Location.objects(
-		Q(coordinates__within_box=[(bottom_left_lon, bottom_left_lat), (upper_right_lon, upper_right_lat)])
+		Q(coordinates__within_box=[(bottom_left_lat, bottom_left_lon), (upper_right_lat, upper_right_lon)])
 		& Q(timestamp__gte=from_timestamp)
 		& Q(timestamp__lte=to_timestamp)
 	)

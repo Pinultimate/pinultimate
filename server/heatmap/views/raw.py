@@ -57,7 +57,7 @@ def search_region(request, lat, lon, latrange, lonrange, callback=None):
 	
 	bottom_left_lon, bottom_left_lat = convert_to_bottom_left(lon, lat, lonrange, latrange)
 	upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, lonrange, latrange)
-	locations = Location.objects(coordinates__within_box=[(bottom_left_lon, bottom_left_lat), (upper_right_lon, upper_right_lat)])
+	locations = Location.objects(coordinates__within_box=[(bottom_left_lat, bottom_left_lon), (upper_right_lat, upper_right_lon)])
 
 	json_response = {}
 	request_dict = construct_request_dict("raw")
@@ -99,7 +99,7 @@ def search_region_to_now(request, lat, lon, latrange, lonrange, year, month, day
 	bottom_left_lon, bottom_left_lat = convert_to_bottom_left(lon, lat, lonrange, latrange)
 	upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, lonrange, latrange)
 	locations = Location.objects(
-		Q(coordinates__within_box=[(bottom_left_lon, bottom_left_lat), (upper_right_lon, upper_right_lat)])
+		Q(coordinates__within_box=[(bottom_left_lat, bottom_left_lon), (upper_right_lat, upper_right_lon)])
 		& Q(timestamp__gte=from_timestamp)
 	)
 	
@@ -148,7 +148,7 @@ def search_region_in_timeframe(request, lat, lon, latrange, lonrange, fyear, fmo
 	bottom_left_lon, bottom_left_lat = convert_to_bottom_left(lon, lat, lonrange, latrange)
 	upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, lonrange, latrange)
 	locations = Location.objects(
-		Q(coordinates__within_box=[(bottom_left_lon, bottom_left_lat), (upper_right_lon, upper_right_lat)])
+		Q(coordinates__within_box=[(bottom_left_lat, bottom_left_lon), (upper_right_lat, upper_right_lon)])
 		& Q(timestamp__gte=from_timestamp)
 		& Q(timestamp__lte=to_timestamp)
 	)
