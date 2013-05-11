@@ -8,7 +8,7 @@
     <link href='http://fonts.googleapis.com/css?family=Tauri' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
     <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="webapp/style.css">
   </head>
   <body>
     <header>
@@ -18,7 +18,11 @@
     <div id="sliderContainer">    </div>
 
 
-    <div id="mapContainer"></div>
+    <div id="mapContainer">
+      <div id="loading">
+        <div id="loadingText">Loading...</div>
+      </div>
+    </div>
 
     
 
@@ -27,137 +31,27 @@
       <div class="test"></div>
     </footer>
 
-    <script type="text/javascript" src="map.js"></script>
-    <script type="text/javascript" src="sampleData.js"></script>
-    <script type="text/javascript" src="data.js"></script>
-    <script type="text/javascript" src="time_slider.js"></script>
+    <script type="text/javascript" src="webapp/map.js"></script>
+    <script type="text/javascript" src="webapp/sampleData.js"></script>
+    <script type="text/javascript" src="webapp/data.js"></script>
+    <script type="text/javascript" src="webapp/time_slider.js"></script>
+    <script type="text/javascript" src="webapp/KMeans.js"></script>
     <script type="text/javascript">
 
 
       $(document).ready(function() {
 
-        // Global Objects
-        global_data = null;
-        global_heatmap_type = "density";
-        global_map = null;
         // Palo Alto, California
-        global_zoom_level = 13;
-        global_height = 0;
-        global_width = 0;
-        global_lat = 37.442
-        global_long = -122.14;
+        starting_zoom_level = 13;
+        starting_lat = 37.442
+        starting_long = -122.14;
 
-        global_ts = new Date();
-        global_slider_value = 0;
+        $("#loading").show();
 
-        var renderHeatMap = function(heatmap_data) {
-          global_map.overlays.clear();
-          var heatMapOverlay = createHeatMapOverlay(heatmap_data,global_heatmap_type);
-          global_map.overlays.add(heatMapOverlay);
-        }
+        var center_object = [starting_lat,starting_long];
 
-        var initializeGlobalData = function(json_str) {
-          console.log(json_str);
-          console.log("Hello");
-          global_data = JSON.parse(json_str);
-          var centerObject = [global_lat,  global_long];
-          heatmap_data = heatmap_data_for_time(0);
-          global_map = createNokiaMap("mapContainer", heatmap_data, global_heatmap_type, centerObject);
-          global_height = global_map.getViewBounds().getHeight();
-          global_width = global_map.getViewBounds().getWidth();
-          console.log(global_height);
-          console.log(global_width);
-
-            //Listners
-          var dragendHandler = function (evt) {
-                //console.log("event "+ evt.type + " @ " + evt.target.$name);
-                var center_geo = global_map.getViewBounds().getCenter();
-                global_lat = center_geo.latitude;
-                global_long = center_geo.longitude;
-                console.log(center_geo.latitude);
-                console.log(center_geo.longitude);
-                //applyLocationData(updateData,global_lat,global_long,global_zoom_level,global_ts);
-                applyLocationData(updateData);
-          };   
-
-          var listeners = {
-            //"dragstart": [defaultHandler, false, null],
-            //"drag": [defaultHandler, false, null],
-            "dragend": [dragendHandler, false, null]
-
-          };
-          global_map.addListeners(listeners);
-
-
-
-          // Create a default observer for display properties that will just log a message.
-          var dragObserver = function (obj, key, newValue, oldValue) {
-
-              console.log(newValue.longitude);
-              console.log(newValue.latitude);
-
-              //set new center
-              var location = [newValue.latitude, newValue.longitude];
-
-              //update data
-              //var newData = getNewData(0, location, radius)
-              //var heatMap_newData = JSON.parse(newData);
-              //map.overlays.clear();
-              //var heatMapOverlay = createHeatMapOverlay(heatMap_newData,heatmap_type);
-              //map.overlays.add(heatMapOverlay);
-          };
-
-          var zoomObserver = function (obj, key, newValue, oldValue) {
-            //set new radius
-            global_zoom_level = newValue;
-            global_height = global_map.getViewBounds().getHeight();
-            global_width = global_map.getViewBounds().getWidth();
-            console.log(global_height);
-            console.log(global_width);
-            if (newValue > oldValue) {
-              //applyLocationData(updateData,global_lat,global_long,global_zoom_level,global_ts);
-              applyLocationData(updateData);
-            }
-          };
-
-          // Template of all map properties we would like to observe
-          var observers = {
-            "center": dragObserver,
-            "zoomLevel": zoomObserver,
-          };
-
-
-          // Again we use a simple loop to install all observers at once
-          for (var mapProperty in observers)
-            global_map.addObserver(mapProperty, observers[mapProperty]);
-        };
-
-        var sliderChangeFunction = function(sliderValue) {
-          // Get Data for specific time
-          global_slider_value = sliderValue;
-          var heatmap_data_at_time = heatmap_data_for_time(global_slider_value);
-          renderHeatMap(heatmap_data_at_time);
-        };
-
-        var heatmap_data_for_time = function(hour) {
-          return global_data[hour.toString()];
-        }
-
-        var slider = createTimeSlider("sliderContainer", sliderChangeFunction ,null);
-
-        var updateData = function(json_str) {
-          console.log("yo");
-          global_data = JSON.parse(json_str);
-          var heatmap_data_at_time = heatmap_data_for_time(global_slider_value);
-          renderHeatMap(heatmap_data_at_time);
-        }
-
-        // Initiialization
-        //applyLocationData(initializeGlobalData,global_lat,global_long,global_zoom_level,global_ts);
-        applyLocationData(initializeGlobalData);
-
-        
-
+        map = new TrendMap("mapContainer","sliderContainer",center_object,starting_zoom_level);
+       
       });
     </script>
   </body>
