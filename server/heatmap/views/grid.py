@@ -1,6 +1,9 @@
 from heatmap.views.normalization import *
 from heatmap.views.requestdict import *
 from heatmap.models import *
+from instagram.models import *
+from flickr.models import *
+from twitter.models import *
 from django.http import HttpResponse
 from collections import OrderedDict
 import json
