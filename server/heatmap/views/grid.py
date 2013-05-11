@@ -9,12 +9,16 @@ import time
 from django.db.models import Q
 from math import *
 
-def add_grid_location_to_list(location_list, gridified_lat, gridified_lon):
+def add_grid_location_to_list(location_list, gridified_lat, gridified_lon, source=None):
 	for location in location_list:
 		if location["latitude"] == gridified_lat and location["longitude"] == gridified_lon:
 			location["count"] = location["count"] + 1
+			if source is not None:
+				location[source] = location[source] + 1
 			return
-	location_list.append({"latitude" : gridified_lat, "longitude" : gridified_lon, "count" : 1})	
+	location = {"latitude" : gridified_lat, "longitude" : gridified_lon, "count" : 1, "instagram" : 0, "flickr" : 0, "twitter" : 0}
+	location[source] = 1
+	location_list.append(location)
 
 def grid_search(request, resolution, callback=None):
 	locations = Location.objects
@@ -36,11 +40,11 @@ def grid_search(request, resolution, callback=None):
 			response.append(timestamp_response)
 			timestamp_response["timestamp"] = n_timestamp_str
 			timestamp_response["locations"] = []
-			add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon)
+			add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon, location.source)
 			prev_n_timestamp_str = n_timestamp_str
 		else:
 			prev_timestamp_response = response[-1]
-			add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon)
+			add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon, location.source)
 
 	json_response["response"] = response
 	if callback is None:
@@ -91,11 +95,11 @@ def grid_search_region(request, resolution, lat, lon, latrange, lonrange, callba
 				response.append(timestamp_response)
 				timestamp_response["timestamp"] = n_timestamp_str
 				timestamp_response["locations"] = []
-				add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon)
+				add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon, location.source)
 				prev_n_timestamp_str = n_timestamp_str
 			else:
 				prev_timestamp_response = response[-1]
-				add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon)
+				add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon, location.source)
 
 	json_response["response"] = response
 	if callback is None:
@@ -152,11 +156,11 @@ def grid_search_region_to_now(request, resolution, lat, lon, latrange, lonrange,
 					response.append(timestamp_response)
 					timestamp_response["timestamp"] = n_timestamp_str
 					timestamp_response["locations"] = []
-					add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon)
+					add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon, location.source)
 					prev_n_timestamp_str = n_timestamp_str
 				else:
 					prev_timestamp_response = response[-1]
-					add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon)
+					add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon, location.source)
 
 	json_response["response"] = response
 	if callback is None:
@@ -216,11 +220,11 @@ def grid_search_region_in_timeframe(request, resolution, lat, lon, latrange, lon
 					response.append(timestamp_response)
 					timestamp_response["timestamp"] = n_timestamp_str
 					timestamp_response["locations"] = []
-					add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon)
+					add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon, location.source)
 					prev_n_timestamp_str = n_timestamp_str
 				else:
 					prev_timestamp_response = response[-1]
-					add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon)
+					add_grid_location_to_list(prev_timestamp_response["locations"], gridified_lat, gridified_lon, location.source)
 
 	json_response["response"] = response
 	if callback is None:
