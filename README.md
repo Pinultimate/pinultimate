@@ -7,7 +7,7 @@ PINULTIMATE
 
 ## SSH to EC2:
 ```bash
-ssh deploy@pinultimate.net
+ssh deploy@api.pinultimate.net
 ```
 password: pinultimate
 
@@ -15,7 +15,7 @@ password: pinultimate
 First time setup:
 ```bash
 git remote remove deploy
-git remote add deploy ssh://deploy@pinultimate.net/home/deploy/pinultimate.git
+git remote add deploy ssh://deploy@api.pinultimate.net/home/deploy/pinultimate.git
 ```
 Then, whenever you want to deploy:
 ```bash
