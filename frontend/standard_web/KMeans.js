@@ -1,6 +1,6 @@
 
 var ClusteringProcessor = function(data) {
-	var K = 10;
+	var K = 15;
 	var clusters = [];
 
 	var ClusterCenter = function(latitude, longitude) {

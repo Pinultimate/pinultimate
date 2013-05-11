@@ -1,5 +1,5 @@
 //var SERVER_URL = "http://localhost:8000/";
-var SERVER_URL = "http://www.pinultimate.net/";
+var SERVER_URL = "http://api.pinultimate.net/";
 var HEATMAP_SEARCH_URL = "heatmap/"
 var CALLBACK_URL = "&callback=?";
 
@@ -14,49 +14,15 @@ var CALLBACK_URL = "&callback=?";
 //		);
 // Warning: Notice that the "timestamp" in the string output is not wrapped with quotation marks
 // i.e. 2013-03-14 15:00:00 instead of "2013-03-14 15:00:00"
-var applyLocationData = function(callback_func, lat, lon, rad, ts, discard_hour, discard_minute) {
-	var coord_url = "";
-	var rad_url = "";
-	if ((typeof lat !== 'undefined') && (typeof lon !== 'undefined') && (typeof rad !== 'undefined')) {
-		coord_url = "coord/"+lat+"/"+lon+"/";
-		rad_url = "rad/"+rad+"/";
-	}
-
-	if (typeof discard_hour === 'undefined') {
-		discard_hour = false;
-	}
-	if (typeof discard_minute === 'undefined') {
-		discard_minute = false;
-	}
-	var ts_url = "";
-	if (typeof ts !== 'undefined') {
-		ts_url = "ts/"+ts.getYear()+"/"+ts.getMonth()+"/"+ts.getDate()+"/";
-		if (!discard_hour) {
-			ts_url += ts.getHours()+"/";
-			if (!discard_minute) {
-				ts_url += ts.getMinutes()+"/";
-			}
-		}
-	}
-	$.getJSON(SERVER_URL+HEATMAP_SEARCH_URL+coord_url+rad_url+ts_url+CALLBACK_URL,
-		function(response) {
-			// returns a string representation of the JSON object
-			var response_str = stringifyLocationJSON(response);
-
-			if ((typeof callback_func !== 'undefined') && (jQuery.isFunction(callback_func))) {
-				callback_func(response_str);
-			}
-	    }
-    );
-}
 
 var getGridLocationData = function(callback_func, lat_center, long_center, lat_range, long_range, resolution) {
   var data_url = SERVER_URL + HEATMAP_SEARCH_URL;
+  console.log("SERVER_URL: " + SERVER_URL)
   data_url += "resolution/" + resolution + "/";
   data_url += "search/center/" + lat_center + "/" + long_center + "/";
   data_url += "region/" + lat_range + "/" + long_range + "/";
   data_url += CALLBACK_URL; // Need CALLBACK_URL For Jsonp
-
+  console.log(data_url);
   $.getJSON(data_url)
     .done(function(response) {
       // Once request is recieved, call the call_back function
@@ -64,41 +30,6 @@ var getGridLocationData = function(callback_func, lat_center, long_center, lat_r
     }).fail(function() {
       console.log("Getting grid data failed"); 
     });
-}
-
-var applyLocationDataReg = function(callback_func, lat, lon, latrange, lonrange, ts, discard_hour, discard_minute) {
-	var coord_url = "";
-	var reg_url = "";
-	if ((typeof lat !== 'undefined') && (typeof lon !== 'undefined') && (typeof latrange !== 'undefined') && (typeof lonrange !== 'undefined')) {
-		coord_url = "coord/"+lat+"/"+lon+"/";
-		reg_url = "reg/"+latrange+"/"+lonrange+"/";
-	}
-
-	if (typeof discard_hour === 'undefined') {
-		discard_hour = false;
-	}
-	if (typeof discard_minute === 'undefined') {
-		discard_minute = false;
-	}
-	var ts_url = "";
-	if (typeof ts !== 'undefined') {
-		ts_url = "ts/"+ts.getYear()+"/"+ts.getMonth()+"/"+ts.getDate()+"/";
-		if (!discard_hour) {
-			ts_url += ts.getHours()+"/";
-			if (!discard_minute) {
-				ts_url += ts.getMinutes()+"/";
-			}
-		}
-	}
-	$.getJSON(SERVER_URL+HEATMAP_SEARCH_URL+coord_url+rad_url+ts_url+CALLBACK_URL,
-		function(response) {
-			// returns a string representation of the JSON object
-			var response_str = stringifyLocationJSON(response);
-			if ((typeof callback_func !== 'undefined') && (jQuery.isFunction(callback_func))) {
-				callback_func(response_str);
-			}
-	    }
-    );
 }
 
 var stringifyLocationJSON = function(response) {

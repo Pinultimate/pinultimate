@@ -14,7 +14,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.fetched_data_long_bottom = null;
 
   this.RESOLUTION_DIVISIONS = 25;
-  this.SERVER_URL = "http://www.pinultimate.net/";
+  this.SERVER_URL = "http://api.pinultimate.net/";
   this.HEATMAP_SEARCH_URL = "heatmap/"
   this.CALLBACK_URL = "&callback=?";
 
@@ -41,7 +41,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
       center: center_object, 
         });
 
-    map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
+    map.set("baseMapType", nokia.maps.map.Display.NORMAL);
     addListenersAndObservers(map);
 
     return map;
@@ -98,9 +98,9 @@ TrendMap.prototype.potentialDataUpdate = function(force)
 {
   var map = this.map;
   console.log("Checking if new data needs to be grabbed...")
-  data_bounds_width = map.getViewBounds().getWidth();
+  data_bounds_width = map.getViewBounds().getWidth()*2;
   console.log("Data bounds width: " + data_bounds_width.toString());
-  data_bounds_height = map.getViewBounds().getHeight();
+  data_bounds_height = map.getViewBounds().getHeight()*2;
   resolution = map.getViewBounds().getWidth()/this.RESOLUTION_DIVISIONS;
   map_lat_left = map.center.latitude - map.getViewBounds().getWidth()/2;
   map_lat_right = map.center.latitude + map.getViewBounds().getWidth()/2;
@@ -213,15 +213,46 @@ TrendMap.prototype.getGridLocationData = function(callback_func, lat_center, lon
   data_url += "resolution/" + resolution + "/";
   data_url += "search/center/" + lat_center + "/" + long_center + "/";
   data_url += "region/" + lat_range + "/" + long_range + "/";
+
+  var date = new Date();
+  
+  var today_year = date.getUTCFullYear();
+  var today_month = date.getUTCMonth()+1;
+  var today_day = date.getUTCDate();
+  var today_hour = date.getUTCHours();
+
+  var today_milliseconds = Date.UTC(today_year,today_month,today_day,today_hour);
+  var yesterday_milliseconds = today_milliseconds - (24*3600*1000); // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
+
+  console.log("Today: " + today_year.toString() + "/" + today_month.toString() + "/" + today_day.toString() + " " + today_hour.toString());
+
+  var yesterday_date = new Date(yesterday_milliseconds);
+  var yesterday_year = yesterday_date.getUTCFullYear();
+  var yesterday_month = yesterday_date.getUTCMonth();
+  var yesterday_day = yesterday_date.getUTCDate();
+  var yesterday_hour = date.getUTCHours();
+
+  data_url += "from/" + yesterday_year + "/" + yesterday_month + "/" + yesterday_day + "/" + yesterday_hour +"/";
+
+  data_url += "to/"+ today_year + "/" + today_month + "/" + today_day + "/" + today_hour + "/";
+
+  console.log("24 hours ago: " + yesterday_year.toString() + "/" + yesterday_month.toString() + "/" + yesterday_day.toString() + " " + yesterday_hour.toString());
+
   data_url += this.CALLBACK_URL; // Need CALLBACK_URL For Jsonp
+
+  
+
 
   $.getJSON(data_url)
     .done(function(response) {
+      $("#loading").hide();
       // Once request is recieved, call the call_back function
       me.updateData(response);
     }).fail(function() {
+      $("#loading").hide();
       console.log("Getting grid data failed"); 
     });
+  $("#loading").show();
 }
 
 TrendMap.prototype.setHourOffset = function(hour_offset)

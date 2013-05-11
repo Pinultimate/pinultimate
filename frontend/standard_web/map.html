@@ -18,7 +18,11 @@
     <div id="sliderContainer">    </div>
 
 
-    <div id="mapContainer"></div>
+    <div id="mapContainer">
+      <div id="loading">
+        <div id="loadingText">Loading...</div>
+      </div>
+    </div>
 
     
 
@@ -41,6 +45,8 @@
         starting_zoom_level = 13;
         starting_lat = 37.442
         starting_long = -122.14;
+
+        $("#loading").show();
 
         var center_object = [starting_lat,starting_long];
 

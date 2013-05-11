@@ -71,6 +71,7 @@ footer {
   height: 480px;
   margin: auto;
   margin-top: 25px;
+  position:relative;
 }
 
 #pageTitle {
@@ -93,4 +94,23 @@ footer {
   margin: auto;
   margin-top: 15px;
   width: 960px;
+}
+
+#loading {
+  width: 20%;
+  height: 15%;
+  top:42%;
+  left:40%;
+  margin:auto;
+  background-color: #000000;
+  color: #FFFFFF;
+  z-index: 1000;
+  position: absolute;
+  text-align: center;
+}
+
+#loadingText {
+  position: absolute;
+  top:40%;
+  left:35%;
 }
