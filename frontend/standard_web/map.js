@@ -90,7 +90,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.map = createNokiaMap(div_ID, center_object, zoom_level);
   this.potentialDataUpdate(false);
   this.slider = createTimeSlider("sliderContainer", function() {
-    console.log("Slider Moved");
+    console.log("Slider Moved. New Value: " + this.value);
   } ,null);
 };
 
