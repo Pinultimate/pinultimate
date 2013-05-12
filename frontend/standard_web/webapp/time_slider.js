@@ -11,9 +11,30 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
   me.TIMER_MILLI_SECONDS = 1000;
 
   var parentDiv = $("#"+divID);
+  
+
+  var getExactTimeLabel = function(offset) {
+    var date = new Date();
+    var hours = date.getHours();
+    time = hours + offset;
+    if (time >= 24) {
+      time -= 24;
+    }
+    if (time === 0) {
+      return "12:00 A.M.";
+    }
+    if (time < 12) {
+      return time + ":00 A.M.";
+    } else if (time > 12) {
+      return (time-12) + ":00 P.M.";
+    } else { // time === 12
+      return "12:00 PM";
+    }
+    return "Error";
+  }
 
   // Create time label
-  var timeLabel = $(document.createElement("p")).text("0:00");
+  var timeLabel = $(document.createElement("p")).text(getExactTimeLabel(0));
   timeLabel.css( {
     "margin-bottom":5,
     "text-align": "center"
@@ -23,17 +44,19 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
       min: this.MIN_VALUE,
       max: this.MAX_VALUE,
       step: this.STEP_VALUE,
+      value: this.MAX_VALUE,
       // Change is called when the slider is released and value was changed
       change: function(event, ui) {
-        timeLabel.text(slider.slider("value") + ":00");
+        timeLabel.text(getExactTimeLabel(slider.slider("value")));
         if (changeFunction) {
           var num = slider.slider("value");
+          console.log(num);
           changeFunction(num);
         }
       },
       // Slider is called whenever the slider value is changed
       slide: function(event, ui) {
-        timeLabel.text(slider.slider("value") + ":00");
+        //timeLabel.text(slider.slider("value") + ":00");
         if (slideFunction) {
           slideFunction();
         }

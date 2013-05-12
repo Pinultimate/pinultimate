@@ -89,8 +89,10 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
   this.map = createNokiaMap(div_ID, center_object, zoom_level);
   this.potentialDataUpdate(false);
-  this.slider = createTimeSlider("sliderContainer", function() {
-    console.log("Slider Moved. New Value: " + this.value);
+  this.slider = createTimeSlider("sliderContainer", function(new_value) {
+    me.hour_offset = 23-new_value;
+    console.log("Slider Moved. New Value: " + new_value);
+    me.updateCurrentData();
   } ,null);
 };
 
@@ -108,7 +110,6 @@ TrendMap.prototype.potentialDataUpdate = function(force)
   map_long_top = map.center.longitude + map.getViewBounds().getHeight()/2;
   if (force || this.firstFetch() || this.newAreaNotCached(map_lat_left,map_lat_right,map_long_top,map_long_bottom)) 
   {
-    this.removeAllMarkers();
     this.getGridLocationData(this.updateData,map.center.latitude,map.center.longitude,data_bounds_width,data_bounds_height,resolution);
     console.log("New data must be grabbed")
     this.fetched_data_lat_left = map.center.latitude - data_bounds_width/2;
@@ -190,7 +191,49 @@ TrendMap.prototype.makeMarkers = function(clustered_data)
 
 TrendMap.prototype.updateData = function(json_object) 
 {
-  this.fetched_data = json_object.response;
+  var me = this;
+  var parseHourFromTimeStamp = function(timestamp_string)
+  {
+    var index_of_space = timestamp_string.indexOf(" ");
+    var index_of_colon = timestamp_string.indexOf(":");
+    //console.log("Index of Space: " + index_of_space);
+    //console.log("Index of Colon: " + index_of_colon);
+    hour_string = timestamp_string.substring(index_of_space+1,index_of_colon);
+    //console.log("Hour String: " + hour_string);
+    // parseInt doesn't play nicely if the string is has a zero as the first character
+    if (hour_string[0] === "0") {
+      hour_string = hour_string[1];
+    }
+    return parseInt(hour_string);
+  }
+
+  // Takes JSON response and creates an array of objects for TrendMap to work with
+  var translateResponse = function(json_object)
+  {
+    var array_of_time_data = json_object.response;
+    var translated_data = new Array();
+    for (var i=0; i < 24; i++) {
+      translated_data.push({"locations":[]});
+    }
+    var current_hour = new Date().getHours();
+    var data_index = array_of_time_data.length-1;
+    for (var i=23; i >= 0; i--) {
+      data_hour = parseHourFromTimeStamp(array_of_time_data[data_index].timestamp);
+      console.log("Current Hour: "+ current_hour);
+      console.log("Data Hour: " + data_hour)
+      if (data_hour === current_hour){
+        translated_data[i] = array_of_time_data[data_index];
+        data_index--;
+      }
+      current_hour--;
+      if (current_hour < 0) {
+        current_hour = 23;
+      }
+    }
+    return translated_data
+  }
+  
+  this.fetched_data = translateResponse(json_object);
   if (this.fetched_data.length-1-this.hour_offset >= 0) 
   {
     this.updateCurrentData();
@@ -201,9 +244,11 @@ TrendMap.prototype.updateData = function(json_object)
 
 TrendMap.prototype.updateCurrentData = function()
 {
+  console.log(this.fetched_data);
   this.current_data = this.fetched_data[this.fetched_data.length-1-this.hour_offset];
   //console.log(this.current_data);
   var clustered_data = ClusteringProcessor(this.current_data.locations);
+  this.removeAllMarkers();
   this.makeMarkers(clustered_data);
 }
 
@@ -216,10 +261,10 @@ TrendMap.prototype.getGridLocationData = function(callback_func, lat_center, lon
 
   var date = new Date();
   
-  var today_year = date.getUTCFullYear();
-  var today_month = date.getUTCMonth()+1;
-  var today_day = date.getUTCDate();
-  var today_hour = date.getUTCHours();
+  var today_year = date.getFullYear();
+  var today_month = date.getMonth()+1;
+  var today_day = date.getDate();
+  var today_hour = date.getHours();
 
   var today_milliseconds = Date.UTC(today_year,today_month,today_day,today_hour);
   var yesterday_milliseconds = today_milliseconds - (24*3600*1000); // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
@@ -227,10 +272,10 @@ TrendMap.prototype.getGridLocationData = function(callback_func, lat_center, lon
   console.log("Today: " + today_year.toString() + "/" + today_month.toString() + "/" + today_day.toString() + " " + today_hour.toString());
 
   var yesterday_date = new Date(yesterday_milliseconds);
-  var yesterday_year = yesterday_date.getUTCFullYear();
-  var yesterday_month = yesterday_date.getUTCMonth();
-  var yesterday_day = yesterday_date.getUTCDate();
-  var yesterday_hour = date.getUTCHours();
+  var yesterday_year = yesterday_date.getFullYear();
+  var yesterday_month = yesterday_date.getMonth();
+  var yesterday_day = yesterday_date.getDate();
+  var yesterday_hour = date.getHours();
 
   data_url += "from/" + yesterday_year + "/" + yesterday_month + "/" + yesterday_day + "/" + yesterday_hour +"/";
 
