@@ -7,4 +7,5 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     url(r'^heatmap/', include('heatmap.urls')),
     url(r'^instagram/subscription/', 'instagram.views.subscription'),
+    url(r'^webapp/', include('webapp.urls')),
 )
