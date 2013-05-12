@@ -14,6 +14,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.fetched_data_long_bottom = null;
 
   this.RESOLUTION_DIVISIONS = 25;
+  this.reso = 0;
   this.SERVER_URL = "http://api.pinultimate.net/";
   this.HEATMAP_SEARCH_URL = "heatmap/"
   this.CALLBACK_URL = "&callback=?";
@@ -104,6 +105,7 @@ TrendMap.prototype.potentialDataUpdate = function(force)
   console.log("Data bounds width: " + data_bounds_width.toString());
   data_bounds_height = map.getViewBounds().getHeight()*2;
   resolution = map.getViewBounds().getWidth()/this.RESOLUTION_DIVISIONS;
+  this.reso = resolution;
   map_lat_left = map.center.latitude - map.getViewBounds().getWidth()/2;
   map_lat_right = map.center.latitude + map.getViewBounds().getWidth()/2;
   map_long_bottom = map.center.longitude - map.getViewBounds().getHeight()/2;
@@ -122,10 +124,16 @@ TrendMap.prototype.potentialDataUpdate = function(force)
 TrendMap.prototype.addMarker = function(text,lat,long, radius) 
 {
   var iconSVG = 
-  '<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">' +
-  '<circle stroke="__ACCENTCOLOR__" fill="__MAINCOLOR__" cx="16" cy="16" r="16" />' +
-  '<text x="16" y="20" font-size="10pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
+  '<svg width="__WIDTH__" height="__WIDTH__" xmlns="http://www.w3.org/2000/svg">' +
+  '<circle stroke="__ACCENTCOLOR__" fill="__MAINCOLOR__" cx="__RADIUS__" cy="__RADIUS__" r="__RADIUS__" />' +
+  '<text x="__RADIUS__" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
   '</svg>';
+
+  circle_radius = 16;
+  if (radius != 0) {
+    circle_radius *= radius / this.reso;
+  }
+
   svgParser = new nokia.maps.gfx.SvgParser();
   // Helper function that allows us to easily set the text and color of our SVG marker.
   createIcon = function (text, mainColor, accentColor) {
@@ -133,7 +141,10 @@ TrendMap.prototype.addMarker = function(text,lat,long, radius)
       .replace(/__TEXTCONTENT__/g, text)
       .replace(/__TEXT__/g, text)
       .replace(/__ACCENTCOLOR__/g, accentColor)
-      .replace(/__RADIUS__/g, radius) // Currently doesn't do anything, FIX
+      .replace(/__RADIUS__/g, circle_radius) 
+      .replace(/__TEXTHEIGHT__/g, circle_radius*1.35) 
+      .replace(/__FONT__/g, circle_radius*0.625) 
+      .replace(/__WIDTH__/g, circle_radius*2) // Currently doesn't do anything, FIX
       .replace(/__MAINCOLOR__/g, mainColor);
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
