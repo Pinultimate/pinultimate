@@ -1,6 +1,5 @@
 
 var ClusteringProcessor = function(data) {
-	var K = 15;
 	var clusters = [];
 
 	var ClusterCenter = function(latitude, longitude) {
@@ -240,6 +239,7 @@ var ClusteringProcessor = function(data) {
 	}
 
 	var cluster = function() {
+		K = Math.floor(Math.sqrt(data.length/2)) + 10;
 		if (data.length > K) {
 			var centers = initClusters();
 			centers = runKMeans(centers, data);
