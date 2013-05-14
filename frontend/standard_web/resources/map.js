@@ -68,11 +68,8 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
     var zoomObserver = function (obj, key, newValue, oldValue) {
       //set new radius
-      global_zoom_level = newValue;
-      global_height = map.getViewBounds().getHeight();
-      global_width = map.getViewBounds().getWidth();
       if (newValue < oldValue) {
-        me.potentialDataUpdate(false);
+        me.potentialDataUpdate(true);
       } else {
         me.potentialDataUpdate(true);
       }
@@ -104,9 +101,9 @@ TrendMap.prototype.potentialDataUpdate = function(force)
 {
   var map = this.map;
   console.log("Checking if new data needs to be grabbed...")
-  data_bounds_width = map.getViewBounds().getWidth()*2;
+  data_bounds_width = map.getViewBounds().getWidth()*1.0;
   console.log("Data bounds width: " + data_bounds_width.toString());
-  data_bounds_height = map.getViewBounds().getHeight()*2;
+  data_bounds_height = map.getViewBounds().getHeight()*1.0;
   resolution = map.getViewBounds().getWidth()/this.RESOLUTION_DIVISIONS;
   this.reso = resolution;
   map_lat_left = map.center.latitude - map.getViewBounds().getWidth()/2;
@@ -134,16 +131,19 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
   '<text x="__RADIUS__" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
   '</svg>';
 
-  circle_radius = 16;
-  if (radius != 0) {
+  console.log("Radius: " + radius);
+  var circle_radius = 16;
+  if (radius !== undefined && radius !== 0) {
+    console.log("I'm in!");
     circle_radius *= radius / this.reso;
     if (circle_radius < 8) circle_radius = 8;
   }
+  console.log("Circle Radius: " + circle_radius);
 
   var level = Math.floor((this.countMax - this.countMin) / 5); 
   var mainColor;
   var shadowColor; 
-  var color = [{"Center": "#FF04F0", "Shadow": "#FF07F0"}, {"Center": "#FF0000", "Shadow": "#FF3200"}, {"Center": "#FFD700", "Shadow": "#FFFF00"}, {"Center": "#43A51B", "Shadow": "#43A51B"}, {"Center": "#0054ff", "Shadow": "#0084ff"}];
+  var color = [{"Center": "#FF0000", "Shadow": "#FF3200"},{"Center": "#FF04F0", "Shadow": "#FF07F0"}, {"Center": "#FFD700", "Shadow": "#FFFF00"}, {"Center": "#43A51B", "Shadow": "#43A51B"}, {"Center": "#0054ff", "Shadow": "#0084ff"}];
   var mainColor = color[2].Center;;
   var shadowColor = color[2].Center;
   console.log(count);
@@ -164,7 +164,8 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
 
   svgParser = new nokia.maps.gfx.SvgParser();
   // Helper function that allows us to easily set the text and color of our SVG marker.
-  createIcon = function (text, mainColor, accentColor, secondColor, opacity) {
+  var createIcon = function (text, mainColor, accentColor, secondColor, opacity, circle_radius) {
+    console.log("Circle Radius in createIcon: " + circle_radius);
     var svg = iconSVG
       .replace(/__OPACITY__/g, opacity)
       .replace(/__TEXTCONTENT__/g, text)
@@ -182,8 +183,8 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
 
-  var markerIcon = createIcon(text, mainColor, "#FFF", shadowColor, 0);
-  var markerIconOnHover = createIcon(text, mainColor, "#FFF", shadowColor, 0.3);
+  var markerIcon = createIcon(text, mainColor, "#FFF", shadowColor, 0, circle_radius);
+  var markerIconOnHover = createIcon(text, mainColor, "#FFF", shadowColor, 0.3, circle_radius);
 
   var marker = new nokia.maps.map.Marker([lat, long], {icon: markerIcon});
 
@@ -320,9 +321,12 @@ TrendMap.prototype.updateCurrentData = function()
   console.log(this.fetched_data);
   this.current_data = this.fetched_data[this.fetched_data.length-1-this.hour_offset];
   //console.log(this.current_data);
-  var clustered_data = ClusteringProcessor(this.current_data.locations);
+  var data_to_display = this.current_data.locations;
+  //if (data_to_display.length > 50) {
+  data_to_display = ClusteringProcessor(data_to_display);
+  //}
   this.removeAllMarkers();
-  this.makeMarkers(clustered_data);
+  this.makeMarkers(data_to_display);
 }
 
 TrendMap.prototype.getGridLocationData = function(callback_func, lat_center, long_center, lat_range, long_range, resolution) {
