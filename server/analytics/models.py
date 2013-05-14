@@ -1,12 +1,10 @@
 from mongoengine import DynamicDocument, DateTimeField, StringField, IntField, ReferenceField
 
 class User(DynamicDocument):
-    email = StringField(required=True)
-    first_name = StringField(max_length=50)
-    last_name = StringField(max_length=50)
+    username = StringField(required=True, max_length=15)
 
     def __unicode__(self):
-        return self.email
+        return self.username
 
     def get_all_sessions(self):
         return UsageSession.objects(user=self)
@@ -28,8 +26,9 @@ class User(DynamicDocument):
             taps = taps + session.cluster_taps
         return taps
 
-class UsageSession(DynamicDocument):
-    user = ReferenceField(User)
+class Session(DynamicDocument):
+    #user = ReferenceField(User)
+    username = StringField(required=True)
     login = DateTimeField()
     logout = DateTimeField()
     cluster_taps = IntField()
