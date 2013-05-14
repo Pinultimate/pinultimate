@@ -5,4 +5,4 @@
 *.sw*
 #ignore *.pyc files
 *.pyc
-#*#
+*#
