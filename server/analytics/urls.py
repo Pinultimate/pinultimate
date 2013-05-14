@@ -1,6 +1,6 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('analytics.views',
-	url(r'tap/(?P<user_id>\d+)/$', 'tap'),
-	url(r'update/(?P<contact_id>\d+)/$', 'update'),
+	url(r'^tap/$', 'tap'),
+	url(r'^update/$', 'update'),
 )
