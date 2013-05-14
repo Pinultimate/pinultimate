@@ -10,6 +10,9 @@ WEBAPP_DIR='/home/deploy/pinultimate/frontend/standard_web/'
 DATA_SUBDIR='resources/'
 
 def index(request):
+    if not request.session.exists(request.session.session_key):
+        request.session.create()
+
     web_user = WebUser.objects.get(session=request.session)
     if web_user is not None:
         web_user = WebUser(session=request.session)
