@@ -1,13 +1,13 @@
-from django.db import models as m
+from django.db import models
 from django.contrib.sessions.models import Session
 from datetime import datetime
 
-class WebUser(Session):
-    session = m.ForeignKey(Session)
-    total_taps = m.IntegerField(default=0)
-    total_seconds_spent = m.IntegerField(default=0)
-    total_visits = m.IntegerField(default=0)
-    last_updated = m.DateTimeField(auto_now_add=True)
+class WebUser(models.Model):
+    session = models.ForeignKey(Session)
+    total_taps = models.IntegerField(default=0)
+    total_seconds_spent = models.IntegerField(default=0)
+    total_visits = models.IntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return self.session
