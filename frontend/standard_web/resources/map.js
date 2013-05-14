@@ -8,6 +8,9 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
   this.hour_offset = 0;
   this.reso = 0;
+  this.countMax = 0;
+  this.countMin = 0;  
+  this.countMean = 0;
 
   this.fetched_data_lat_left = null;
   this.fetched_data_lat_right = null;
@@ -121,22 +124,34 @@ TrendMap.prototype.potentialDataUpdate = function(force)
   }
 };
 
-TrendMap.prototype.addMarker = function(text,lat,long, radius) 
+TrendMap.prototype.addMarker = function(count,lat,long, radius) 
 {
+  text = count.toString();
   var iconSVG = 
   '<svg width="__WIDTH__" height="__WIDTH__" xmlns="http://www.w3.org/2000/svg">' +
-  '<circle stroke="__ACCENTCOLOR__" fill="__MAINCOLOR__" cx="__RADIUS__" cy="__RADIUS__" r="__RADIUS__" />' +
+  '<circle stroke="__SECONDCOLOR__" fill="__SECONDCOLOR__" cx="__X__" cy="__Y__" r="__RADIUS2__" opacity=".3"/>' +
+  '<circle stroke="__MAINCOLOR__" fill="__MAINCOLOR__" cx="__RADIUS__" cy="__RADIUS__" r="__RADIUS__" />' +
   '<text x="__RADIUS__" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
-   '</svg>';
+  '</svg>';
+
+  var shadowSVG = 
+  '<svg width="__WIDTH__" height="__WIDTH__" xmlns="http://www.w3.org/2000/svg">' +
+  '<circle stroke="__ACCENTCOLOR__" fill="__MAINCOLOR__" cx="__RADIUS__" cy="__RADIUS__" r="__RADIUS__" /></svg>';
+
 
   circle_radius = 16;
   if (radius != 0) {
     circle_radius *= radius / this.reso;
+    if (circle_radius < 8) circle_radius = 8;
   }
+
+  var level; 
+  var color = [];
+
 
   svgParser = new nokia.maps.gfx.SvgParser();
   // Helper function that allows us to easily set the text and color of our SVG marker.
-  createIcon = function (text, mainColor, accentColor) {
+  createIcon = function (text, mainColor, accentColor, secondColor) {
     var svg = iconSVG
       .replace(/__TEXTCONTENT__/g, text)
       .replace(/__TEXT__/g, text)
@@ -145,11 +160,27 @@ TrendMap.prototype.addMarker = function(text,lat,long, radius)
       .replace(/__TEXTHEIGHT__/g, circle_radius*1.35) 
       .replace(/__FONT__/g, circle_radius*0.625) 
       .replace(/__WIDTH__/g, circle_radius*2)      
-      .replace(/__MAINCOLOR__/g, mainColor);
+      .replace(/__MAINCOLOR__/g, mainColor)
+      .replace(/__SECONDCOLOR__/g, secondColor)
+      .replace(/__X__/g, circle_radius)
+      .replace(/__Y__/g, circle_radius)
+      .replace(/__RADIUS2__/g, circle_radius*1.5)
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
-  var markerIcon = createIcon(text, "#43A51B", "#FFF");
+
+  createShadow = function (mainColor, accentColor) {
+    var svg = shadowSVG
+      .replace(/__ACCENTCOLOR__/g, accentColor)
+      .replace(/__RADIUS__/g, circle_radius*1.5) 
+      .replace(/__WIDTH__/g, circle_radius*3)      
+      .replace(/__MAINCOLOR__/g, mainColor);
+    return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
+  }
+  var markerIcon = createIcon(text, "#43A51B", "#FFF", "#b0ff00");
+  
+
   var marker = new nokia.maps.map.Marker([lat, long], {icon: markerIcon});
+
   this.map.objects.add(marker);
 };
 
@@ -193,10 +224,21 @@ TrendMap.prototype.newAreaNotCached = function(new_lat_left,new_lat_right,new_lo
 };
 
 TrendMap.prototype.makeMarkers = function(clustered_data)
-{
+{  
+  this.countMin = clustered_data[0].count;
+  this.countMax = this.countMin;
+  var sum  = 0;;
+  for (var i=1; i < clustered_data.length; i++) 
+  { 
+    sum += clustered_data[i].count;
+    if (clustered_data[i].count > this.countMax) this.countMax = clustered_data[i].count;
+    if (clustered_data[i].count < this.countMin) this.countMin = clustered_data[i].count;
+  }
+  this.countMean = sum / clustered_data.length;
+
   for (var i=0; i < clustered_data.length; i++) 
-  {
-    this.addMarker(clustered_data[i].count.toString(),clustered_data[i].latitude,clustered_data[i].longitude,clustered_data[i].radius);
+  {  
+    this.addMarker(clustered_data[i].count,clustered_data[i].latitude,clustered_data[i].longitude,clustered_data[i].radius);
   }
 };
 
