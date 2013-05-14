@@ -1,9 +1,7 @@
 from django.conf.urls import patterns, include, url
 
-analytics_urlpatterns = patterns('analytics.views.user',
-	url(r'new_user/$', 'new_user'),
-)
-
-urlpatterns = patterns('',
-	url(r'', include(analytics_urlpatterns)),
+urlpatterns = patterns('analytics.views',
+	url(r'user/()/login/$', 'user_login'),
+	url(r'user/()/logout/$', 'user_logout'),
+	url(r'user/()/touch/$', 'user_touch'),
 )
