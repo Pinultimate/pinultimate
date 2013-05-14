@@ -8,14 +8,19 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
   me.MAX_VALUE = 23;
   me.MIN_VALUE = 0;
   me.STEP_VALUE = 1;
-  me.TIMER_MILLI_SECONDS = 1000;
+  me.TIMER_INTERVAL_MILLI = 3000;
 
   var parentDiv = $("#"+divID);
   
-
   var getExactTimeLabel = function(offset) {
     var date = new Date();
     var hours = date.getHours();
+
+    // Get Appropriate Day
+    var month = date.getMonth()+1;
+    var day = date.getDate();
+    var month_day_formatted = month + "/" + day;
+    var full_time_string = month_day_formatted;
     time = hours + offset;
     if (time >= 24) {
       time -= 24;
@@ -75,6 +80,11 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
       playButton.html("play");
     } else {
       //Start Timer
+      var slider_value = slider.slider("value");
+      if (slider_value >= MAX_VALUE) {
+        // Start Playback
+        slider.slider("value",0);
+      }
       playButton.text("pause");
       me.timerInterval = setInterval(function() {
         console.log("timer set");
@@ -85,7 +95,7 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
           playButton.html("play");
         }
         slider.slider("value",value+1);
-      },me.TIMER_MILLI_SECONDS);
+      },me.TIMER_INTERVAL_MILLI);
     }
   });
 

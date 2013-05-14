@@ -11,11 +11,20 @@ var ClusteringProcessor = function(data) {
 	}
 
 	ClusterCenter.prototype.getCluster = function() {
-		var count = 1;
+		// Count was originally set to 1 here, changed it to 0.  Is this alright, Caiyao? --Kyle
+		var count = 0;
+		// Count individual social media contributions
+		var twitter_count = 0;
+		var instagram_count = 0;
+		var flickr_count = 0;
+
 		var length = this.locations.length;
 		var radius = 0;
 		for (var i = 0; i < length; i++) {
 			count += this.locations[i]['count'];
+			twitter_count += this.locations[i]['twitter'];
+			instagram_count += this.locations[i]['instagram'];
+			flickr_count += this.locations[i]['flickr'];
 			var dist = Math.sqrt(this.locations[i]['distance']);
 			if (dist < 0.00001) {
 				radius += 0;
@@ -23,7 +32,7 @@ var ClusteringProcessor = function(data) {
 				radius += dist;
 			}
 		}		
-		return {"latitude": this.latitude, "longitude": this.longitude, "count": count, "radius": radius / length};
+		return {"latitude": this.latitude, "longitude": this.longitude, "count": count, "radius": radius / length, "twitter": twitter_count, "instagram": instagram_count, "flickr": flickr_count};
 	}
 
 	ClusterCenter.prototype.clearLocation = function() {
@@ -248,7 +257,7 @@ var ClusteringProcessor = function(data) {
 		} else {
 			var DEFAULT_RADIUS = 0;
 			for (var i = 0; i < data.length; i++) {
-				var center = {"latitude": data[i]['latitude'], "longitude": data[i]['longitude'], "count": data[i]['count'], "radius": DEFAULT_RADIUS};
+				var center = {"latitude": data[i]['latitude'], "longitude": data[i]['longitude'], "count": data[i]['count'], "radius": DEFAULT_RADIUS, "twitter": data[i]['twitter'],"instagram": data[i]['instagram'], "flickr":data[i]['flickr']};
 				clusters.push(center);
 			}
 		}

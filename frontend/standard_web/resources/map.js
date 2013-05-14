@@ -12,6 +12,9 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.countMin = 0;  
   this.countMean = 0;
 
+  this.DEFAULT_CLUSTER_RADIUS = 16; // in px
+  this.MIN_CLUSTER_RADIUS = 8;
+
   this.fetched_data_lat_left = null;
   this.fetched_data_lat_right = null;
   this.fetched_data_long_top = null;
@@ -21,8 +24,19 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.SERVER_URL = "http://api.pinultimate.net/";
   this.HEATMAP_SEARCH_URL = "heatmap/"
   this.CALLBACK_URL = "&callback=?";
+  this.ANALYTICS_URL = this.SERVER_URL+ "analytics/";
+  this.UPDATE_TIME_INTERVAL = 15000;
 
-  this.ANALYTICS_URL = "http://analytics.pinultimate.net/"
+  this.MIN_DATA_POINTS_TO_CLUSTER = 20;
+
+  setInterval(function() {
+    var update_user_time_url = me.ANALYTICS_URL + "update/";
+    $.post(update_user_time_url).done(function() {
+      console.log("User time update success");
+    }).fail(function() {
+      console.log("User time update failure");
+    });
+  }, me.UPDATE_TIME_INTERVAL);
 
   var createNokiaMap = function(div_ID, center_object, zoom_level)
   {
@@ -105,7 +119,6 @@ TrendMap.prototype.potentialDataUpdate = function(force)
   var map = this.map;
   console.log("Checking if new data needs to be grabbed...")
   data_bounds_width = map.getViewBounds().getWidth()*1.0;
-  console.log("Data bounds width: " + data_bounds_width.toString());
   data_bounds_height = map.getViewBounds().getHeight()*1.0;
   resolution = map.getViewBounds().getWidth()/this.RESOLUTION_DIVISIONS;
   this.reso = resolution;
@@ -126,53 +139,39 @@ TrendMap.prototype.potentialDataUpdate = function(force)
 
 TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, instagram_count, flickr_count) 
 {
-  console.log("Instagram: " + instagram_count);
-  console.log("Twitter: " + twitter_count);
-  console.log("Flickr: " + flickr_count);
   var me = this;
-  text = count.toString();
-  var iconSVG = 
+  //Returns an array of colors for the drawing, array[0] is main color, array[1] is shadow color
+  var decideColors = function(count,mean_count,level)
+  {
+    var color = [{"Center": "#FF0000", "Shadow": "#FF3200"},{"Center": "#FF04F0", "Shadow": "#FF07F0"}, {"Center": "#FFD700", "Shadow": "#FFFF00"}, {"Center": "#43A51B", "Shadow": "#43A51B"}, {"Center": "#0054ff", "Shadow": "#0084ff"}];
+    var mainColor = color[2].Center;;
+    var shadowColor = color[2].Center;
+    if (count > mean_count + 2*level) {
+      mainColor = color[0].Center;
+      shadowColor = color[0].Shadow;
+    } else if (count > mean_count + level) {
+      mainColor = color[1].Center;
+      shadowColor = color[1].Shadow;
+    } else if (count < mean_count - level) {
+      mainColor = color[3].Center;
+      shadowColor = color[3].Shadow;
+    } else if (count < mean_count - 2*level) {
+      mainColor = color[4].Center;
+      shadowColor = color[4].Shadow;
+    }
+    return [mainColor,shadowColor];
+  };
+
+  //Creates and returns a marker icon
+  var createIcon = function (text, mainColor, accentColor, secondColor, opacity, circle_radius) 
+  {
+    var svgParser = new nokia.maps.gfx.SvgParser();
+    var iconSVG = 
   '<svg width="__WIDTH__" height="__WIDTH__" xmlns="http://www.w3.org/2000/svg">' +
   '<circle stroke="__SECONDCOLOR__" fill="__SECONDCOLOR__" cx="__X__" cy="__Y__" r="__RADIUS2__" opacity="__OPACITY__"/>' +
   '<circle stroke="__MAINCOLOR__" fill="__MAINCOLOR__" cx="__RADIUS__" cy="__RADIUS__" r="__RADIUS__" />' +
   '<text x="__RADIUS__" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
   '</svg>';
-
-  console.log("Radius: " + radius);
-  var circle_radius = 16;
-  if (radius !== undefined && radius !== 0) {
-    console.log("I'm in!");
-    circle_radius *= radius / this.reso;
-    if (circle_radius < 8) circle_radius = 8;
-  }
-  console.log("Circle Radius: " + circle_radius);
-
-  var level = Math.floor((this.countMax - this.countMin) / 5); 
-  var mainColor;
-  var shadowColor; 
-  var color = [{"Center": "#FF0000", "Shadow": "#FF3200"},{"Center": "#FF04F0", "Shadow": "#FF07F0"}, {"Center": "#FFD700", "Shadow": "#FFFF00"}, {"Center": "#43A51B", "Shadow": "#43A51B"}, {"Center": "#0054ff", "Shadow": "#0084ff"}];
-  var mainColor = color[2].Center;;
-  var shadowColor = color[2].Center;
-  console.log(count);
-  console.log 
-  if (count > this.countMean + 2*level) {
-    mainColor = color[0].Center;
-    shadowColor = color[0].Shadow;
-  } else if (count > this.countMean + level) {
-    mainColor = color[1].Center;
-    shadowColor = color[1].Shadow;
-  } else if (count < this.countMean - level) {
-    mainColor = color[3].Center;
-    shadowColor = color[3].Shadow;
-  } else if (count < this.countMean - 2*level) {
-    mainColor = color[4].Center;
-    shadowColor = color[4].Shadow;
-  }
-
-  svgParser = new nokia.maps.gfx.SvgParser();
-  // Helper function that allows us to easily set the text and color of our SVG marker.
-  var createIcon = function (text, mainColor, accentColor, secondColor, opacity, circle_radius) {
-    console.log("Circle Radius in createIcon: " + circle_radius);
     var svg = iconSVG
       .replace(/__OPACITY__/g, opacity)
       .replace(/__TEXTCONTENT__/g, text)
@@ -190,8 +189,22 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
 
-  var markerIcon = createIcon(text, mainColor, "#FFF", shadowColor, 0, circle_radius);
-  var markerIconOnHover = createIcon(text, mainColor, "#FFF", shadowColor, 0.3, circle_radius);
+  var count_text = count.toString();
+  
+  // Determine radius for cluster
+  var cluster_circle_radius = me.DEFAULT_CLUSTER_RADIUS;
+  if (radius !== undefined && radius !== 0) {
+    cluster_circle_radius *= radius / this.reso;
+    if (cluster_circle_radius < me.MIN_CLUSTER_RADIUS) cluster_circle_radius = me.MIN_CLUSTER_RADIUS;
+  }
+
+  // Create marker icons
+  var level = Math.floor((this.countMax - this.countMin) / 5); 
+  var colors = decideColors(count,this.countMean,level);
+  var mainColor = colors[0];
+  var shadowColor = colors[1]; 
+  var markerIcon = createIcon(count_text, mainColor, "#FFF", shadowColor, 0, cluster_circle_radius);
+  var markerIconOnHover = createIcon(count_text, mainColor, "#FFF", shadowColor, 0.3, cluster_circle_radius);
 
   var marker = new nokia.maps.map.Marker([lat, long], {icon: markerIcon});
 
@@ -208,14 +221,16 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
     //map.update(-1, 0);
   });
 
-  
+  // Define Touch Listener
   var TOUCH = nokia.maps.dom.Page.browser.touch,
   CLICK = TOUCH ? "tap" : "click";
-
-  // Click Listener for each Marker
   marker.addListener(CLICK, function(evt) {
-    me.infoBubbles.openBubble("Twitter: " + twitter_count + ", Instragam: " + instagram_count + ", Flickr: " + flickr_count,marker.coordinate);
-    $.post(this.ANALYTICS_URL+ "tap/" +me.CALLBACK_URL).done(function() {
+    // Create Info Bubble
+    var info_bubble_text = "Twitter: " + twitter_count + ", Instragam: " + instagram_count + ", Flickr: " + flickr_count;
+    // Info bubble requires a coordinate, not just a lat-long
+    me.infoBubbles.openBubble(info_bubble_text,marker.coordinate);
+    var tap_url = me.ANALYTICS_URL + "tap/";
+    $.post(tap_url).done(function() {
       console.log("Tap POST success");
     }).fail(function(request_object,status,error_message) {
       console.log("Tap POST failed");
@@ -263,6 +278,7 @@ TrendMap.prototype.newAreaNotCached = function(new_lat_left,new_lat_right,new_lo
     return true;
   } else 
   {
+    console.log("Area was cached, no request sent");
     return false;
   }
 };
@@ -272,6 +288,7 @@ TrendMap.prototype.makeMarkers = function(clustered_data)
   this.countMin = clustered_data[0].count;
   this.countMax = this.countMin;
   var sum  = 0;;
+  // Count total number of check-ins to decide weights for colors
   for (var i=1; i < clustered_data.length; i++) 
   { 
     sum += clustered_data[i].count;
@@ -282,6 +299,7 @@ TrendMap.prototype.makeMarkers = function(clustered_data)
 
   for (var i=0; i < clustered_data.length; i++) 
   {  
+    // Add markers
     this.addMarker(clustered_data[i].count,clustered_data[i].latitude,clustered_data[i].longitude,clustered_data[i].radius,clustered_data[i].twitter,clustered_data[i].instagram,clustered_data[i].flickr);
   }
 };
@@ -293,10 +311,7 @@ TrendMap.prototype.updateData = function(json_object)
   {
     var index_of_space = timestamp_string.indexOf(" ");
     var index_of_colon = timestamp_string.indexOf(":");
-    //console.log("Index of Space: " + index_of_space);
-    //console.log("Index of Colon: " + index_of_colon);
     hour_string = timestamp_string.substring(index_of_space+1,index_of_colon);
-    //console.log("Hour String: " + hour_string);
     // parseInt doesn't play nicely if the string is has a zero as the first character
     if (hour_string[0] === "0") {
       hour_string = hour_string[1];
@@ -307,23 +322,29 @@ TrendMap.prototype.updateData = function(json_object)
   // Takes JSON response and creates an array of objects for TrendMap to work with
   var translateResponse = function(json_object)
   {
-    var array_of_time_data = json_object.response;
+    var fetched_time_data = json_object.response;
     var translated_data = new Array();
     for (var i=0; i < 24; i++) {
       translated_data.push({"locations":[]});
     }
     var current_hour = new Date().getHours();
-    var data_index = array_of_time_data.length-1;
+    var data_index = fetched_time_data.length-1;
     for (var i=23; i >= 0; i--) {
-      data_hour = parseHourFromTimeStamp(array_of_time_data[data_index].timestamp);
+      data_hour = parseHourFromTimeStamp(fetched_time_data[data_index].timestamp);
       console.log("Current Hour: "+ current_hour);
-      console.log("Data Hour: " + data_hour)
+      console.log("Data Hour: " + data_hour);
+      // If data exists for this hour, supply the data
       if (data_hour === current_hour){
-        translated_data[i] = array_of_time_data[data_index];
+        translated_data[i] = fetched_time_data[data_index];
+        // Decrement current index counter for fetched_data
         data_index--;
       }
+      // Always decrement counter for current hour index
       current_hour--;
+
+      // To yesterday?
       if (current_hour < 0) {
+        // Went back to the day before
         current_hour = 23;
       }
     }
@@ -345,10 +366,11 @@ TrendMap.prototype.updateCurrentData = function()
   this.current_data = this.fetched_data[this.fetched_data.length-1-this.hour_offset];
   //console.log(this.current_data);
   var data_to_display = this.current_data.locations;
-  // RIGHT NOW WE CAN'T CLUSTER IF WE WANT TO SHOW WHERE DATA COMES FROM, THIS CAN BE FIXED
-  //if (data_to_display.length > 50) {
-    //data_to_display = ClusteringProcessor(data_to_display);
-  //}
+  // Potential Cluster Threshold
+  if (data_to_display.length > this.MIN_DATA_POINTS_TO_CLUSTER) {
+    // Perform Clustering
+    data_to_display = ClusteringProcessor(data_to_display);
+  }
   this.removeAllMarkers();
   this.makeMarkers(data_to_display);
 }
@@ -370,7 +392,7 @@ TrendMap.prototype.getGridLocationData = function(callback_func, lat_center, lon
   var today_milliseconds = Date.UTC(today_year,today_month,today_day,today_hour);
   var yesterday_milliseconds = today_milliseconds - (24*3600*1000); // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
 
-  console.log("Today: " + today_year.toString() + "/" + today_month.toString() + "/" + today_day.toString() + " " + today_hour.toString());
+  console.log("Today: " + today_year.toString() + "/" + today_month.toString() + "/" + today_day.toString() + " " + today_hour.toString() + ":00");
 
   var yesterday_date = new Date(yesterday_milliseconds);
   var yesterday_year = yesterday_date.getFullYear();
@@ -379,15 +401,10 @@ TrendMap.prototype.getGridLocationData = function(callback_func, lat_center, lon
   var yesterday_hour = date.getHours();
 
   data_url += "from/" + yesterday_year + "/" + yesterday_month + "/" + yesterday_day + "/" + yesterday_hour +"/";
-
   data_url += "to/"+ today_year + "/" + today_month + "/" + today_day + "/" + today_hour + "/";
-
-  console.log("24 hours ago: " + yesterday_year.toString() + "/" + yesterday_month.toString() + "/" + yesterday_day.toString() + " " + yesterday_hour.toString());
+  console.log("24 hours ago: " + yesterday_year.toString() + "/" + yesterday_month.toString() + "/" + yesterday_day.toString() + " " + yesterday_hour.toString() +":00");
 
   data_url += this.CALLBACK_URL; // Need CALLBACK_URL For Jsonp
-
-  
-
 
   $.getJSON(data_url)
     .done(function(response) {

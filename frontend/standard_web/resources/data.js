@@ -17,7 +17,6 @@ var CALLBACK_URL = "&callback=?";
 
 var getGridLocationData = function(callback_func, lat_center, long_center, lat_range, long_range, resolution) {
   var data_url = SERVER_URL + HEATMAP_SEARCH_URL;
-  console.log("SERVER_URL: " + SERVER_URL)
   data_url += "resolution/" + resolution + "/";
   data_url += "search/center/" + lat_center + "/" + long_center + "/";
   data_url += "region/" + lat_range + "/" + long_range + "/";
