@@ -47,7 +47,7 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
       value: this.MAX_VALUE,
       // Change is called when the slider is released and value was changed
       change: function(event, ui) {
-        timeLabel.text(getExactTimeLabel(slider.slider("value")));
+        timeLabel.text(getExactTimeLabel(slider.slider("value") + 1));
         if (changeFunction) {
           var num = slider.slider("value");
           console.log(num);
@@ -81,6 +81,8 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
         var value = slider.slider("value");
         if (value >= MAX_VALUE) {
           clearInterval(me.timerInterval);
+          me.timerInterval = null;
+          playButton.html("play");
         }
         slider.slider("value",value+1);
       },me.TIMER_MILLI_SECONDS);
