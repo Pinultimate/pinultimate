@@ -22,6 +22,8 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.HEATMAP_SEARCH_URL = "heatmap/"
   this.CALLBACK_URL = "&callback=?";
 
+  this.ANALYTICS_URL = "http://analytics.pinultimate.net/"
+
   var createNokiaMap = function(div_ID, center_object, zoom_level)
   {
     nokia.Settings.set( "appId", "ZK2z_y4VG6AbOWUzjvN2");
@@ -29,10 +31,11 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
     // Get the DOM node to which we will append the map
     var mapContainer = document.getElementById(div_ID);
-
+    me.infoBubbles = new nokia.maps.map.component.InfoBubbles();
     // Create a map inside the map container DOM node
     var map = new nokia.maps.map.Display(mapContainer, {
       components: [
+        me.infoBubbles,
         // Add the behavior component to allow panning / zooming of the map
         new nokia.maps.map.component.Behavior(),
         new nokia.maps.map.component.ZoomBar(),
@@ -121,8 +124,12 @@ TrendMap.prototype.potentialDataUpdate = function(force)
   }
 };
 
-TrendMap.prototype.addMarker = function(count,lat,long, radius) 
+TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, instagram_count, flickr_count) 
 {
+  console.log("Instagram: " + instagram_count);
+  console.log("Twitter: " + twitter_count);
+  console.log("Flickr: " + flickr_count);
+  var me = this;
   text = count.toString();
   var iconSVG = 
   '<svg width="__WIDTH__" height="__WIDTH__" xmlns="http://www.w3.org/2000/svg">' +
@@ -201,6 +208,22 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
     //map.update(-1, 0);
   });
 
+  
+  var TOUCH = nokia.maps.dom.Page.browser.touch,
+  CLICK = TOUCH ? "tap" : "click";
+
+  // Click Listener for each Marker
+  marker.addListener(CLICK, function(evt) {
+    me.infoBubbles.openBubble("Twitter: " + twitter_count + ", Instragam: " + instagram_count + ", Flickr: " + flickr_count,marker.coordinate);
+    $.post(this.ANALYTICS_URL+ "tap/" +me.CALLBACK_URL).done(function() {
+      console.log("Tap POST success");
+    }).fail(function(request_object,status,error_message) {
+      console.log("Tap POST failed");
+      console.log("status: " + status);
+      console.log("Error Message: " + error_message);
+    })
+  });
+
 
   this.map.objects.add(marker);
 };
@@ -259,7 +282,7 @@ TrendMap.prototype.makeMarkers = function(clustered_data)
 
   for (var i=0; i < clustered_data.length; i++) 
   {  
-    this.addMarker(clustered_data[i].count,clustered_data[i].latitude,clustered_data[i].longitude,clustered_data[i].radius);
+    this.addMarker(clustered_data[i].count,clustered_data[i].latitude,clustered_data[i].longitude,clustered_data[i].radius,clustered_data[i].twitter,clustered_data[i].instagram,clustered_data[i].flickr);
   }
 };
 
@@ -322,8 +345,9 @@ TrendMap.prototype.updateCurrentData = function()
   this.current_data = this.fetched_data[this.fetched_data.length-1-this.hour_offset];
   //console.log(this.current_data);
   var data_to_display = this.current_data.locations;
+  // RIGHT NOW WE CAN'T CLUSTER IF WE WANT TO SHOW WHERE DATA COMES FROM, THIS CAN BE FIXED
   //if (data_to_display.length > 50) {
-  data_to_display = ClusteringProcessor(data_to_display);
+    //data_to_display = ClusteringProcessor(data_to_display);
   //}
   this.removeAllMarkers();
   this.makeMarkers(data_to_display);
