@@ -25,7 +25,8 @@ def write_to_db(tweet):
         print "No coordinates found"
         return
 
-    coords = tweet['coordinates']['coordinates'].reverse(),
+    coords = tweet['coordinates']['coordinates']
+    coords = [coords[1], coords[0]]
     location = TwitterLocation(
         coordinates = coords,
         timestamp = taken_time,
