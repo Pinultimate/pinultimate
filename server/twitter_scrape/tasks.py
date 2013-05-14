@@ -26,7 +26,7 @@ def write_to_db(tweet):
         return
 
     location = TwitterLocation(
-        coordinates = tweet['coordinates']['coordinates'],
+        coordinates = tweet['coordinates']['coordinates'].reverse(),
         timestamp = taken_time,
         time_added_to_db = datetime.datetime.now(),
         source = "twitter",
