@@ -134,20 +134,33 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
   '<text x="__RADIUS__" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
   '</svg>';
 
-  var shadowSVG = 
-  '<svg width="__WIDTH__" height="__WIDTH__" xmlns="http://www.w3.org/2000/svg">' +
-  '<circle stroke="__ACCENTCOLOR__" fill="__MAINCOLOR__" cx="__RADIUS__" cy="__RADIUS__" r="__RADIUS__" /></svg>';
-
-
   circle_radius = 16;
   if (radius != 0) {
     circle_radius *= radius / this.reso;
     if (circle_radius < 8) circle_radius = 8;
   }
 
-  var level; 
-  var color = [];
-
+  var level = Math.floor((this.countMax - this.countMin) / 5); 
+  var mainColor;
+  var shadowColor; 
+  var color = [{"Center": "#FF04F0", "Shadow": "#FF07F0"}, {"Center": "#FF0000", "Shadow": "#FF3200"}, {"Center": "#FFdc00", "Shadow": "#FFf000"}, {"Center": "#43A51B", "Shadow": "#b0ff00"}, {"Center": "#0054ff", "Shadow": "#0084ff"}];
+  var mainColor = color[2].Center;;
+  var shadowColor = color[2].Center;
+  console.log(count);
+  console.log 
+  if (count > this.countMean + 2*level) {
+    mainColor = color[0].Center;
+    shadowColor = color[0].Shadow;
+  } else if (count > this.countMean + level) {
+    mainColor = color[1].Center;
+    shadowColor = color[1].Shadow;
+  } else if (count < this.countMean - level) {
+    mainColor = color[3].Center;
+    shadowColor = color[3].Shadow;
+  } else if (count < this.countMean - 2*level) {
+    mainColor = color[4].Center;
+    shadowColor = color[4].Shadow;
+  }
 
   svgParser = new nokia.maps.gfx.SvgParser();
   // Helper function that allows us to easily set the text and color of our SVG marker.
@@ -176,7 +189,7 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
       .replace(/__MAINCOLOR__/g, mainColor);
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   }
-  var markerIcon = createIcon(text, "#43A51B", "#FFF", "#b0ff00");
+  var markerIcon = createIcon(text, mainColor, "#FFF", shadowColor);
   
 
   var marker = new nokia.maps.map.Marker([lat, long], {icon: markerIcon});
