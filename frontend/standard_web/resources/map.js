@@ -129,7 +129,7 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
   text = count.toString();
   var iconSVG = 
   '<svg width="__WIDTH__" height="__WIDTH__" xmlns="http://www.w3.org/2000/svg">' +
-  '<circle stroke="__SECONDCOLOR__" fill="__SECONDCOLOR__" cx="__X__" cy="__Y__" r="__RADIUS2__" opacity=".3"/>' +
+  '<circle stroke="__SECONDCOLOR__" fill="__SECONDCOLOR__" cx="__X__" cy="__Y__" r="__RADIUS2__" opacity="__OPACITY__"/>' +
   '<circle stroke="__MAINCOLOR__" fill="__MAINCOLOR__" cx="__RADIUS__" cy="__RADIUS__" r="__RADIUS__" />' +
   '<text x="__RADIUS__" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
   '</svg>';
@@ -143,7 +143,7 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
   var level = Math.floor((this.countMax - this.countMin) / 5); 
   var mainColor;
   var shadowColor; 
-  var color = [{"Center": "#FF04F0", "Shadow": "#FF07F0"}, {"Center": "#FF0000", "Shadow": "#FF3200"}, {"Center": "#FFdc00", "Shadow": "#FFf000"}, {"Center": "#43A51B", "Shadow": "#b0ff00"}, {"Center": "#0054ff", "Shadow": "#0084ff"}];
+  var color = [{"Center": "#FF04F0", "Shadow": "#FF07F0"}, {"Center": "#FF0000", "Shadow": "#FF3200"}, {"Center": "#FFD700", "Shadow": "#FFFF00"}, {"Center": "#43A51B", "Shadow": "#43A51B"}, {"Center": "#0054ff", "Shadow": "#0084ff"}];
   var mainColor = color[2].Center;;
   var shadowColor = color[2].Center;
   console.log(count);
@@ -164,8 +164,9 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
 
   svgParser = new nokia.maps.gfx.SvgParser();
   // Helper function that allows us to easily set the text and color of our SVG marker.
-  createIcon = function (text, mainColor, accentColor, secondColor) {
+  createIcon = function (text, mainColor, accentColor, secondColor, opacity) {
     var svg = iconSVG
+      .replace(/__OPACITY__/g, opacity)
       .replace(/__TEXTCONTENT__/g, text)
       .replace(/__TEXT__/g, text)
       .replace(/__ACCENTCOLOR__/g, accentColor)
@@ -181,18 +182,24 @@ TrendMap.prototype.addMarker = function(count,lat,long, radius)
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
 
-  createShadow = function (mainColor, accentColor) {
-    var svg = shadowSVG
-      .replace(/__ACCENTCOLOR__/g, accentColor)
-      .replace(/__RADIUS__/g, circle_radius*1.5) 
-      .replace(/__WIDTH__/g, circle_radius*3)      
-      .replace(/__MAINCOLOR__/g, mainColor);
-    return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
-  }
-  var markerIcon = createIcon(text, mainColor, "#FFF", shadowColor);
-  
+  var markerIcon = createIcon(text, mainColor, "#FFF", shadowColor, 0);
+  var markerIconOnHover = createIcon(text, mainColor, "#FFF", shadowColor, 0.3);
 
   var marker = new nokia.maps.map.Marker([lat, long], {icon: markerIcon});
+
+
+  marker.addListener("mouseover", function (evt) {
+    marker.set("icon", markerIconOnHover);
+    /* Display's update() can be used to force an immediate re-render of the current view 
+     * instead of the default delayed one, we do this to make the icons switch instantly on mouse over.
+     */
+    //map.update(-1, 0);
+  });
+  marker.addListener("mouseout", function (evt) {
+    marker.set("icon", markerIcon);
+    //map.update(-1, 0);
+  });
+
 
   this.map.objects.add(marker);
 };
