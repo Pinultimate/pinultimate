@@ -1,4 +1,5 @@
 from django.shortcuts import render_to_response
+from django.contrib.sessions.models import Session
 from django.http import HttpResponse
 from models import WebUser
 from datetime import datetime
@@ -13,9 +14,13 @@ def index(request):
     if not request.session.exists(request.session.session_key):
         request.session.create()
 
-    web_user = WebUser.objects.get(session=request.session)
-    if web_user is not None:
-        web_user = WebUser(session=request.session)
+    session = Session.objects.get(session_key=request.session.session_key)
+    web_user_queryset = WebUser.objects.filter(session=session)
+    web_user = list(web_user_queryset)
+    if web_user is None or len(web_user) == 0:
+        web_user = WebUser(session=session)
+    else:
+        web_user = web_user[0]
     web_user.total_visits += 1
     web_user.last_updated = datetime.now()
     web_user.save()

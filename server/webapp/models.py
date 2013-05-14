@@ -3,7 +3,7 @@ from django.contrib.sessions.models import Session
 from datetime import datetime
 
 class WebUser(models.Model):
-    session = models.ForeignKey(Session)
+    session = models.ForeignKey(Session, unique=True)
     total_taps = models.IntegerField(default=0)
     total_seconds_spent = models.IntegerField(default=0)
     total_visits = models.IntegerField(default=0)
