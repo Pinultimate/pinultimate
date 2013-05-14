@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from models import WebUser
+from datetime import datetime
 
 CSS_M='text/css'
 JS_M='text/javascript'
@@ -13,6 +14,7 @@ def index(request):
     if web_user is not None:
         web_user = WebUser(session=request.session)
     web_user.total_visits += 1
+    web_user.last_updated = datetime.now()
     web_user.save()
 
     return render_to_response('map.html')
