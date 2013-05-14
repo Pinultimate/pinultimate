@@ -176,6 +176,7 @@ INSTALLED_APPS = (
     'flickr',
     'twitter_scrape',
     'metrics',
+    'webapp',
 )
 
 # A sample logging configuration. The only tangible logging
