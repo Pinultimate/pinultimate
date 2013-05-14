@@ -16,7 +16,15 @@ mongo.connect(DBNAME)
 
 # This is IGNORED when using MongoDB
 DATABASES = {
-    'default': {}
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'trendmap_db',                      # Or path to database file if using sqlite3.
+        # The following settings are not used with sqlite3:
+        'USER': 'pinultimate',
+        'PASSWORD': 'pinultimate',
+        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                      # Set to empty string for default.
+    }
 }
 
 # import Celery, used to run daemon tasks, like Twitter scraping

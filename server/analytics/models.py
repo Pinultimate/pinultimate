@@ -2,7 +2,8 @@ from mongoengine import DynamicDocument, DateTimeField, StringField, IntField, R
 
 class User(DynamicDocument):
     username = StringField(required=True, max_length=15)
-
+    password = StringField(required=True)
+    
     def __unicode__(self):
         return self.username
 
