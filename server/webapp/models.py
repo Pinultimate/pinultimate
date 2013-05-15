@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.sessions.models import Session
 from datetime import datetime
+from django.utils.timezone import utc
 
 class WebUser(models.Model):
     session = models.ForeignKey(Session, unique=True)
@@ -13,7 +14,7 @@ class WebUser(models.Model):
         return self.session
 
     def update(self):
-        now = datetime.now()
+        now = datetime.utcnow().replace(tzinfo=utc)
         lapse = now - self.last_updated
         self.total_seconds_spent += lapse.seconds
         self.last_updated = now
