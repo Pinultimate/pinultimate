@@ -168,9 +168,9 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
     var svgParser = new nokia.maps.gfx.SvgParser();
     var iconSVG = 
   '<svg width="__WIDTH__" height="__WIDTH__" xmlns="http://www.w3.org/2000/svg">' +
-  '<circle stroke="__SECONDCOLOR__" fill="__SECONDCOLOR__" cx="__X__" cy="__Y__" r="__RADIUS2__" opacity="__OPACITY__"/>' +
-  '<circle stroke="__MAINCOLOR__" fill="__MAINCOLOR__" cx="__RADIUS__" cy="__RADIUS__" r="__RADIUS__" />' +
-  '<text x="__RADIUS__" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
+  '<circle stroke="__SECONDCOLOR__" fill="__SECONDCOLOR__" cx="0" cy="0" r="__RADIUS2__" opacity="__OPACITY__"/>' +
+  '<circle stroke="__MAINCOLOR__" fill="__MAINCOLOR__" cx="0" cy="0" r="__RADIUS__" />' +
+  '<text x="0" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
   '</svg>';
     var svg = iconSVG
       .replace(/__OPACITY__/g, opacity)
@@ -178,13 +178,11 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
       .replace(/__TEXT__/g, text)
       .replace(/__ACCENTCOLOR__/g, accentColor)
       .replace(/__RADIUS__/g, circle_radius) 
-      .replace(/__TEXTHEIGHT__/g, circle_radius*1.35) 
+      .replace(/__TEXTHEIGHT__/g, circle_radius*0.35) 
       .replace(/__FONT__/g, circle_radius*0.625) 
       .replace(/__WIDTH__/g, circle_radius*2)      
       .replace(/__MAINCOLOR__/g, mainColor)
       .replace(/__SECONDCOLOR__/g, secondColor)
-      .replace(/__X__/g, circle_radius)
-      .replace(/__Y__/g, circle_radius)
       .replace(/__RADIUS2__/g, circle_radius*1.5)
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
