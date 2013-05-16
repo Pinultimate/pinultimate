@@ -14,6 +14,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
   this.DEFAULT_CLUSTER_RADIUS = 16; // in px
   this.MIN_CLUSTER_RADIUS = 8;
+  this.MAX_CLUSTER_RADIUS = 24;
 
   this.fetched_data_lat_left = null;
   this.fetched_data_lat_right = null;
@@ -194,6 +195,7 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
   if (radius !== undefined && radius !== 0) {
     cluster_circle_radius *= radius / this.reso;
     if (cluster_circle_radius < me.MIN_CLUSTER_RADIUS) cluster_circle_radius = me.MIN_CLUSTER_RADIUS;
+    if (cluster_circle_radius > me.MAX_CLUSTER_RADIUS) cluster_circle_radius = me.MAX_CLUSTER_RADIUS;
   }
 
   // Create marker icons
@@ -224,7 +226,12 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
   CLICK = TOUCH ? "tap" : "click";
   marker.addListener(CLICK, function(evt) {
     // Create Info Bubble
-    var info_bubble_text = "Twitter: " + twitter_count + ", Instragam: " + instagram_count + ", Flickr: " + flickr_count;
+    var info_bubble_text = "<div style='background-color:" + mainColor + "'>" + 
+    "<p><font size='2'> Counts from </font></p>" +
+    "<p>Twitter:" + twitter_count + "</p>" +
+    "<p> Instragam: " + instagram_count + "</p>" +
+    "<p> Flickr: " + flickr_count + "</p>" +
+    "</div>" ;
     // Info bubble requires a coordinate, not just a lat-long
     me.infoBubbles.openBubble(info_bubble_text,marker.coordinate);
     var tap_url = me.ANALYTICS_URL + "tap/";
