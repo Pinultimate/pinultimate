@@ -100,6 +100,7 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
   });
 
   playButton.css("float","right");
+  //playButton.css("background-color", "#ff6622");
 
   parentDiv.append(timeLabel);
   parentDiv.append(slider);

@@ -50,7 +50,9 @@ html {
 }
       
 body {
-  background: url(white_wall_hash.png);
+  background: url(http://2.bp.blogspot.com/-QEi_6AzpVlA/UTawMsM3wJI/AAAAAAAAUHM/k8UJmWdN4yM/s1600/allcolors.jpg);
+  background-size:100%;
+  background-repeat:no-repeat;  
   margin: 0;
   padding: 0;
   width: 100%;
@@ -117,8 +119,7 @@ footer {
   -webkit-transform-origin: top right;
   -ms-transform: rotate(270deg);
   -ms-transform-origin: top right;
-  background-color: #000f1a;
-  background-color: rgba(0,15,26,0.85);
+  background-color: #ff6622;
   color: #fff;
   font-size: 12px;
   height: 30px;
@@ -126,6 +127,10 @@ footer {
   padding-bottom: 0;
   position: fixed;
   right: 30px;
+}
+
+#play {
+    background-color: #ff6622;
 }
 
 .footer-text {
@@ -144,7 +149,7 @@ footer {
   top:42%;
   left:40%;
   margin:auto;
-  background-color: #000000;
+  background-color: #ff6622;
   color: #FFFFFF;
   z-index: 1000;
   position: absolute;
