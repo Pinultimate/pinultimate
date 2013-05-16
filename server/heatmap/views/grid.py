@@ -211,6 +211,7 @@ def grid_search_region_in_timeframe(request, resolution, lat, lon, latrange, lon
 		response.append(timestamp_response)
 		timestamp_response["timestamp"] = cur_timestamp_str
 		timestamp_response["locations"] = []
+		cur_timestamp = cur_timestamp + timedelta(hours=1)
 
 	for location in locations:
 		n_timestamp = normalize_timestamp_to_hour(location.timestamp)
