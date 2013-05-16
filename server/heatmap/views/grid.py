@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from collections import OrderedDict
 import json
 import datetime
+from datetime import timedelta
 import time
 from django.db.models import Q
 from math import *
