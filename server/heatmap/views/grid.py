@@ -225,8 +225,9 @@ def grid_search_region_in_timeframe(request, resolution, lat, lon, latrange, lon
 
 		if (n_timestamp >= from_timestamp) and (n_timestamp <= to_timestamp):
 			if (grid_lat_index >= grid_lat_index_min) and (grid_lat_index <= grid_lat_index_max) and (grid_lon_index >= grid_lon_index_min) and (grid_lon_index <= grid_lon_index_max):				
+				index = ((n_timestamp - from_timestamp).seconds)/3600
 				gridified_lat, gridified_lon = grid_center(grid_lat_index, grid_lon_index, resolution)				
-				timestamp_response = response[n_timestamp_str]
+				timestamp_response = response[index]
 				add_grid_location_to_list(timestamp_response["locations"], gridified_lat, gridified_lon, location.source)
 
 	json_response["response"] = response
