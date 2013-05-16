@@ -26,3 +26,12 @@ def update(request):
         web_user = web_user[0]
         web_user.update()
     return HttpResponse(status=200)
+
+def open_phone(request, device_id):
+	pass
+
+def close_phone(request, device_id):
+	pass
+
+def tap_phone(request, device_id):
+	pass
