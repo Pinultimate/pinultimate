@@ -54,6 +54,8 @@ def close_phone(request, device_id):
 
 	return HttpResponse(status=200)
 
+@csrf_exempt
+@require_POST
 def tap_phone(request, device_id):
 	phone_user_queryset = PhoneUser.objects.filter(phone_id=device_id)
 	phone_user = list(phone_user_queryset)
