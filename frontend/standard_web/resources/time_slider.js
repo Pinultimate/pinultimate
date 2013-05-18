@@ -62,12 +62,12 @@ function TimeSlider(parent_div_ID, change_function) {
             me.change_function(num);
           }
           if (me.getSliderValue() === me.MAX_VALUE) {
-            me.playButton.html("Begin Playback");
+            me.playButton.attr("src","resources/PlayButton.jpeg");
           } else {
             if (me.timerInterval) {
-              me.playButton.html("Pause");
+              me.playButton.attr("src","resources/PauseButton.jpeg");
             } else {
-              me.playButton.html("Play");
+              me.playButton.attr("src","resources/PlayButton.jpeg");
             }
           }
         }
@@ -82,19 +82,19 @@ function TimeSlider(parent_div_ID, change_function) {
   });
   this.slider.width("100%");
 
-  this.playButton = $(document.createElement("div")).text("Begin Playback").click(function() {
+  this.playButton = $(document.createElement("img")).text("Begin Playback").click(function() {
     if (me.timerInterval) {
       // Pause
       clearInterval(me.timerInterval);
       me.timerInterval = null;
-      me.playButton.html("Play");
+      me.playButton.attr("src","resources/PlayButton.jpeg");
     } else {
       //Start Timer
       var slider_value = me.getSliderValue()
       if (slider_value >= me.MAX_VALUE) {
         me.resetSlider();
       }
-      me.playButton.text("Pause");
+      me.playButton.attr("src","resources/PauseButton.jpeg");
       me.timerInterval = setInterval(function() {
         var slider_value = me.getSliderValue()
         me.incrementSlider()
@@ -104,7 +104,7 @@ function TimeSlider(parent_div_ID, change_function) {
         }
       },me.TIMER_INTERVAL_MILLI);
     }
-  });
+  }).attr("src","resources/PlayButton.jpeg").width(50);
   this.playButton.css("display","inline-block");
   this.playButton.css("margin-top","5px");
   //playButton.css("background-color", "#ff6622");

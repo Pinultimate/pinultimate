@@ -162,3 +162,7 @@ footer {
   top:40%;
   left:35%;
 }
+
+.timerControlPlay {
+  background-image: url("PlayButton.jpeg");
+}
