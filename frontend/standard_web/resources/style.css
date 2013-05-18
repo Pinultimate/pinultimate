@@ -50,7 +50,7 @@ html {
 }
       
 body {
-  background: url(http://2.bp.blogspot.com/-QEi_6AzpVlA/UTawMsM3wJI/AAAAAAAAUHM/k8UJmWdN4yM/s1600/allcolors.jpg);
+  /*background: url(http://2.bp.blogspot.com/-QEi_6AzpVlA/UTawMsM3wJI/AAAAAAAAUHM/k8UJmWdN4yM/s1600/allcolors.jpg);*/
   background-size:100%;
   background-repeat:no-repeat;  
   margin: 0;
@@ -141,6 +141,7 @@ footer {
   margin: auto;
   margin-top: 120px;
   width: 960px;
+  text-align: center;
 }
 
 #loading {

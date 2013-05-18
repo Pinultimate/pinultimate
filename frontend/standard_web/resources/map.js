@@ -30,6 +30,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
   this.MIN_DATA_POINTS_TO_CLUSTER = 20;
 
+  // Interval to call analytics for time
   setInterval(function() {
     var update_user_time_url = me.ANALYTICS_URL + "update/";
     $.post(update_user_time_url).done(function() {
@@ -108,11 +109,11 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
   this.map = createNokiaMap(div_ID, center_object, zoom_level);
   this.potentialDataUpdate(false);
-  this.slider = createTimeSlider("sliderContainer", function(new_value) {
+  this.slider = new TimeSlider("sliderContainer", function(new_value) {
     me.hour_offset = 23-new_value;
     console.log("Slider Moved. New Value: " + new_value);
     me.updateCurrentData();
-  } ,null);
+  });
 };
 
 TrendMap.prototype.potentialDataUpdate = function(force) 
@@ -290,9 +291,9 @@ TrendMap.prototype.newAreaNotCached = function(new_lat_left,new_lat_right,new_lo
 
 TrendMap.prototype.makeMarkers = function(clustered_data)
 {  
-  this.countMin = clustered_data[0].count;
+  this.countMin = 0;
   this.countMax = this.countMin;
-  var sum  = 0;;
+  var sum  = 0;
   // Count total number of check-ins to decide weights for colors
   for (var i=1; i < clustered_data.length; i++) 
   { 
@@ -336,8 +337,8 @@ TrendMap.prototype.updateData = function(json_object)
     var data_index = fetched_time_data.length-1;
     for (var i=23; i >= 0; i--) {
       data_hour = parseHourFromTimeStamp(fetched_time_data[data_index].timestamp);
-      console.log("Current Hour: "+ current_hour);
-      console.log("Data Hour: " + data_hour);
+      //console.log("Current Hour: "+ current_hour);
+      //console.log("Data Hour: " + data_hour);
       // If data exists for this hour, supply the data
       if (data_hour === current_hour){
         translated_data[i] = fetched_time_data[data_index];
@@ -377,6 +378,7 @@ TrendMap.prototype.updateCurrentData = function()
     data_to_display = ClusteringProcessor(data_to_display);
   }
   this.removeAllMarkers();
+  //console.log(data_to_display);
   this.makeMarkers(data_to_display);
 }
 

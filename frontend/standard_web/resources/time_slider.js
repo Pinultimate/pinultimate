@@ -1,17 +1,18 @@
 /* Requires JQuery UI */
 
-var createTimeSlider = function(divID,changeFunction,slideFunction) {
-
+function TimeSlider(parent_div_ID, change_function) {
   var me = this; // Disambiguates scope
 
-  me.timerInterval = null;
-  me.MAX_VALUE = 23;
-  me.MIN_VALUE = 0;
-  me.STEP_VALUE = 1;
-  me.TIMER_INTERVAL_MILLI = 3000;
+  this.timerInterval = null;
+  this.MAX_VALUE = 23;
+  this.MIN_VALUE = 0;
+  this.STEP_VALUE = 1;
+  this.TIMER_INTERVAL_MILLI = 2000;
 
-  var parentDiv = $("#"+divID);
-  
+  this.change_function = change_function;
+
+  this.parent_div = $("#"+parent_div_ID);
+
   var getExactTimeLabel = function(offset) {
     var date = new Date();
     var hours = date.getHours();
@@ -33,78 +34,96 @@ var createTimeSlider = function(divID,changeFunction,slideFunction) {
     } else if (time > 12) {
       return (time-12) + ":00 P.M.";
     } else { // time === 12
-      return "12:00 PM";
+      return "12:00 P.M.";
     }
     return "Error";
   }
 
-  // Create time label
-  var timeLabel = $(document.createElement("p")).text(getExactTimeLabel(0));
-  timeLabel.css( {
+  this.timeLabel = $(document.createElement("p")).text(getExactTimeLabel(0));
+  this.timeLabel.css( {
     "margin-bottom":5,
     "text-align": "center"
   });
-  // Create slider
-	var slider = $(document.createElement("div")).slider({
-      min: this.MIN_VALUE,
-      max: this.MAX_VALUE,
-      step: this.STEP_VALUE,
-      value: this.MAX_VALUE,
+
+  this.slider = $(document.createElement("div")).slider({
+      min: me.MIN_VALUE,
+      max: me.MAX_VALUE,
+      step: me.STEP_VALUE,
+      value: me.MAX_VALUE,
       // Change is called when the slider is released and value was changed
       change: function(event, ui) {
-        timeLabel.text(getExactTimeLabel(slider.slider("value") + 1));
-        if (changeFunction) {
-          var num = slider.slider("value");
-          console.log(num);
-          changeFunction(num);
+        me.timeLabel.text(getExactTimeLabel(me.getSliderValue() + 1));
+        if (me.getSliderValue() > me.MAX_VALUE) {
+          //Do nothing
+        } else {
+          if (me.change_function) {
+            var num = me.getSliderValue()
+            console.log(num);
+            me.change_function(num);
+          }
+          if (me.getSliderValue() === me.MAX_VALUE) {
+            me.playButton.html("Begin Playback");
+          } else {
+            if (me.timerInterval) {
+              me.playButton.html("Pause");
+            } else {
+              me.playButton.html("Play");
+            }
+          }
         }
       },
       // Slider is called whenever the slider value is changed
       slide: function(event, ui) {
         //timeLabel.text(slider.slider("value") + ":00");
-        if (slideFunction) {
-          slideFunction();
+        if (this.slideFunction) {
+          this.slideFunction();
         }
       }
   });
-  slider.width(900);
-  slider.css("float","left");
+  this.slider.width("100%");
 
-  var playButton = $(document.createElement("div")).text("play")
-  playButton.click(function() {
-    console.log("Clicked!");
+  this.playButton = $(document.createElement("div")).text("Begin Playback").click(function() {
     if (me.timerInterval) {
       // Pause
       clearInterval(me.timerInterval);
       me.timerInterval = null;
-      playButton.html("play");
+      me.playButton.html("Play");
     } else {
       //Start Timer
-      var slider_value = slider.slider("value");
-      if (slider_value >= MAX_VALUE) {
-        // Start Playback
-        slider.slider("value",0);
+      var slider_value = me.getSliderValue()
+      if (slider_value >= me.MAX_VALUE) {
+        me.resetSlider();
       }
-      playButton.text("pause");
+      me.playButton.text("Pause");
       me.timerInterval = setInterval(function() {
-        console.log("timer set");
-        var value = slider.slider("value");
-        if (value >= MAX_VALUE) {
+        var slider_value = me.getSliderValue()
+        me.incrementSlider()
+        if (me.getSliderValue() >= me.MAX_VALUE) {
           clearInterval(me.timerInterval);
           me.timerInterval = null;
-          playButton.html("play");
         }
-        slider.slider("value",value+1);
       },me.TIMER_INTERVAL_MILLI);
     }
   });
-
-  playButton.css("float","right");
+  this.playButton.css("display","inline-block");
+  this.playButton.css("margin-top","5px");
   //playButton.css("background-color", "#ff6622");
 
-  parentDiv.append(timeLabel);
-  parentDiv.append(slider);
-  parentDiv.append(playButton);
+  this.parent_div.append(this.timeLabel);
+  this.parent_div.append(this.slider);
+  this.parent_div.append(this.playButton);
   // This final div just allows the last two divs to be floated
-  parentDiv.append($(document.createElement("div")).css("clear","both"));
+  this.parent_div.append($(document.createElement("div")).css("clear","both"));
+}
+
+TimeSlider.prototype.getSliderValue = function() {
+  return this.slider.slider("value");
+}
+
+TimeSlider.prototype.resetSlider = function() {
+  this.slider.slider("value",0);
+}
+
+TimeSlider.prototype.incrementSlider = function() {
+  this.slider.slider("value", this.getSliderValue()+1);
 }
