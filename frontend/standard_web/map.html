@@ -24,7 +24,15 @@
       </div>
     </div>
 
-    <button id="feedback" type="submit" style="top: 166.5px;">Feedback<span>&nbsp;</span></button>
+    <button id="feedback" type="submit" onClick="feedbackPop()" style="top: 166.5px;">Feedback<span>&nbsp;</span></button>
+
+    <script type="text/javascript">
+      function feedbackPop() {
+      window.open( "feedback.html", "myWindow", 
+      "status = 1, height = 553, width = 418, resizable = 1" )
+    }
+  </script>
+
 
     <footer>
       <p class="footer-text">Pinultimate in conjunction with Nokia</p>
@@ -35,6 +43,8 @@
     <script type="text/javascript" src="resources/sampleData.js"></script>
     <script type="text/javascript" src="resources/data.js"></script>
     <script type="text/javascript" src="resources/time_slider.js"></script>
+    <script type="text/javascript" src="resources/Dialog.js"></script>
+
     <script type="text/javascript" src="resources/KMeans.js"></script>
     <script type="text/javascript">
 
