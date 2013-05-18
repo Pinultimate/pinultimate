@@ -80,7 +80,7 @@ function TimeSlider(parent_div_ID, change_function) {
         }
       }
   });
-  this.slider.width("100%");
+  this.slider.width("90%").css("float","left");
 
   this.playButton = $(document.createElement("img")).text("Begin Playback").click(function() {
     if (me.timerInterval) {
@@ -104,9 +104,8 @@ function TimeSlider(parent_div_ID, change_function) {
         }
       },me.TIMER_INTERVAL_MILLI);
     }
-  }).attr("src","resources/PlayButton.jpeg").width(50);
+  }).attr("src","resources/PlayButton.jpeg").width("5%").css("float","right").css("margin-top","-10px");
   this.playButton.css("display","inline-block");
-  this.playButton.css("margin-top","5px");
   //playButton.css("background-color", "#ff6622");
 
   this.parent_div.append(this.timeLabel);
