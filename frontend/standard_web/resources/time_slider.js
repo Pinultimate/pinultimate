@@ -80,7 +80,7 @@ function TimeSlider(parent_div_ID, change_function) {
         }
       }
   });
-  this.slider.width("90%").css("float","left");
+  this.slider.width("95%").css("float","left");
 
   this.playButton = $(document.createElement("img")).text("Begin Playback").click(function() {
     if (me.timerInterval) {
@@ -104,7 +104,7 @@ function TimeSlider(parent_div_ID, change_function) {
         }
       },me.TIMER_INTERVAL_MILLI);
     }
-  }).attr("src","resources/PlayButton.jpeg").width("5%").css("float","right").css("margin-top","-10px");
+  }).attr("src","resources/PlayButton.jpeg").width("5%").css("float","right").css("margin-top","-10px").css("max-height", "30px").css("max-width", "30px");
   this.playButton.css("display","inline-block");
   //playButton.css("background-color", "#ff6622");
 

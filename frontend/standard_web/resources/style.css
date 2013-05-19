@@ -73,6 +73,7 @@ header {
   min-height: 32px;
   background: #fff;
 }
+
 footer {
   border-top: 1px #666666 solid;
   width:90%;
@@ -82,11 +83,11 @@ footer {
 }
 
 #logo {
-  margin-top: 10px;
-  vertical-align: middle;
-  max-width: 150px;
-  max-height: 150px;
-  height: 54px;
+  max-width: 60px;
+  max-height: 60px;
+  height: 60px;
+  float: left;
+  padding-left: 150px;
 }
 
 #container {
@@ -107,17 +108,34 @@ footer {
 #pageTitle {
   font-family: 'lato',arial,sans-serif;
   color: #ff6622;
+  padding: 20px 0 0 0;
   text-align: center;
-  font-size: 50px;
-  margin-top: 10px;
-  margin-bottom: 5px;
+  margin-top: 20;
+  font-size: 20px;
+  float: left;
 }
 
 #pageSubtitle {
-  font-family: 'lato',arial,sans-serif;
+  font-family: lato, arial, sans-serif;
   text-align: center;
-  margin-bottom: 5px;
+  font-size: 14px;
+  margin-top: 20px;
+  float: right;
+  padding-right: 18px;
+  color: grey;
 }
+
+#pageSubtitle1 {
+
+  font-family: lato, arial, sans-serif;
+  text-align: center;
+  font-size: 14px;
+  margin-top: 20px;
+  float: right;
+  padding-right: 170px;
+  color: grey;
+}
+
 
 #feedback{
   moz-transform: rotate(270deg);
