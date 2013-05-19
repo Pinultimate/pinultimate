@@ -7,6 +7,7 @@ from datetime import datetime
 CSS_M='text/css'
 JS_M='text/javascript'
 PNG_M='image/png'
+JPG_M='image/jpeg'
 WEBAPP_DIR='/home/deploy/pinultimate/frontend/standard_web/'
 DATA_SUBDIR='resources/'
 
@@ -26,6 +27,9 @@ def index(request):
     web_user.save()
 
     return render_to_response('map.html')
+
+def feedback_html(request):
+    return render_to_response('feedback.html')
 
 def style_css(request):
     return render_to_response(DATA_SUBDIR + 'style.css', mimetype=CSS_M)
@@ -49,3 +53,10 @@ def white_wall_hash_png(request):
     image_data = open(WEBAPP_DIR + DATA_SUBDIR + "white_wall_hash.png", "rb").read()
     return HttpResponse(image_data, mimetype=PNG_M)
 
+def pause_button_jpeg(request):
+    image_data = open(WEBAPP_DIR + DATA_SUBDIR + "PauseButton.jpeg", "rb").read()
+    return HttpResponse(image_data, mimetype=JPG_M)
+
+def play_button_jpeg(request):
+    image_data = open(WEBAPP_DIR + DATA_SUBDIR + "PlayButton.jpeg", "rb").read()
+    return HttpResponse(image_data, mimetype=JPG_M)
