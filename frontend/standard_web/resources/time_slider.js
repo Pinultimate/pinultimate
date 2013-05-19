@@ -80,7 +80,7 @@ function TimeSlider(parent_div_ID, change_function) {
         }
       }
   });
-  this.slider.width("95%").css("float","left");
+  this.slider.width("93%").css("float","left").css("margin-left", "2%");
 
   this.playButton = $(document.createElement("img")).text("Begin Playback").click(function() {
     if (me.timerInterval) {
