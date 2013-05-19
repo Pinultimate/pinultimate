@@ -14,6 +14,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
   this.DEFAULT_CLUSTER_RADIUS = 16; // in px
   this.MIN_CLUSTER_RADIUS = 8;
+  this.MAX_CLUSTER_RADIUS = 24;
 
   this.fetched_data_lat_left = null;
   this.fetched_data_lat_right = null;
@@ -29,6 +30,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
   this.MIN_DATA_POINTS_TO_CLUSTER = 20;
 
+  // Interval to call analytics for time
   setInterval(function() {
     var update_user_time_url = me.ANALYTICS_URL + "update/";
     $.post(update_user_time_url).done(function() {
@@ -107,11 +109,11 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
 
   this.map = createNokiaMap(div_ID, center_object, zoom_level);
   this.potentialDataUpdate(false);
-  this.slider = createTimeSlider("sliderContainer", function(new_value) {
+  this.slider = new TimeSlider("sliderContainer", function(new_value) {
     me.hour_offset = 23-new_value;
     console.log("Slider Moved. New Value: " + new_value);
     me.updateCurrentData();
-  } ,null);
+  });
 };
 
 TrendMap.prototype.potentialDataUpdate = function(force) 
@@ -168,9 +170,9 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
     var svgParser = new nokia.maps.gfx.SvgParser();
     var iconSVG = 
   '<svg width="__WIDTH__" height="__WIDTH__" xmlns="http://www.w3.org/2000/svg">' +
-  '<circle stroke="__SECONDCOLOR__" fill="__SECONDCOLOR__" cx="__X__" cy="__Y__" r="__RADIUS2__" opacity="__OPACITY__"/>' +
-  '<circle stroke="__MAINCOLOR__" fill="__MAINCOLOR__" cx="__RADIUS__" cy="__RADIUS__" r="__RADIUS__" />' +
-  '<text x="__RADIUS__" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
+  '<circle stroke="__SECONDCOLOR__" fill="__SECONDCOLOR__" cx="0" cy="0" r="__RADIUS2__" opacity="__OPACITY__"/>' +
+  '<circle stroke="__MAINCOLOR__" fill="__MAINCOLOR__" cx="0" cy="0" r="__RADIUS__" />' +
+  '<text x="0" y="__TEXTHEIGHT__" font-size="__FONT__pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="__ACCENTCOLOR__" textContent="__TEXTCONTENT__">__TEXT__</text>' +
   '</svg>';
     var svg = iconSVG
       .replace(/__OPACITY__/g, opacity)
@@ -178,13 +180,11 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
       .replace(/__TEXT__/g, text)
       .replace(/__ACCENTCOLOR__/g, accentColor)
       .replace(/__RADIUS__/g, circle_radius) 
-      .replace(/__TEXTHEIGHT__/g, circle_radius*1.35) 
+      .replace(/__TEXTHEIGHT__/g, circle_radius*0.35) 
       .replace(/__FONT__/g, circle_radius*0.625) 
       .replace(/__WIDTH__/g, circle_radius*2)      
       .replace(/__MAINCOLOR__/g, mainColor)
       .replace(/__SECONDCOLOR__/g, secondColor)
-      .replace(/__X__/g, circle_radius)
-      .replace(/__Y__/g, circle_radius)
       .replace(/__RADIUS2__/g, circle_radius*1.5)
     return new nokia.maps.gfx.GraphicsImage(svgParser.parseSvg(svg));
   };
@@ -196,6 +196,7 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
   if (radius !== undefined && radius !== 0) {
     cluster_circle_radius *= radius / this.reso;
     if (cluster_circle_radius < me.MIN_CLUSTER_RADIUS) cluster_circle_radius = me.MIN_CLUSTER_RADIUS;
+    if (cluster_circle_radius > me.MAX_CLUSTER_RADIUS) cluster_circle_radius = me.MAX_CLUSTER_RADIUS;
   }
 
   // Create marker icons
@@ -226,7 +227,12 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
   CLICK = TOUCH ? "tap" : "click";
   marker.addListener(CLICK, function(evt) {
     // Create Info Bubble
-    var info_bubble_text = "Twitter: " + twitter_count + ", Instragam: " + instagram_count + ", Flickr: " + flickr_count;
+    var info_bubble_text = "<div style='background-color:" + mainColor + "'>" + 
+    "<p><font size='2'> Counts from </font></p>" +
+    "<p>Twitter:" + twitter_count + "</p>" +
+    "<p> Instragam: " + instagram_count + "</p>" +
+    "<p> Flickr: " + flickr_count + "</p>" +
+    "</div>" ;
     // Info bubble requires a coordinate, not just a lat-long
     me.infoBubbles.openBubble(info_bubble_text,marker.coordinate);
     var tap_url = me.ANALYTICS_URL + "tap/";
@@ -285,9 +291,9 @@ TrendMap.prototype.newAreaNotCached = function(new_lat_left,new_lat_right,new_lo
 
 TrendMap.prototype.makeMarkers = function(clustered_data)
 {  
-  this.countMin = clustered_data[0].count;
+  this.countMin = 0;
   this.countMax = this.countMin;
-  var sum  = 0;;
+  var sum  = 0;
   // Count total number of check-ins to decide weights for colors
   for (var i=1; i < clustered_data.length; i++) 
   { 
@@ -331,8 +337,8 @@ TrendMap.prototype.updateData = function(json_object)
     var data_index = fetched_time_data.length-1;
     for (var i=23; i >= 0; i--) {
       data_hour = parseHourFromTimeStamp(fetched_time_data[data_index].timestamp);
-      console.log("Current Hour: "+ current_hour);
-      console.log("Data Hour: " + data_hour);
+      //console.log("Current Hour: "+ current_hour);
+      //console.log("Data Hour: " + data_hour);
       // If data exists for this hour, supply the data
       if (data_hour === current_hour){
         translated_data[i] = fetched_time_data[data_index];
@@ -372,6 +378,7 @@ TrendMap.prototype.updateCurrentData = function()
     data_to_display = ClusteringProcessor(data_to_display);
   }
   this.removeAllMarkers();
+  //console.log(data_to_display);
   this.makeMarkers(data_to_display);
 }
 

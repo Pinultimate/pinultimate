@@ -12,11 +12,16 @@
   </head>
   <body>
     <header>
-      <h1 id="pageTitle">Trend Map</h1>
-      <h2 id="pageSubtitle">A Pinultimate Production</h2>
-    </header>
-    <div id="sliderContainer">    </div>
+      <img id="logo"src="http://res.cloudinary.com/hrscywv4p/image/upload/c_limit,h_900,w_1200/ijcybkdbripyruruexyh.png" alt="Smiley face">
+      <div id="pageTitle">TrendMap</div>
+      <a href="http://www.pinultimate.net/#6" id="pageSubtitle1" style="text-decoration: none">Contact</a>
+      <a href="http://www.pinultimate.net/#4" id="pageSubtitle" style="text-decoration: none">About us</a>
+      <a href="http://www.pinultimate.net/#3" id="pageSubtitle" style="text-decoration: none">Product</a>
+      <a href="http://www.pinultimate.net" id="pageSubtitle" style="text-decoration: none">Home</a>
 
+    </header>
+    
+<div id="container">
 
     <div id="mapContainer">
       <div id="loading">
@@ -24,17 +29,27 @@
       </div>
     </div>
 
-    
+    <div id="sliderContainer">    </div>
 
-    <footer>
-      <p class="footer-text">Pinultimate in conjunction with Nokia</p>
-      <div class="test"></div>
-    </footer>
+    <button id="feedback" type="submit" onClick="feedbackPop()" style="top: 166.5px;">Feedback<span>&nbsp;</span></button>
+
+</div>
+
+    <script type="text/javascript">
+      function feedbackPop() {
+      window.open( "feedback.html", "myWindow", 
+      "status = 1, height = 553, width = 418, resizable = 1" )
+    }
+  </script>
+
+
 
     <script type="text/javascript" src="resources/map.js"></script>
     <script type="text/javascript" src="resources/sampleData.js"></script>
     <script type="text/javascript" src="resources/data.js"></script>
     <script type="text/javascript" src="resources/time_slider.js"></script>
+    <script type="text/javascript" src="resources/Dialog.js"></script>
+
     <script type="text/javascript" src="resources/KMeans.js"></script>
     <script type="text/javascript">
 
