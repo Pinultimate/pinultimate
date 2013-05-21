@@ -248,7 +248,9 @@ var ClusteringProcessor = function(data) {
 	}
 
 	var cluster = function() {
-		K = Math.floor(Math.sqrt(data.length/2)) + 5;
+		K = Math.floor(Math.sqrt(data.length/2)) + 7;
+		console.log(K);
+		console.log(data.length);
 		if (data.length > K) {
 			var centers = initClusters();
 			centers = runKMeans(centers, data);

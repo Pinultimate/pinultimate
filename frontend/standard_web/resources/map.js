@@ -28,7 +28,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.ANALYTICS_URL = this.SERVER_URL+ "analytics/";
   this.UPDATE_TIME_INTERVAL = 15000;
 
-  this.MIN_DATA_POINTS_TO_CLUSTER = 20;
+  this.MIN_DATA_POINTS_TO_CLUSTER = 0;
 
   // Interval to call analytics for time
   setInterval(function() {
