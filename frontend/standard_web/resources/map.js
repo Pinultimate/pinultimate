@@ -114,7 +114,6 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
     console.log("Slider Moved. New Value: " + new_value);
     me.updateCurrentData();
   });
-  this.slider.setSliderValue(22); // Start slider at a point with some data
 };
 
 TrendMap.prototype.potentialDataUpdate = function(force) 

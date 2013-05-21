@@ -22,6 +22,7 @@ function TimeSlider(parent_div_ID, change_function) {
     var day = date.getDate();
     var month_day_formatted = month + "/" + day;
     var full_time_string = month_day_formatted;
+    /*
     time = hours + offset;
     if (time >= 24) {
       time -= 24;
@@ -37,9 +38,31 @@ function TimeSlider(parent_div_ID, change_function) {
       return "12:00 P.M.";
     }
     return "Error";
+    */
+    time_string = "";
+    console.log("Hours: " + hours);
+    console.log("Offset: " + offset);
+    time = hours - offset;
+    if (time <= 0) {
+      time += 24;
+      day -= 1;
+    }
+    if (time === 0) {
+      time_string += "12:00 A.M.";
+    }
+    if (time < 12) {
+      time_string += time + ":00 A.M.";
+    } else if (time > 12) {
+      time_string += (time-12) + ":00 P.M.";
+    } else { // time === 12
+      time_string += "12:00 P.M.";
+    }
+    var month_day_formatted = month + "/" + day;
+    var full_time_string = month_day_formatted;
+    return time_string + " " + full_time_string;
   }
 
-  this.timeLabel = $(document.createElement("p")).text(getExactTimeLabel(0));
+  this.timeLabel = $(document.createElement("p")).text(getExactTimeLabel(1));
   this.timeLabel.css( {
     "margin-bottom":5,
     "text-align": "center"
@@ -52,7 +75,7 @@ function TimeSlider(parent_div_ID, change_function) {
       value: me.MAX_VALUE,
       // Change is called when the slider is released and value was changed
       change: function(event, ui) {
-        me.timeLabel.text(getExactTimeLabel(me.getSliderValue() + 1));
+        me.timeLabel.text(getExactTimeLabel(me.MAX_VALUE - me.getSliderValue()+1));
         if (me.getSliderValue() > me.MAX_VALUE) {
           //Do nothing
         } else {
