@@ -4,7 +4,7 @@ function TimeSlider(parent_div_ID, change_function) {
   var me = this; // Disambiguates scope
 
   this.timerInterval = null;
-  this.MAX_VALUE = 24;
+  this.MAX_VALUE = 23;
   this.MIN_VALUE = 1;
   this.STEP_VALUE = 1;
   this.TIMER_INTERVAL_MILLI = 2000;
@@ -42,7 +42,7 @@ function TimeSlider(parent_div_ID, change_function) {
     time_string = "";
     console.log("Hours: " + hours);
     console.log("Offset: " + offset);
-    time = hours - offset;
+    time = hours - offset-1;
     if (time <= 0) {
       time += 24;
       day -= 1;
@@ -62,7 +62,7 @@ function TimeSlider(parent_div_ID, change_function) {
     return time_string + " " + full_time_string;
   }
 
-  this.timeLabel = $(document.createElement("p")).text(getExactTimeLabel(1));
+  this.timeLabel = $(document.createElement("p")).text(getExactTimeLabel(0));
   this.timeLabel.css( {
     "margin-bottom":5,
     "text-align": "center"
