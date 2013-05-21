@@ -4,8 +4,8 @@ function TimeSlider(parent_div_ID, change_function) {
   var me = this; // Disambiguates scope
 
   this.timerInterval = null;
-  this.MAX_VALUE = 23;
-  this.MIN_VALUE = 0;
+  this.MAX_VALUE = 24;
+  this.MIN_VALUE = 1;
   this.STEP_VALUE = 1;
   this.TIMER_INTERVAL_MILLI = 2000;
 
@@ -75,13 +75,13 @@ function TimeSlider(parent_div_ID, change_function) {
       value: me.MAX_VALUE,
       // Change is called when the slider is released and value was changed
       change: function(event, ui) {
-        me.timeLabel.text(getExactTimeLabel(me.MAX_VALUE - me.getSliderValue()+1));
+        me.timeLabel.text(getExactTimeLabel(me.MAX_VALUE - me.getSliderValue()));
         if (me.getSliderValue() > me.MAX_VALUE) {
           //Do nothing
         } else {
           if (me.change_function) {
             var num = me.getSliderValue()
-            console.log(num);
+            console.log("Slider Value: " + num);
             me.change_function(num);
           }
           if (me.getSliderValue() === me.MAX_VALUE) {

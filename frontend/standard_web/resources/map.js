@@ -6,7 +6,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.fetched_data = null;
   this.current_data = null;
 
-  this.hour_offset = 0;
+  this.hour_offset = 1; 
   this.reso = 0;
   this.countMax = 0;
   this.countMin = 0;  
@@ -110,7 +110,7 @@ function TrendMap(div_ID, slider_ID, center_object, zoom_level)
   this.map = createNokiaMap(div_ID, center_object, zoom_level);
   this.potentialDataUpdate(false);
   this.slider = new TimeSlider("sliderContainer", function(new_value) {
-    me.hour_offset = 23-new_value;
+    me.hour_offset = 24-new_value;
     console.log("Slider Moved. New Value: " + new_value);
     me.updateCurrentData();
   });
