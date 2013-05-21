@@ -126,3 +126,7 @@ TimeSlider.prototype.resetSlider = function() {
 TimeSlider.prototype.incrementSlider = function() {
   this.slider.slider("value", this.getSliderValue()+1);
 }
+
+TimeSlider.prototype.setSliderValue = function(new_value) {
+  this.slider.slider("value", new_value);
+}
