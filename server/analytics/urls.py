@@ -6,4 +6,5 @@ urlpatterns = patterns('analytics.views',
 	url(r'^open_phone/(?P<device_id>[a-zA-Z0-9]+)/$', 'open_phone'),
 	url(r'^close_phone/(?P<device_id>[a-zA-Z0-9]+)/$', 'close_phone'),
 	url(r'^tap_phone/(?P<device_id>[a-zA-Z0-9]+)/$', 'tap_phone'),
+        url(r'^user_analytics.html', 'user_analytics_page'),
 )
