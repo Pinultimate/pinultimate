@@ -7,6 +7,28 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 @require_POST
+def map_operation(request):
+	session = Session.objects.get(session_key=request.session.session_key)
+    web_user_queryset = WebUser.objects.filter(session=session)
+    web_user = list(web_user_queryset)
+    if web_user is not None and len(web_user) > 0:
+    	web_user = web_user[0]
+    	web_user.map_operation()
+	return HttpResponse(status=200)
+
+@csrf_exempt
+@require_POST
+def slide(request):
+	session = Session.objects.get(session_key=request.session.session_key)
+    web_user_queryset = WebUser.objects.filter(session=session)
+    web_user = list(web_user_queryset)
+    if web_user is not None and len(web_user) > 0:
+    	web_user = web_user[0]
+    	web_user.slide()
+	return HttpResponse(status=200)
+
+@csrf_exempt
+@require_POST
 def tap(request):
     session = Session.objects.get(session_key=request.session.session_key)
     web_user_queryset = WebUser.objects.filter(session=session)
