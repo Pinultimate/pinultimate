@@ -18,7 +18,6 @@ LON1, LAT1, LON2, LAT2 = (-122.23, 37.32, -122.09, 37.49)
 locations_args = "%f,%f,%f,%f" % (LON1, LAT1, LON2, LAT2)
 
 def write_to_db(tweet):
-    print tweet
 
     taken_time = datetime.datetime.fromtimestamp(int(time.mktime(time.strptime(tweet['created_at'], "%a %b %d %H:%M:%S +0000 %Y"))))
     if tweet['coordinates'] == None:
