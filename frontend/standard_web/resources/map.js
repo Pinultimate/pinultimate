@@ -236,7 +236,13 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
     "<p> Flickr: " + flickr_count + "</p>" +
     "</div>" ;
     // Info bubble requires a coordinate, not just a lat-long
-    me.infoBubbles.openBubble(info_bubble_text,marker.coordinate);
+    var boundingbox = marker.getDisplayBoundingBox(me.map);
+    var width = boundingbox.bottomRight.x - boundingbox.topLeft.x;
+    var height = boundingbox.bottomRight.y - boundingbox.topLeft.y;
+    var x = boundingbox.topLeft.x + width/2;;
+    var y = boundingbox.topLeft.y + height/2;
+    var bubblecoord = me.map.pixelToGeo(x, y);
+    me.infoBubbles.openBubble(info_bubble_text,bubblecoord);
     var tap_url = me.ANALYTICS_URL + "tap/";
     $.post(tap_url).done(function() {
       console.log("Tap POST success");
