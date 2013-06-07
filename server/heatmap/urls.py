@@ -30,7 +30,12 @@ grid_query_urlpatterns = patterns('heatmap.views.grid',
 	url(r'search/center/(?P<lat>[+-]?\d+(\.\d+)?)/(?P<lon>[+-]?\d+(\.\d+)?)/region/(?P<latrange>\d+(\.\d+)?)/(?P<lonrange>\d+(\.\d+)?)/', include(grid_query_timerange_urlpatterns)),
 )
 
+tweets_urlpatterns = patterns('heatmap.views.tweets',
+	url(r'center/(?P<lat>[+-]?\d+(\.\d+)?)/(?P<lon>[+-]?\d+(\.\d+)?)/radius/(?P<radius>\d+(\.\d+)?)/from/(?P<fyear>\d+)/(?P<fmonth>\d+)/(?P<fday>\d+)/(?P<fhour>\d+)/to/(?P<tyear>\d+)/(?P<tmonth>\d+)/(?P<tday>\d+)/(?P<thour>\d+)/$', 'twitter_reverse_geocode'),
+)
+
 urlpatterns = patterns('',
 	url(r'raw/', include(raw_query_urlpatterns)),
 	url(r'resolution/(?P<resolution>\d+(\.\d+)?)/', include(grid_query_urlpatterns)),
+	url(r'tweets/', include(tweets_urlpatterns)),
 )
