@@ -1,5 +1,6 @@
 from twitter_scrape.models import TwitterLocation
 from django.http import HttpResponse
+from heatmap.views.requestdict import *
 from heatmap.views.normalization import *
 import json
 import datetime
