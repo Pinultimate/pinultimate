@@ -17,8 +17,7 @@ def twitter_reverse_geocode(request, lat, lon, radius, fyear, fmonth, fday, fhou
     upper_right_lon, upper_right_lat = convert_to_upper_right(lon, lat, radius, radius)
     results = TwitterLocation.objects(__raw__={
         'coordinates' : {'$within' : {'$box' : [ [bottom_left_lat, bottom_left_lon],[upper_right_lat, upper_right_lon] ]}},
-        'timestamp' : { '$gte' : from_timestamp, '$lt' : to_timestamp + datetime.timedelta(hours = 1) }})
-    }).limit(25)
+        'timestamp' : { '$gte' : from_timestamp, '$lt' : to_timestamp + datetime.timedelta(hours = 1) }}).limit(25)
 
     reponse = []
     for result in results:
