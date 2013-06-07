@@ -194,3 +194,7 @@ footer {
 .timerControlPlay {
   background-image: url("PlayButton.jpeg");
 }
+
+#infobubble {
+  padding: 4px 10px 2px;
+}

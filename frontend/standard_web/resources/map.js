@@ -229,7 +229,7 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
   CLICK = TOUCH ? "tap" : "click";
   marker.addListener(CLICK, function(evt) {
     // Create Info Bubble
-    var info_bubble_text = "<div style='background-color:" + mainColor + "'>" + 
+    var info_bubble_text = "<div id='infobubble' style='background-color:" + mainColor + "'>" +
     "<p><font size='2'> Counts from </font></p>" +
     "<p>Twitter:" + twitter_count + "</p>" +
     "<p> Instagram: " + instagram_count + "</p>" +
