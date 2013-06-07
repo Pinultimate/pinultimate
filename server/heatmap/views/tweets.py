@@ -29,8 +29,8 @@ def twitter_reverse_geocode(request, lat, lon, radius, fyear, fmonth, fday, fhou
     json_response = {}
 
     #TODO construct_request_dict
-    request_dict = construct_request_dict("")
-    json_response["request"] = request_dict
+    #request_dict = construct_request_dict("")
+    #json_response["request"] = request_dict
     json_response["response"] = response
     return HttpResponse(json.dumps(json_response), content_type="application/json")
 
