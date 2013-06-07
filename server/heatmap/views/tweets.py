@@ -20,7 +20,7 @@ def twitter_reverse_geocode(request, lat, lon, radius, fyear, fmonth, fday, fhou
         'coordinates' : {'$within' : {'$box' : [ [bottom_left_lat, bottom_left_lon],[upper_right_lat, upper_right_lon] ]}},
         'timestamp' : { '$gte' : from_timestamp, '$lt' : to_timestamp + datetime.timedelta(hours = 1) }}).limit(25)
 
-    reponse = []
+    response = []
     for result in results:
         response.append(result.tweet_text)
         if len(response) == 5:
