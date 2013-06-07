@@ -231,9 +231,9 @@ TrendMap.prototype.addMarker = function(count,lat,long,radius, twitter_count, in
     // Create Info Bubble
     var info_bubble_text = "<div id='infobubble' style='background-color:" + mainColor + "'>" +
     "<p><font size='2'> Counts from </font></p>" +
-    "<p>Twitter:" + twitter_count + "</p>" +
-    "<p> Instagram: " + instagram_count + "</p>" +
-    "<p> Flickr: " + flickr_count + "</p>" +
+    "<p>Twitter: " + twitter_count + "</p>" +
+    "<p>Instagram: " + instagram_count + "</p>" +
+    "<p>Flickr: " + flickr_count + "</p>" +
     "</div>" ;
     // Info bubble requires a coordinate, not just a lat-long
     var boundingbox = marker.getDisplayBoundingBox(me.map);
